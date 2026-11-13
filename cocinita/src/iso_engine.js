@@ -16,13 +16,13 @@ const ISO=(()=>{
     const a=AR.A,L=[];
     const add=(id,f,dep,room,act,label)=>L.push({id,f,dep,room,act,label});
     add('ground',a.ground,-1e3);
-    add('kfloor',a.floor(0,0,6.5,6,'#FFF4E0','#F9D5CD'),-900,'cocina');
-    add('bfloor',a.floor(6.5,0,4.5,5,'#E3F2EA','#FFFDF6'),-900,'bano');
-    add('lfloor',a.floor(0,6,5,4.5,'#E3B07E','#E3B07E','wood'),-900,'lavanderia');
-    add('wallY1',a.wallY(0,6,'#F9CEC6',(g,S)=>{AR.windowOn(g,S,.3,.42,.62,.8);AR.garland(g,S,7)}),-800,'cocina');
-    add('wallY2',a.wallY(6,4.5,'#CFE6EE',(g,S)=>{AR.windowOn(g,S,.07,.44,.33,.8)}),-800,'lavanderia');
-    add('wallX1',a.wallX(0,6.5,'#F9CEC6',(g,S)=>{for(let i=0;i<11;i++)for(let j=0;j<3;j++)g.rect(S,.28+i*.048,.365+j*.085,.28+(i+1)*.048,.365+(j+1)*.085,(i+j)%2?'#FFF6E2':'#FFEFD2',{stroke:'#EBCFA8',sw:1.2});AR.garland(g,S,8)}),-800,'cocina');
-    add('wallX2',a.wallX(6.5,4.5,'#D8EEE4',(g,S)=>{for(let i=0;i<9;i++)for(let j=0;j<4;j++)g.rect(S,i/9,.07+j*.1,(i+1)/9,.07+(j+1)*.1,(i+j)%2?'#FFFDF6':'#EAF6F0',{stroke:'#C9E0D4',sw:1.2});g.rect(S,0,.47,1,.5,'#F7B3A9',{sw:1.6})}),-800,'bano');
+    add('kfloor',a.floor(0,0,6.5,6,'#FFF7EA','#FBE3DC'),-900,'cocina');
+    add('bfloor',a.floor(6.5,0,4.5,5,'#FFFDF6','#E6F3EC'),-900,'bano');
+    add('lfloor',a.floor(0,6,5,4.5,'#EFC9A0','#EFC9A0','wood'),-900,'lavanderia');
+    add('wallY1',a.wallY(0,6,'#F9CEC6',(g,S)=>{AR.windowOn(g,S,.36,.4,.58,.8);AR.sconce(g,S,.2,.62,1.1);AR.sconce(g,S,.74,.62,1.1);AR.garland(g,S,7)}),-800,'cocina');
+    add('wallY2',a.wallY(6,4.5,'#F7D9D2',(g,S)=>{AR.windowOn(g,S,.1,.42,.32,.8)}),-800,'lavanderia');
+    add('wallX1',a.wallX(0,6.5,'#F9CEC6',(g,S)=>{for(let i=0;i<11;i++)for(let j=0;j<3;j++)g.rect(S,.28+i*.048,.365+j*.085,.28+(i+1)*.048,.365+(j+1)*.085,(i+j)%2?'#FFF6E2':'#FFEFD2',{stroke:'#EBCFA8',sw:1.2});AR.sconce(g,S,.93,.62,1);AR.garland(g,S,8)}),-800,'cocina');
+    add('wallX2',a.wallX(6.5,4.5,'#F9D7D0',(g,S)=>{for(let i=0;i<9;i++)for(let j=0;j<4;j++)g.rect(S,i/9,.07+j*.1,(i+1)/9,.07+(j+1)*.1,(i+j)%2?'#FFFDF6':'#EAF6F0',{stroke:'#C9E0D4',sw:1.2});g.rect(S,0,.47,1,.5,'#F7B3A9',{sw:1.6});AR.windowOn(g,S,.62,.58,.84,.88);AR.sconce(g,S,.08,.7,1.4);AR.sconce(g,S,.46,.7,1.4)}),-800,'bano');
     add('shaft',a.shaft(2.3,4.2,1.75,3.25,3.4),-700,'cocina');
     add('curb1',a.curb(6.4,0,.2,5),6.5+2.5,'bano');
     add('curb2',a.curb(0,5.9,5,.2),2.5+6,'lavanderia');
@@ -46,8 +46,19 @@ const ISO=(()=>{
     add('lshelf',a.shelfWall(wY2,.42,.92,.66,[[.12,.36,'#8EB8D0',.12],[.34,.28,'#F6B5AE',.11,'#8E6BC0'],[.56,.38,'#FFFDF6',.12,'#4A8BB0'],[.8,.26,'#CDE8D8',.1,'#7FA050']]),.05+1.1+8+1.3+.01,'lavanderia');
     add('lrug',a.rug(2.9,8.4,1.3,1.1,'#CFE6EE','#FFFDF6'),-690,'lavanderia');
     add('basket',a.basket(.6,9.95),.6+9.95+.5,'lavanderia','laundry');
-    add('bush1',a.bush(6.3,10.6,.7),6.3+10.6+.9);
-    add('bush2',a.bush(11.2,6.4,.6),11.2+6.4+.8);
+    add('vine1',a.vine(-.2,.2,H,0,.62,5),-750);add('vine2',a.vine(.5,-.2,H,.62,0,4),-749);add('vine3',a.vine(-.2,8.6,H,0,.6,4),-748);add('vine4',a.vine(9.2,-.2,H,.6,0,4),-747);
+    add('stool1',a.stool(2.0,3.3),2.0+3.3+.3,'cocina');add('stool2',a.stool(1.1,4.5,'#FFD979'),1.1+4.5+.3,'cocina');
+    add('jars',a.jars(4.75,.4,1.5),3.35+1.9+FY+1.1+.02,'cocina');
+    add('khang',a.hang(wX1,.56,.74,.645),3.35+1.9+FY+1.1+.015,'cocina');
+    add('kframe',a.frame(wY1,.9,.6),-799,'cocina');
+    add('kroses',a.roses(.75,5.3,0,'#F7B3A9'),.75+5.3+.3,'cocina');
+    add('proses',a.roses(1.0,.55,3.49),.25+1.5+FY+1.05+.01,'cocina');
+    add('broses',a.roses(10.5,4.3,0,'#C9B0E8'),10.5+4.3+.3,'bano');
+    add('lroses',a.roses(4.3,6.7,0,'#FFD979'),4.3+6.7+.3,'lavanderia');
+    add('lstool',a.stool(4.2,9.8,'#C9B0E8'),4.2+9.8+.3,'lavanderia');
+    add('groses',a.roses(6.0,7.2,-.02),6.0+7.2+.3);add('groses2',a.roses(10.6,10.4,-.02,'#F7B3A9'),10.6+10.4+.3);
+    add('bush1',a.bush(6.4,10.6,.7),6.4+10.6+.9);
+    add('bush2',a.bush(10.8,6.3,.6),10.8+6.3+.8);
     add('mailbox',a.mailbox(8.3,7.8),8.3+7.8+.5,null,'mailbox','Buzón');
     add('letter',a.letter(8.3,7.8),8.3+7.8+.52,null,'mailbox');
     add('fglow',a.fridgeGlow(FX,FY),FX+1.45+FY+1.15-.25,'cocina');
@@ -103,7 +114,7 @@ const ISO=(()=>{
   function targetFor(v){
     const W=app.renderer.width/app.renderer.resolution,Hh=app.renderer.height/app.renderer.resolution;
     let b,top=46,bot=16+bottomPad,side=10;
-    if(v==='home')b=boundsOf([-.7,11.7,-.7,11.7],-1,H+.3);
+    if(v==='home')b=boundsOf([-.5,11.8,-.5,11.8],-1.5,H+.7);
     else if(v==='fridge'){b=boundsOf([FX-1.5,FX+1.6,FY,FY+2.7],0,3.6);top=54}
     else{b=boundsOf(ROOMSB[v],-.3,H+.2);top=50}
     const s=Math.min((W-2*side)/(b.x1-b.x0),(Hh-top-bot)/(b.y1-b.y0));
