@@ -1,0 +1,1087 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Mi Cocinita</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,800&family=Nunito:wght@500;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#FBE4DF;--paper:#FFF6E2;--card:#FFFAEE;--ink:#5A3524;--muted:#9A7260;--line:#EDCFBC;--out:#7A4A30;
+  --sage:#9DC27A;--sage-d:#5E8040;--terra:#E4574B;--terra-d:#A93B30;--butter:#FFD36B;--rose:#F6B5AE;--berry:#C73D3A;
+  --wood:#D39764;--wood-d:#8A5330;--plank:#CE915F;--fridge:#FFF3D6;--fridge-in:#FFFBEF;--freezer:#D7EEF5;--glass:#BFE3EE;
+  --pantry-in:#FFF0D0;--tile:#FFE08A;--tile2:#FFD36B;--tile-l:#E7B24A;--wallp:#F9CFC9;--mint:#CBE9D6;--sky:#C4E5F0;--lilac:#E4D5F4;--peach:#FFDDBA;
+  --gold:#D9A32E;--sh:0 4px 0 var(--out);
+  --pat:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='72' height='72'%3E%3Cg opacity='.55'%3E%3Cpath d='M14 34C8 31 6 25 9 21C12 19 18 19 21 21C24 25 22 31 14 34Z' fill='%23F08A80'/%3E%3Cpath d='M10 21l4-3 4 3-4 1z' fill='%237FA050'/%3E%3C/g%3E%3Ccircle cx='50' cy='54' r='2.2' fill='%23F4B6AE'/%3E%3Ccircle cx='55' cy='14' r='1.8' fill='%23FFD36B'/%3E%3C/svg%3E");
+  color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#2B1B1A;--paper:#3A2824;--card:#43302B;--ink:#FBE9D6;--muted:#C3A892;--line:#5B4238;--out:#150D0A;
+    --sage:#8FB36C;--sage-d:#6F9150;--terra:#E5675A;--terra-d:#8E2E26;--butter:#EDC25E;--rose:#8A4A4C;--berry:#E0605A;
+    --wood:#8A5F3C;--wood-d:#5E3C22;--plank:#7B5233;--fridge:#4B4036;--fridge-in:#55493D;--freezer:#3E5560;--glass:#5C7F80;
+    --pantry-in:#4A3A28;--tile:#6B5424;--tile2:#7A6129;--tile-l:#4D3C18;--wallp:#5A3436;--mint:#3F6150;--sky:#3F6577;--lilac:#5B4A78;--peach:#7B5538;
+    --gold:#E9BE5B;color-scheme:dark;
+    --pat:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='72' height='72'%3E%3Cg opacity='.18'%3E%3Cpath d='M14 34C8 31 6 25 9 21C12 19 18 19 21 21C24 25 22 31 14 34Z' fill='%23F08A80'/%3E%3C/g%3E%3Ccircle cx='50' cy='54' r='2' fill='%23F4B6AE' opacity='.2'/%3E%3C/svg%3E");
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#2B1B1A;--paper:#3A2824;--card:#43302B;--ink:#FBE9D6;--muted:#C3A892;--line:#5B4238;--out:#150D0A;
+  --sage:#8FB36C;--sage-d:#6F9150;--terra:#E5675A;--terra-d:#8E2E26;--butter:#EDC25E;--rose:#8A4A4C;--berry:#E0605A;
+  --wood:#8A5F3C;--wood-d:#5E3C22;--plank:#7B5233;--fridge:#4B4036;--fridge-in:#55493D;--freezer:#3E5560;--glass:#5C7F80;
+  --pantry-in:#4A3A28;--tile:#6B5424;--tile2:#7A6129;--tile-l:#4D3C18;--wallp:#5A3436;--mint:#3F6150;--sky:#3F6577;--lilac:#5B4A78;--peach:#7B5538;
+  --gold:#E9BE5B;color-scheme:dark;
+}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{margin:0;background-color:var(--bg);background-image:var(--pat);color:var(--ink);font:600 15px/1.4 Nunito,system-ui,sans-serif;padding-bottom:96px;overflow-x:hidden}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);background:var(--paper);z-index:40}
+body.is-dragging{user-select:none;-webkit-user-select:none;cursor:grabbing}
+h1,h2,h3{font-family:Fraunces,Georgia,serif;margin:0;letter-spacing:-.01em}
+button,input,select,textarea{font:inherit;color:inherit}
+button{cursor:pointer;border:0;background:none}
+.bow{flex:none;filter:drop-shadow(0 2px 0 rgba(122,74,48,.25))}
+
+/* header */
+header{position:sticky;top:env(safe-area-inset-top,0px);z-index:30;background:var(--paper);border-bottom:3px solid var(--out);box-shadow:0 3px 0 var(--rose);
+  padding:9px 14px;display:flex;align-items:center;gap:10px}
+.brand{flex:1;min-width:0}
+.brand h1{font-size:23px;font-weight:800;color:var(--terra);line-height:1;display:flex;align-items:center;gap:7px}
+.brand small{color:var(--muted);font-weight:800;font-size:12px}
+.pill-xp{background:var(--butter);color:#4A3426;border:2.5px solid var(--out);border-radius:999px;padding:4px 11px;font-weight:800;font-size:13px;white-space:nowrap;box-shadow:0 2px 0 var(--out)}
+.bell{position:relative;width:42px;height:42px;border-radius:50%;background:var(--lilac);border:3px solid var(--out);font-size:19px;box-shadow:0 3px 0 var(--out)}
+.bell b{position:absolute;top:-6px;right:-6px;min-width:20px;height:20px;border-radius:10px;background:var(--terra);color:#fff;border:2px solid var(--out);font-size:11px;display:grid;place-items:center;padding:0 4px}
+main{max-width:600px;margin:0 auto;padding:14px 12px 20px}
+
+/* nav */
+nav{position:fixed;left:0;right:0;bottom:0;z-index:30;background:var(--paper);border-top:3px solid var(--out);box-shadow:0 -3px 0 var(--rose);display:flex;
+  padding:6px 4px calc(6px + env(safe-area-inset-bottom,0px))}
+nav button{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;font-size:10.5px;font-weight:800;color:var(--muted);padding:2px 0}
+nav button span{width:44px;height:30px;border-radius:15px;background:var(--c);border:2.5px solid transparent;display:grid;place-items:center;font-size:19px;transition:transform .2s}
+nav button.on{color:var(--terra)}
+nav button.on span{border-color:var(--out);box-shadow:0 3px 0 var(--out);transform:translateY(-3px) scale(1.08)}
+nav button:active span{transform:scale(.88)}
+
+/* banners */
+.banner{position:relative;display:flex;align-items:center;gap:12px;padding:14px 16px;margin-bottom:16px;border:3px solid var(--out);border-radius:26px;box-shadow:var(--sh);overflow:hidden;
+  background-color:var(--bn);background-image:radial-gradient(rgba(255,255,255,.5) 2px,transparent 2.6px);background-size:16px 16px}
+.b-ic{width:56px;height:56px;border-radius:18px;background:rgba(255,255,255,.75);border:3px solid var(--out);display:grid;place-items:center;font-size:30px;flex:none;animation:bobble 3s ease-in-out infinite}
+@keyframes bobble{0%,100%{transform:translateY(0) rotate(-3deg)}50%{transform:translateY(-4px) rotate(3deg)}}
+.banner h2{font-size:23px}.banner small{opacity:.8;font-weight:800}
+.banner .bow{position:absolute;right:12px;top:-3px;transform:rotate(14deg)}
+
+/* cards & forms */
+.card{background:var(--card);border:3px solid var(--out);border-radius:26px;padding:16px;margin-bottom:18px;box-shadow:var(--sh)}
+.card h2{font-size:20px;margin-bottom:10px}
+.card h3{font-size:16px;margin-bottom:6px}
+.sub{color:var(--muted);font-size:13px;margin:0 0 8px}
+.hint{color:var(--muted);font-size:12.5px;text-align:center;margin:10px 0}
+.btn{background:var(--sage);color:#2d3d1c;border:3px solid var(--out);border-radius:18px;padding:9px 16px;font-weight:800;box-shadow:0 4px 0 var(--out);transition:transform .1s,box-shadow .1s}
+.btn:active{transform:translateY(4px);box-shadow:0 0 0 var(--out)}
+.btn.terra{background:var(--terra);color:#fff}
+.btn.ghost{background:var(--paper);color:var(--ink)}
+.btn.sm{padding:5px 11px;font-size:13px;border-radius:14px;box-shadow:0 3px 0 var(--out)}
+.btn.sm:active{transform:translateY(3px)}
+.btn.berry{background:var(--berry);color:#fff}
+.btn.block{display:block;width:100%}
+input,select,textarea{width:100%;background:var(--paper);border:3px solid var(--out);border-radius:16px;padding:8px 12px;outline:none}
+input:focus,select:focus,textarea:focus{border-color:var(--terra)}
+label{display:block;font-size:12.5px;font-weight:800;color:var(--muted);margin:8px 0 3px}
+.row{display:flex;gap:8px;align-items:flex-end}
+.row>*{flex:1;min-width:0}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{background:var(--paper);border:2.5px solid var(--out);border-radius:999px;padding:3px 11px;font-size:13px;font-weight:800}
+.chip.ok{background:var(--mint)}
+.chip.no{background:var(--rose)}
+.panel-title{display:flex;align-items:center;gap:8px;margin:2px 4px 10px}
+.panel-title span{font-size:24px}.panel-title h3{font-size:19px}
+
+/* stat strip */
+.strip{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:16px}
+.stat{border:3px solid var(--out);border-radius:20px;padding:8px 2px;text-align:center;box-shadow:0 3px 0 var(--out);background:var(--paper)}
+.stat:nth-child(1){background:var(--mint)}.stat:nth-child(2){background:var(--butter);color:#4A3426}.stat:nth-child(3){background:var(--rose)}.stat:nth-child(4){background:var(--sky)}
+.stat b{display:block;font:800 21px Fraunces,Georgia,serif}
+.stat small{font-size:11px;font-weight:800}
+
+/* kitchen illustration */
+.kitchen{border:3px solid var(--out);border-radius:28px;overflow:hidden;box-shadow:var(--sh);background:var(--wallp);margin-bottom:18px}
+.kscene{display:block;width:100%;height:auto;user-select:none;-webkit-user-select:none}
+.piece{cursor:pointer;transform-box:fill-box;transform-origin:50% 100%}
+.piece .glow{opacity:0}
+.piece.sel .glow{opacity:1;animation:dash 1.2s linear infinite}
+.piece:active{animation:wig .4s}
+.ktag rect{fill:var(--paper)}.ktag text{fill:#5A3524;font:800 10px Nunito,system-ui,sans-serif}
+.piece.sel .ktag rect{fill:var(--terra)}.piece.sel .ktag text{fill:#fff}
+@keyframes dash{to{stroke-dashoffset:-26}}
+@keyframes wig{0%,100%{transform:rotate(0)}25%{transform:rotate(-2.2deg)}75%{transform:rotate(2.2deg)}}
+.stm{transform-box:fill-box;animation:stm 2.6s ease-in-out infinite}.stm2{animation-delay:1.2s}
+@keyframes stm{0%{opacity:0;transform:translateY(6px)}40%{opacity:.95}100%{opacity:0;transform:translateY(-12px)}}
+.curt{transform-box:fill-box;transform-origin:50% 0;animation:sway 5s ease-in-out infinite alternate}
+@keyframes sway{to{transform:skewX(1.8deg)}}
+
+/* interior furniture */
+.scene{perspective:1000px;position:relative;margin-bottom:14px}
+.door{position:absolute;inset:0;border-radius:inherit;transform-origin:left center;animation:doorOpen .85s ease-in forwards;pointer-events:none;z-index:6;background:var(--fridge);border:4px solid var(--out)}
+.door::after{content:"";position:absolute;right:12px;top:42%;width:10px;height:70px;border-radius:6px;background:#E9C48F;border:2.5px solid var(--out)}
+.door.pd{background:var(--sage)}.door.pd::after{width:18px;height:18px;border-radius:50%;background:var(--butter)}
+.door.sd{background:var(--wood)}
+@keyframes doorOpen{0%{transform:rotateY(0);opacity:1}65%{opacity:1}100%{transform:rotateY(-108deg);opacity:0}}
+.fridge{position:relative;background:var(--fridge);border:4px solid var(--out);border-radius:30px 30px 20px 20px;padding:14px 34px 16px 14px;box-shadow:var(--sh)}
+.fridge::after{content:"";position:absolute;right:11px;top:60px;width:11px;height:110px;border-radius:6px;background:#E9C48F;border:2.5px solid var(--out)}
+.fridge::before{content:"🍓";position:absolute;right:6px;bottom:6px;font-size:22px}
+.fridge .shelf{background:var(--fridge-in);border:3px solid var(--out)}
+.fridge .shelf.sh0{background:var(--freezer)}
+.fridge .shelf::after{background:var(--glass)}
+.rack{background:var(--wood);border:4px solid var(--out);border-radius:22px;padding:12px;box-shadow:var(--sh)}
+.rack .shelf{background:rgba(255,246,226,.32);border:3px solid var(--out);min-height:106px}
+.rack .shelf::after{background:var(--wood-d)}
+.pantry{position:relative;background:var(--pantry-in);border:4px solid var(--out);border-radius:22px 22px 14px 14px;padding:0 12px 6px;box-shadow:var(--sh)}
+.valance{position:relative;height:34px;margin:0 -12px 18px;border-bottom:3px solid var(--out);background-color:#FFF1D6;background-image:radial-gradient(circle,#E4574B 2.3px,transparent 2.8px);background-size:16px 16px;border-radius:18px 18px 0 0}
+.valance::after{content:"";position:absolute;left:0;right:0;bottom:-13px;height:12px;background:radial-gradient(circle at 10px 0,#FFF1D6 9px,transparent 10px) 0 0/20px 12px repeat-x;filter:drop-shadow(0 2px 0 var(--out))}
+.pantry .shelf{background:rgba(255,255,255,.28);border:3px solid var(--out)}
+.pantry .shelf::after{background:var(--sage)}
+.cabinet{background:var(--sky);border:4px solid var(--out);border-radius:22px;padding:12px;box-shadow:var(--sh)}
+.cabinet .shelf{background:var(--pantry-in);border:3px solid var(--out)}
+.cabinet .shelf::after{background:var(--sage)}
+.shelf{position:relative;min-height:100px;padding:20px 8px 10px;margin-bottom:22px;display:flex;flex-wrap:wrap;gap:4px 6px;align-items:flex-end;border-radius:12px;transition:background .15s}
+.shelf::after{content:"";position:absolute;left:-6px;right:-6px;bottom:-13px;height:13px;border-radius:7px;background:var(--plank);border:3px solid var(--out);z-index:-1}
+.s-label{position:absolute;top:3px;left:9px;font-size:10.5px;font-weight:800;color:var(--muted)}
+.s-empty{color:var(--muted);font-size:12px;opacity:.75;align-self:center;margin:auto}
+.shelf.over,.dogcol.over,.bowl.over{outline:3px dashed var(--terra);outline-offset:-3px;background-color:color-mix(in srgb,var(--butter) 45%,transparent)}
+.item{position:relative;width:68px;text-align:center;cursor:grab;touch-action:none;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;transition:transform .15s}
+.item:active{transform:scale(1.12) rotate(-3deg)}
+.item.dragging{opacity:.25}
+.item .em{font-size:34px;line-height:1.1;display:block;filter:drop-shadow(1.3px 0 0 #fff) drop-shadow(-1.3px 0 0 #fff) drop-shadow(0 1.3px 0 #fff) drop-shadow(0 -1.3px 0 #fff) drop-shadow(0 2.5px 0 rgba(90,50,30,.3))}
+.item .nm{display:inline-block;font-size:10px;letter-spacing:-.2px;font-weight:800;line-height:1.15;max-height:2.4em;overflow:hidden;margin-top:2px;padding:0 5px;border-radius:8px;background:rgba(255,250,238,.92);color:#5A3524;border:1.5px solid rgba(122,74,48,.35);overflow-wrap:anywhere}
+.badge{position:absolute;top:-3px;right:2px;min-width:20px;height:20px;border-radius:10px;background:var(--terra);color:#fff;border:2px solid var(--out);font-size:11px;font-weight:800;display:grid;place-items:center;padding:0 4px}
+.exb{position:absolute;top:-5px;left:-3px;border-radius:9px;font-size:10px;font-weight:800;padding:0 6px;color:#fff;border:2px solid var(--out)}
+.exb.y{background:var(--butter);color:#3b2a10}.exb.r{background:var(--berry)}
+.item.gone{opacity:.55}.item.gone .em{filter:grayscale(1)}
+.item.rot .em{animation:wobble 1.6s ease-in-out infinite}
+@keyframes wobble{0%,100%{transform:rotate(-6deg)}50%{transform:rotate(6deg)}}
+.jar-w{width:48px;margin:0 auto;position:relative}
+.jar-lid{height:13px;border-radius:7px 7px 3px 3px;border:2.5px solid var(--out);background-color:var(--lid,#E4574B);background-image:linear-gradient(90deg,rgba(255,255,255,.4) 50%,transparent 50%),linear-gradient(rgba(255,255,255,.4) 50%,transparent 50%);background-size:8px 8px}
+.jar-b{height:46px;border:2.5px solid var(--out);border-top:0;border-radius:4px 4px 16px 16px;background:linear-gradient(90deg,rgba(255,255,255,.85) 0 16%,rgba(255,255,255,.45) 16%);display:grid;place-items:center;font-size:23px;box-shadow:inset 0 -6px 0 rgba(122,74,48,.1)}
+.lvl{height:8px;background:rgba(255,255,255,.7);border:2px solid var(--out);border-radius:5px;margin:3px 4px 0;overflow:hidden}
+.lvl i{display:block;height:100%;background:var(--sage-d)}
+.lvl.low i{background:var(--berry)}.lvl.mid i{background:var(--butter)}
+
+.bins{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:14px}
+.bin{border:3px solid var(--out);border-radius:22px;text-align:center;padding:10px 2px;box-shadow:0 4px 0 var(--out);transition:transform .15s}
+.bin:nth-child(1){background:var(--mint)}.bin:nth-child(2){background:var(--butter);color:#4A3426}.bin:nth-child(3){background:var(--rose)}
+.bin span{font-size:28px;display:block}.bin small{font-weight:800;font-size:12px}
+.bin.over{transform:scale(1.08) rotate(-2deg)}
+.dgh{position:fixed;left:0;top:0;z-index:100;pointer-events:none;transform:translate(-50%,-60%) scale(1.25) rotate(6deg);filter:drop-shadow(0 8px 8px rgba(0,0,0,.3))}
+
+/* floor with dogs */
+.floor{position:relative;height:98px;margin:8px 0 6px;border-radius:22px;overflow:hidden;border:3px solid var(--out);box-shadow:var(--sh);
+  background:linear-gradient(var(--wallp) 0 35%,var(--wood) 35%)}
+.floor::before{content:"";position:absolute;inset:35% 0 0;background:repeating-linear-gradient(90deg,transparent 0 46px,rgba(122,74,48,.35) 46px 49px)}
+.floor::after{content:"";position:absolute;left:0;right:0;top:35%;height:3px;background:var(--out)}
+.walker{position:absolute;bottom:2px;width:64px;height:74px;cursor:pointer}
+.walker svg{width:100%;height:100%;overflow:visible;animation:trot .5s ease-in-out infinite}
+.w1{animation:walk1 16s linear infinite}.w2{animation:walk2 21s linear infinite}
+@keyframes walk1{0%{left:2%;transform:scaleX(1)}46%{left:78%;transform:scaleX(1)}50%{left:78%;transform:scaleX(-1)}96%{left:2%;transform:scaleX(-1)}100%{left:2%;transform:scaleX(1)}}
+@keyframes walk2{0%{left:70%;transform:scaleX(-1)}46%{left:6%;transform:scaleX(-1)}50%{left:6%;transform:scaleX(1)}96%{left:70%;transform:scaleX(1)}100%{left:70%;transform:scaleX(-1)}}
+@keyframes trot{0%,100%{translate:0 0}50%{translate:0 -4px}}
+.bubble{position:absolute;left:50%;top:-24px;translate:-50% 0;background:#fff;color:#4A3426;border:2.5px solid var(--out);border-radius:12px;padding:1px 8px;font-size:12px;font-weight:800;white-space:nowrap;animation:bub 1.3s forwards;z-index:3}
+@keyframes bub{0%{opacity:0;translate:-50% 8px}15%,80%{opacity:1;translate:-50% 0}100%{opacity:0;translate:-50% -6px}}
+
+/* dog animations */
+.dog svg{width:100%;height:100%;overflow:visible}
+.tail{transform-origin:148px 196px;animation:wag 1s ease-in-out infinite alternate}
+@keyframes wag{from{transform:rotate(-10deg)}to{transform:rotate(14deg)}}
+.eyes{transform-origin:100px 80px;animation:blink 4.2s infinite}
+@keyframes blink{0%,94%,100%{transform:scaleY(1)}97%{transform:scaleY(.08)}}
+.head{transform-origin:100px 120px}
+.hearts{opacity:0}
+.dog.happy svg{animation:hop .5s ease-out 2}
+.dog.happy .tail{animation-duration:.18s}
+.dog.happy .hearts{animation:hearts 1.4s ease-out}
+.dog.eating .head{animation:munch .3s ease-in-out infinite alternate}
+.dog.nope svg{animation:shake .45s}
+@keyframes hop{0%,100%{transform:translateY(0)}45%{transform:translateY(-16px) rotate(-3deg)}}
+@keyframes munch{from{transform:translateY(0) rotate(0)}to{transform:translateY(7px) rotate(5deg)}}
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-8px)}75%{transform:translateX(8px)}}
+@keyframes hearts{0%{opacity:0;transform:translateY(10px)}25%{opacity:1}100%{opacity:0;transform:translateY(-34px)}}
+
+/* dogs view */
+.rug{display:flex;gap:6px;justify-content:space-around;padding:12px 6px 8px;border-radius:30px;margin-bottom:12px;border:3px solid var(--out);
+  background:radial-gradient(ellipse at center,#FFE9E4 0 58%,var(--rose) 59% 100%)}
+.dogcol{flex:1;text-align:center;border-radius:22px;padding:4px}
+.dogcol .dog{width:150px;height:172px;max-width:100%;margin:0 auto;position:relative;cursor:pointer}
+.dogcol b{font:800 18px Fraunces,Georgia,serif;display:block;color:#5A3524}
+.pills{display:flex;gap:5px;justify-content:center;margin-top:4px;flex-wrap:wrap}
+.pill{border:2.5px solid var(--out);background:var(--paper);color:#5A3524;border-radius:999px;padding:2px 10px;font-size:12px;font-weight:800;box-shadow:0 2px 0 var(--out)}
+.pill.on{background:var(--sage)}
+.tools{display:flex;gap:10px;justify-content:center;margin:6px 0}
+.tool{width:86px;text-align:center;background:var(--butter);color:#4A3426;border:3px solid var(--out);border-radius:22px;padding:6px 2px;cursor:grab;touch-action:none;user-select:none;-webkit-user-select:none;box-shadow:0 4px 0 var(--out);transition:transform .15s}
+.tool:nth-child(2){background:var(--peach)}.tool:nth-child(3){background:var(--sky)}
+.tool:active{transform:scale(1.1) rotate(-4deg)}
+.tool span{font-size:32px;display:block}.tool small{font-size:11px;font-weight:800}
+.bowl{display:flex;align-items:center;gap:10px;background:var(--sky);border:3px solid var(--out);border-radius:20px;padding:8px 12px;margin-top:10px;box-shadow:0 3px 0 var(--out)}
+.bowl span{font-size:26px}.bowl div{flex:1;font-weight:800;font-size:14px}
+.bar{height:20px;background:var(--paper);border:3px solid var(--out);border-radius:12px;overflow:hidden;margin:8px 0}
+.bar i{display:block;height:100%;background:var(--sage);border-radius:8px;transition:width .5s;border-right:3px solid var(--out)}
+.bar.low i{background:var(--berry)}
+
+/* lists */
+.li{display:flex;align-items:center;gap:10px;padding:9px 4px;border-bottom:2.5px dashed var(--line)}
+.li:last-child{border-bottom:0}
+.li .em{font-size:24px}.li .t{flex:1;min-width:0}.li .t b{display:block;word-break:break-word}.li .t small{color:var(--muted);font-size:12px}
+.li.done .t b{text-decoration:line-through;opacity:.5}
+.ck{width:30px;height:30px;border-radius:10px;border:3px solid var(--out);background:var(--paper);display:grid;place-items:center;font-size:16px;color:#2d3d1c;flex:none;padding:0;box-shadow:0 2px 0 var(--out)}
+.ck.on{background:var(--sage)}
+.x{color:var(--muted);font-size:18px;padding:4px 8px}
+.tag{border:2px solid var(--out);border-radius:10px;padding:1px 9px;font-size:11.5px;font-weight:800;white-space:nowrap;color:#3b2a10}
+.tag.r{background:var(--rose)}.tag.y{background:var(--butter)}.tag.g{background:var(--mint)}.tag.b{background:var(--sky)}
+.alert{display:flex;gap:10px;align-items:center;border-radius:20px;padding:9px 10px;margin-bottom:10px;border:3px solid var(--out);background:var(--paper);box-shadow:0 3px 0 var(--out)}
+.alert.r{background:var(--rose)}
+.alert.y{background:color-mix(in srgb,var(--butter) 55%,var(--paper))}
+.alert.b{background:var(--sky)}
+.alert .em{font-size:26px}.alert .t{flex:1;font-size:14px;line-height:1.25;color:var(--ink)}
+.alert .acts{display:flex;flex-direction:column;gap:5px}
+.days{display:flex;gap:7px;overflow-x:auto;padding:2px 2px 10px;margin-bottom:6px}
+.dpill{flex:none;width:54px;text-align:center;border-radius:18px;border:3px solid var(--out);background:var(--paper);padding:6px 0;font-weight:800;position:relative;box-shadow:0 3px 0 var(--out)}
+.dpill.on{background:var(--terra);color:#fff}
+.dpill small{display:block;font-size:10px;opacity:.85}
+.dpill i{position:absolute;top:3px;right:6px;width:8px;height:8px;border-radius:50%;background:var(--sage);border:1.5px solid var(--out)}
+.meal{display:flex;gap:10px;align-items:center;width:100%;text-align:left;background:var(--paper);border:3px solid var(--out);border-radius:20px;padding:10px 12px;margin-bottom:10px;box-shadow:0 3px 0 var(--out)}
+.meal .em{font-size:28px}.meal .t{flex:1;min-width:0}.meal .t small{color:var(--muted);display:block;font-size:12px}
+.meal.empty{border-style:dashed;color:var(--muted);box-shadow:none}
+
+/* sheet */
+#sheet{position:fixed;inset:0;z-index:60;display:none}
+#sheet.on{display:block}
+.sheet-bg{position:absolute;inset:0;background:rgba(50,30,15,.5)}
+.sheet{position:absolute;left:0;right:0;bottom:0;max-height:88%;overflow:auto;background:var(--paper);border-radius:30px 30px 0 0;border:3px solid var(--out);border-bottom:0;box-shadow:0 -4px 0 var(--rose);
+  padding:10px 16px calc(18px + env(safe-area-inset-bottom,0px));max-width:600px;margin:0 auto;animation:up .25s ease-out}
+@keyframes up{from{transform:translateY(60px);opacity:0}}
+.grab{width:46px;height:6px;border-radius:3px;background:var(--out);opacity:.35;margin:0 auto 10px}
+.sheet h3{font-size:20px;margin-bottom:4px}
+.step{display:flex;align-items:center;gap:6px}
+.step button{width:40px;height:40px;border-radius:13px;background:var(--butter);color:#3b2a10;font-weight:800;font-size:20px;flex:none;border:3px solid var(--out);box-shadow:0 3px 0 var(--out)}
+.step input{text-align:center}
+.emoji-btn{width:100%;height:46px;font-size:26px;background:var(--card);border:3px solid var(--out);border-radius:16px}
+.picker{display:none;flex-wrap:wrap;gap:2px;background:var(--card);border:3px solid var(--out);border-radius:16px;padding:6px;margin-top:6px;max-height:140px;overflow:auto}
+.picker.on{display:flex}
+.picker button{font-size:24px;width:42px;height:38px;border-radius:10px}
+.picker button:active{background:var(--butter)}
+.acts-row{display:flex;gap:10px;margin-top:16px;flex-wrap:wrap}
+.acts-row .btn{flex:1;min-width:110px}
+
+/* toast & pops */
+#toast{position:fixed;left:50%;bottom:calc(92px + env(safe-area-inset-bottom,0px));translate:-50% 20px;opacity:0;z-index:70;background:var(--ink);color:var(--paper);border:3px solid var(--out);border-radius:20px;padding:9px 16px;font-weight:800;font-size:14px;max-width:88%;text-align:center;transition:.25s;pointer-events:none}
+#toast.on{opacity:1;translate:-50% 0}
+.pop{position:fixed;z-index:90;pointer-events:none;font:800 21px Fraunces,Georgia,serif;color:#D9A32E;-webkit-text-stroke:1px var(--out);animation:pop 1.1s ease-out forwards;translate:-50% 0}
+@keyframes pop{from{opacity:1;transform:translateY(0) scale(.8)}to{opacity:0;transform:translateY(-70px) scale(1.4)}}
+
+/* jardín y lavandería */
+.garden,.laundry{position:relative;border:3px solid var(--out);border-radius:28px;overflow:hidden;box-shadow:var(--sh);margin-bottom:18px;background:var(--sky)}
+.garden{aspect-ratio:360/400}.laundry{aspect-ratio:360/280}
+.garden>svg,.laundry>svg{display:block;width:100%;height:100%}
+.stitle{position:absolute;z-index:3;background:var(--paper);border:3px solid var(--out);border-radius:16px;padding:2px 12px;font:800 15px Fraunces,Georgia,serif;box-shadow:0 3px 0 var(--out);color:var(--ink);white-space:nowrap}
+.garden .dogcol{position:absolute;bottom:1.5%;width:42%;padding:0;z-index:2}
+.garden .dogcol.gl{left:2%}.garden .dogcol.gr{right:2%}
+.garden .dogcol .dog{width:100%;height:auto;aspect-ratio:200/230;margin:0}
+.gname{display:inline-block;background:var(--paper);border:2.5px solid var(--out);border-radius:14px;padding:0 10px;font:800 15px Fraunces,Georgia,serif;color:#5A3524;box-shadow:0 2px 0 var(--out);margin-top:2px}
+.gbowl{position:absolute;left:50%;bottom:19%;translate:-50% 0;width:15%;min-width:50px;text-align:center;cursor:pointer;z-index:2;border-radius:12px}
+.gbowl svg{width:100%;display:block}
+.gbowl small{display:block;font:800 9px Nunito,system-ui,sans-serif;background:var(--paper);border:2px solid var(--out);border-radius:8px;color:#5A3524;margin-top:1px;white-space:nowrap}
+.gbowl.over{outline:3px dashed var(--terra);outline-offset:2px;background:rgba(255,211,107,.5)}
+.rays{transform-box:fill-box;transform-origin:center;animation:spin 16s linear infinite}
+.cld{animation:drift 9s ease-in-out infinite alternate}
+.cld.c2{animation-duration:12s;animation-direction:alternate-reverse}
+.fl{transform-box:fill-box;transform-origin:50% 100%;animation:fsway 3s ease-in-out infinite alternate}
+.tr{transform-box:fill-box;transform-origin:50% 100%;animation:fsway 5s ease-in-out infinite alternate}
+.bf{animation:fly 7s ease-in-out infinite alternate}
+.bf.b2{animation-duration:9s;animation-direction:alternate-reverse}
+.wing{transform-box:fill-box;transform-origin:center;animation:flap .28s ease-in-out infinite alternate}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes drift{from{transform:translateX(-16px)}to{transform:translateX(16px)}}
+@keyframes fsway{from{transform:rotate(-4deg)}to{transform:rotate(4deg)}}
+@keyframes fly{0%{transform:translate(0,0)}50%{transform:translate(34px,-20px)}100%{transform:translate(70px,6px)}}
+@keyframes flap{from{transform:scaleX(1)}to{transform:scaleX(.35)}}
+.mach{cursor:pointer}
+.drum{transform-box:fill-box;transform-origin:center;animation:spin 9s linear infinite}
+.laundry.run .drum{animation-duration:.6s}
+.laundry.run .mach{animation:jig .12s linear infinite alternate}
+.bub{opacity:0}
+.laundry.run .bub{animation:bubup 1.3s ease-in infinite}
+.laundry.run .bub.d2{animation-delay:.45s}.laundry.run .bub.d3{animation-delay:.9s}
+.sw{transform-box:fill-box;transform-origin:50% 0;animation:swing 3.2s ease-in-out infinite alternate}
+.sw.s2{animation-delay:-1s}.sw.s3{animation-delay:-2s}
+@keyframes jig{from{transform:translateX(-1.2px)}to{transform:translateX(1.2px)}}
+@keyframes bubup{0%{opacity:0;transform:translateY(0) scale(.6)}30%{opacity:1}100%{opacity:0;transform:translateY(-34px) scale(1.2)}}
+@keyframes swing{from{transform:rotate(-5deg)}to{transform:rotate(5deg)}}
+@media (prefers-reduced-motion:reduce){*{animation-duration:.01ms!important;animation-iteration-count:1!important;transition:none!important}}
+</style>
+</head>
+<body>
+<header id="hdr"></header>
+<main id="app"></main>
+<nav id="nav"></nav>
+<div id="sheet"></div>
+<div id="toast"></div>
+
+<script>
+(()=>{
+'use strict';
+const KEY='cocinita-v1';
+const $=(s,r=document)=>r.querySelector(s);
+const $$=(s,r=document)=>[...r.querySelectorAll(s)];
+const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const uid=()=>Math.random().toString(36).slice(2,9);
+const pad=n=>String(n).padStart(2,'0');
+const fmt=d=>d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate());
+const today=()=>fmt(new Date());
+const addDays=n=>{const d=new Date();d.setDate(d.getDate()+n);return fmt(d)};
+const daysUntil=iso=>{if(!iso)return null;const [y,m,d]=iso.split('-').map(Number);const t=new Date(y,m-1,d);const n=new Date();n.setHours(0,0,0,0);return Math.round((t-n)/864e5)};
+const dayIdx=()=>(new Date().getDay()+6)%7;
+const DAYS=['Lun','Mar','Mié','Jue','Vie','Sáb','Dom'];
+const DAYSL=['Lunes','Martes','Miércoles','Jueves','Viernes','Sábado','Domingo'];
+const SLOTS=[['des','Desayuno','🥞'],['alm','Almuerzo','🍲'],['cen','Cena','🍝']];
+const PLACES={
+  fridge:{label:'Refri',ic:'🧊',shelves:['Congelador','Estante alto','Estante medio','Cajón de verduras','Puerta']},
+  spice:{label:'Especiero',ic:'🧂',shelves:['Fila de arriba','Fila del medio','Fila de abajo']},
+  pantry:{label:'Alacena',ic:'🫙',shelves:['Estante alto','Enlatados','Granos y pasta','Abajo']},
+  clean:{label:'Limpieza',ic:'🧽',shelves:['Bajo el fregadero','Baño y lavandería']}
+};
+const FOOD_EM=['🥛','🥚','🧀','🍓','🥬','🥕','🍅','🧈','🍗','🥩','🐟','🥫','🍞','🥐','🍚','🍝','🫘','🥔','🧅','🧄','🍎','🍌','🍇','🍋','🥑','🥒','🌽','🍄','🧂','🌶️','🌿','🍯','🫒','☕','🍫','🥣','🍪','🧃','🥤','🧁','🍕','🌭','🥞','🦐','🧊','🍂','🌼','🍑'];
+const CLEAN_EM=['🧴','🧼','🧽','🧺','🪣','🧹','🧻','🗑️','🧯','🪥','🫧','🧤'];
+const LEVELS=[[0,'Pinche de cocina'],[20,'Cocinera aprendiz'],[60,'Chef del cottage'],[120,'Reina del hogar'],[250,'Hada de la cocina']];
+const LIDS=['#C9623A','#8DA06B','#EFC25A','#E3A09A','#8EB8D0','#B58BD0','#A8571F'];
+
+/* ---------- datos ---------- */
+function mk(name,emoji,place,shelf,qty,exp,min,extra){return Object.assign({id:uid(),name,emoji,place,shelf,qty,min:min||0,expiry:exp||'',level:100},extra||{})}
+function seed(){
+  const t=addDays;
+  return{
+    v:1,stars:0,welcome:false,
+    items:[
+      mk('Pollo','🍗','fridge',0,2,t(45)),mk('Camarones','🦐','fridge',0,1,t(60)),
+      mk('Huevos','🥚','fridge',1,1,t(12),1),mk('Queso','🧀','fridge',1,1,t(5)),mk('Fresas','🍓','fridge',2,1,t(1)),
+      mk('Lechuga','🥬','fridge',3,1,t(-1)),mk('Zanahorias','🥕','fridge',3,1,t(9)),mk('Tomates','🍅','fridge',3,4,t(4)),
+      mk('Leche','🥛','fridge',4,2,t(2),1),mk('Mantequilla','🧈','fridge',4,1,t(30)),mk('Jugo','🧃','fridge',4,1,t(6)),
+      mk('Sal','🧂','spice',0,1),mk('Pimienta','🌶️','spice',0,1),mk('Ajo en polvo','🧄','spice',0,1),
+      mk('Orégano','🌿','spice',1,1),mk('Canela','🍂','spice',1,1,'',0),mk('Cúrcuma','🌼','spice',2,1),
+      mk('Arroz','🍚','pantry',2,2,t(200),1),mk('Pasta','🍝','pantry',2,3,t(150)),mk('Frijoles','🫘','pantry',2,2,t(300)),
+      mk('Atún','🥫','pantry',1,3,t(400)),mk('Tomate en lata','🥫','pantry',1,1,t(300)),mk('Café','☕','pantry',0,1,t(90)),
+      mk('Avena','🥣','pantry',0,1,t(120)),mk('Pan','🍞','pantry',3,1,t(3)),mk('Miel','🍯','pantry',0,1),
+      mk('Jabón de platos','🧴','clean',0,1,'',0,{level:70}),mk('Esponjas','🧽','clean',0,1,'',0,{level:90}),
+      mk('Desinfectante','🧼','clean',1,1,'',0,{level:30}),mk('Detergente','🧺','clean',1,1,'',0,{level:15}),mk('Bolsas de basura','🗑️','clean',0,1,'',0,{level:45})
+    ],
+    shop:[],
+    menu:{
+      '0-alm':{name:'Pollo con arroz y zanahoria',ing:'pollo, arroz, zanahoria'},
+      '0-cen':{name:'Huevos revueltos con pan',ing:'huevos, pan'},
+      '1-alm':{name:'Pasta con salsa de tomate',ing:'pasta, tomate, queso'},
+      '2-cen':{name:'Ensalada de atún',ing:'atún, lechuga, tomate'}
+    },
+    prep:[{id:uid(),text:'Lavar y cortar verduras',done:false},{id:uid(),text:'Cocinar arroz para la semana',done:false}],
+    dogs:{rosco:{name:'Rosco',g:260,fed:{date:'',am:false,pm:false}},mali:{name:'Mali',g:180,fed:{date:'',am:false,pm:false}},bag:{left:9000,total:15000},treats:6,water:''},
+    chores:[
+      {id:uid(),area:'clean',text:'Sacar la basura',every:2,last:t(-1)},{id:uid(),area:'clean',text:'Limpiar el refri por dentro',every:14,last:t(-10)},
+      {id:uid(),area:'clean',text:'Lavar toallas de cocina',every:7,last:t(-8)},{id:uid(),area:'clean',text:'Trapear el piso',every:7,last:t(-3)},
+      {id:uid(),area:'dogs',text:'Baño de Rosco y Mali',every:30,last:t(-20)},{id:uid(),area:'dogs',text:'Desparasitar',every:90,last:t(-60)},
+      {id:uid(),area:'dogs',text:'Lavar camas de los perros',every:14,last:t(-5)}
+    ],
+    reminders:[],wasted:[]
+  };
+}
+function load(){try{const r=localStorage.getItem(KEY);if(r){const s=JSON.parse(r);if(s&&s.items)return s}}catch(e){}return seed()}
+let S=load();
+function save(){try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
+let tab='cocina',furn='fridge',day=dayIdx(),doorAnim=true,ALERTS=[],pendingEmoji='';
+
+function dailyReset(){['rosco','mali'].forEach(k=>{const f=S.dogs[k].fed;if(f.date!==today()){f.date=today();f.am=false;f.pm=false}})}
+
+/* ---------- perros (dibujo propio) ---------- */
+function dogSVG(kind){
+  const R=kind==='rosco';
+  const c=R?{b:'#E3A24F',d:'#9C5E22',cr:'#F6DDAF',ear:'#D68B3C',ein:'#F2B7A0',col:'#7F8F5A'}:{b:'#D6893A',d:'#8A4E1B',cr:'#F8E2B8',ear:'#9A5521',ein:'#F2B7A0',col:'#B58BD0'};
+  const st=`stroke="${c.d}" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"`;
+  const earsBack=R?`<polygon points="64,64 50,12 92,46" fill="${c.ear}" ${st}/><polygon points="67,56 58,28 82,46" fill="${c.ein}"/>
+    <polygon points="136,64 150,12 108,46" fill="${c.ear}" ${st}/><polygon points="133,56 142,28 118,46" fill="${c.ein}"/>`:'';
+  const earsFront=R?'':`<ellipse cx="60" cy="90" rx="16" ry="31" transform="rotate(12 60 90)" fill="${c.ear}" ${st}/><ellipse cx="140" cy="90" rx="16" ry="31" transform="rotate(-12 140 90)" fill="${c.ear}" ${st}/>`;
+  const blaze=R?'':`<path d="M100 48C93 62 93 72 100 82C107 72 107 62 100 48Z" fill="${c.cr}"/>`;
+  return `<svg viewBox="0 0 200 230" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+  <ellipse cx="100" cy="222" rx="62" ry="7" fill="rgba(120,70,40,.2)"/>
+  <g class="tail"><path d="M146 198C176 192 184 160 172 138C168 152 164 168 142 176Z" fill="${c.b}" ${st}/></g>
+  <path d="M58 202C46 150 62 108 100 106C138 108 154 150 142 202Z" fill="${c.b}" ${st}/>
+  <ellipse cx="62" cy="190" rx="21" ry="24" fill="${c.b}" ${st}/><ellipse cx="138" cy="190" rx="21" ry="24" fill="${c.b}" ${st}/>
+  <path d="M82 120C84 160 88 192 100 202C112 192 116 160 118 120Z" fill="${c.cr}"/>
+  <rect x="79" y="160" width="18" height="44" rx="9" fill="${c.cr}" ${st}/><rect x="103" y="160" width="18" height="44" rx="9" fill="${c.cr}" ${st}/>
+  <ellipse cx="88" cy="206" rx="13" ry="7" fill="${c.cr}" ${st}/><ellipse cx="112" cy="206" rx="13" ry="7" fill="${c.cr}" ${st}/>
+  <g class="head">
+    ${earsBack}
+    <ellipse cx="100" cy="82" rx="41" ry="37" fill="${c.b}" ${st}/>
+    ${blaze}${earsFront}
+    <ellipse cx="100" cy="97" rx="21" ry="16" fill="${c.cr}"/>
+    <ellipse cx="73" cy="95" rx="7" ry="4.5" fill="#F2A9A0" opacity=".55"/><ellipse cx="127" cy="95" rx="7" ry="4.5" fill="#F2A9A0" opacity=".55"/>
+    <g class="eyes"><ellipse cx="83" cy="80" rx="5.2" ry="6.4" fill="#3B2316"/><ellipse cx="117" cy="80" rx="5.2" ry="6.4" fill="#3B2316"/>
+      <circle cx="85" cy="77.5" r="2" fill="#fff"/><circle cx="119" cy="77.5" r="2" fill="#fff"/></g>
+    <ellipse cx="100" cy="89" rx="7.5" ry="5.2" fill="#3B2316"/>
+    <path d="M100 94V99M100 99Q93 106 86 100M100 99Q107 106 114 100" stroke="#3B2316" stroke-width="2.2" fill="none" stroke-linecap="round"/>
+    <path d="M95 102Q100 120 105 102Z" fill="#F08A8A" stroke="#C25E5E" stroke-width="1.5"/>
+  </g>
+  <path d="M68 114Q100 132 132 114L132 124Q100 142 68 124Z" fill="${c.col}" ${st}/>
+  <circle cx="100" cy="137" r="7" fill="#F3D9A0" stroke="#9C5E22" stroke-width="2"/>
+  <g class="hearts" font-size="22"><text x="40" y="60">❤️</text><text x="140" y="46">💛</text><text x="94" y="22">❤️</text></g>
+  </svg>`;
+}
+
+
+/* ---------- ilustración propia ---------- */
+const OUT='var(--out)';
+function bow(w){return `<svg class="bow" width="${w||34}" viewBox="0 0 44 30" aria-hidden="true"><path d="M22 15C12 1 1 4 4 15C1 26 12 29 22 15Z" fill="#F58FA6" stroke="#7A4A30" stroke-width="2.2" stroke-linejoin="round"/><path d="M22 15C32 1 43 4 40 15C43 26 32 29 22 15Z" fill="#F58FA6" stroke="#7A4A30" stroke-width="2.2" stroke-linejoin="round"/><path d="M9 12Q14 9 18 14M35 12Q30 9 26 14" stroke="#fff" stroke-width="1.8" fill="none" stroke-linecap="round" opacity=".75"/><circle cx="22" cy="15" r="4.2" fill="#E4577A" stroke="#7A4A30" stroke-width="2"/></svg>`}
+function scal(x,w,y,n,d){let p='';const q=w/n;for(let i=0;i<n;i++)p+=` Q${x+w-(i+.5)*q} ${y+d} ${x+w-(i+1)*q} ${y}`;return p}
+function kjar(x,y,w,h,lid,fill,em){
+  return `<rect x="${x+3}" y="${y-7}" width="${w-6}" height="9" rx="3" fill="${lid}" stroke="${OUT}" stroke-width="2.6"/>
+  <rect x="${x}" y="${y}" width="${w}" height="${h}" rx="9" fill="${fill}" stroke="${OUT}" stroke-width="2.8"/>
+  <rect x="${x+4}" y="${y+5}" width="3.5" height="${h-14}" rx="1.7" fill="#fff" opacity=".7"/>
+  <rect x="${x+w/2-9}" y="${y+h/2-8}" width="18" height="17" rx="5" fill="#FFF8EC" stroke="${OUT}" stroke-width="1.8"/>
+  <text x="${x+w/2}" y="${y+h/2+5}" font-size="11" text-anchor="middle">${em}</text>`;
+}
+function kitchenSVG(sel){
+  const c=k=>sel===k?' sel':'';
+  let berries='';for(let i=0;i<9;i++)berries+=`<use href="#sbk" transform="translate(${10+i*40},${i%2?12:7}) scale(.8)"/>`;
+  let dots='';[110,128,146,164,176].forEach((x,i)=>dots+=`<circle cx="${x}" cy="${i%2?37:40}" r="1.8" fill="#E4574B"/>`);
+  let dots2='';[112,130,148,166].forEach((x,i)=>dots2+=`<circle cx="${x}" cy="${i%2?83:78}" r="1.8" fill="#E4574B"/>`);
+  let planks='';for(let i=1;i<9;i++)planks+=`M${i*40} 236V252`;
+  const tag=(cx,cy,t)=>`<g class="ktag"><rect x="${cx-27}" y="${cy-9}" width="54" height="18" rx="9" stroke="${OUT}" stroke-width="2.2"/><text x="${cx}" y="${cy+4}" text-anchor="middle">${t}</text></g>`;
+  const glow=(x,y,w,h,r)=>`<rect class="glow" x="${x}" y="${y}" width="${w}" height="${h}" rx="${r}" fill="none" stroke="var(--terra)" stroke-width="3.5" stroke-dasharray="7 6"/>`;
+  return `<svg viewBox="0 0 360 254" class="kscene" role="img" aria-label="Tu cocina: toca el refri, el especiero o la alacena">
+  <defs>
+    <g id="sbk"><path d="M10 21C3 18 0 10 4 6C8 4 12 4 16 6C20 10 17 18 10 21Z" fill="#E4574B" stroke="#7A3A2A" stroke-width="1.7" stroke-linejoin="round"/><path d="M4 6L10 2L16 6L10 8.5Z" fill="#8DB05A" stroke="#4F6B2E" stroke-width="1.3" stroke-linejoin="round"/><circle cx="7" cy="12" r="1" fill="#FFE3C0"/><circle cx="12.5" cy="11" r="1" fill="#FFE3C0"/><circle cx="10" cy="16" r="1" fill="#FFE3C0"/><path d="M6 8.5Q8 7 9 8" stroke="#fff" stroke-width="1" fill="none" opacity=".7"/></g>
+    <pattern id="tiles" width="24" height="24" patternUnits="userSpaceOnUse"><rect width="24" height="24" fill="var(--tile)"/><rect x="3" y="3" width="18" height="18" rx="5" fill="var(--tile2)" opacity=".6"/><path d="M0 0H24M0 0V24" stroke="var(--tile-l)" stroke-width="2.4"/></pattern>
+  </defs>
+  <rect width="360" height="254" fill="var(--wallp)"/>
+  <rect y="98" width="360" height="62" fill="url(#tiles)"/>
+  <path d="M0 98H360" stroke="${OUT}" stroke-width="3"/>
+  <path d="M0 22Q20 14 40 22T80 22T120 22T160 22T200 22T240 22T280 22T320 22T360 22" stroke="#8DB05A" stroke-width="2.2" fill="none"/>
+  ${berries}
+  <rect y="236" width="360" height="18" fill="var(--wood)"/><path d="M0 236H360${planks}" stroke="${OUT}" stroke-width="2.6"/>
+
+  <rect x="102" y="36" width="82" height="70" rx="5" fill="var(--sky)" stroke="${OUT}" stroke-width="3"/>
+  <circle cx="122" cy="90" r="10" fill="#9CC87A" opacity=".85"/><circle cx="166" cy="54" r="9" fill="#9CC87A" opacity=".85"/><circle cx="130" cy="52" r="5" fill="#fff" opacity=".6"/>
+  <path d="M143 36V106M102 71H184" stroke="${OUT}" stroke-width="3"/>
+  <rect x="97" y="104" width="92" height="9" rx="3.5" fill="var(--wood)" stroke="${OUT}" stroke-width="3"/>
+  <g class="curt"><path d="M98 28H188V42${scal(98,90,42,10,9)}Z" fill="#FFF6E2" stroke="${OUT}" stroke-width="2.6" stroke-linejoin="round"/>${dots}</g>
+  <path d="M103 66H183V100H103V66" fill="none"/>
+  <path d="M104 72H182V88H104Z" fill="#FFF6E2" stroke="${OUT}" stroke-width="2.6" stroke-linejoin="round"/>${dots2}
+  <path d="M104 72H182" stroke="${OUT}" stroke-width="2.6"/>
+
+  <rect x="82" y="158" width="278" height="12" rx="3" fill="var(--wood)" stroke="${OUT}" stroke-width="3"/>
+  <rect x="90" y="170" width="108" height="66" rx="8" fill="#FBD9D3" stroke="${OUT}" stroke-width="3"/>
+  ${[108,128,152,172].map(x=>`<circle cx="${x}" cy="181" r="5.5" fill="#E4574B" stroke="${OUT}" stroke-width="2.2"/>`).join('')}
+  <rect x="100" y="192" width="88" height="36" rx="8" fill="#F1E3A8" stroke="${OUT}" stroke-width="2.8"/>
+  <use href="#sbk" transform="translate(133,198) scale(1.1)"/>
+  <rect x="98" y="188" width="92" height="5" rx="2.5" fill="#E9C48F" stroke="${OUT}" stroke-width="2"/>
+
+  <g><rect x="94" y="123" width="54" height="9" rx="4.5" fill="#F2766A" stroke="${OUT}" stroke-width="2.6"/><circle cx="121" cy="118" r="4.5" fill="var(--butter)" stroke="${OUT}" stroke-width="2.2"/>
+  <rect x="97" y="131" width="48" height="27" rx="8" fill="#E4574B" stroke="${OUT}" stroke-width="3"/>
+  ${[106,118,130,138].map((x,i)=>`<circle cx="${x}" cy="${i%2?150:142}" r="2.3" fill="#FFE3D0"/>`).join('')}
+  <rect x="90" y="138" width="8" height="7" rx="3" fill="#E4574B" stroke="${OUT}" stroke-width="2.2"/><rect x="144" y="138" width="8" height="7" rx="3" fill="#E4574B" stroke="${OUT}" stroke-width="2.2"/>
+  <path class="stm" d="M114 112Q109 106 114 100" stroke="#fff" stroke-width="3" fill="none" stroke-linecap="round" opacity=".9"/><path class="stm stm2" d="M128 112Q123 106 128 100" stroke="#fff" stroke-width="3" fill="none" stroke-linecap="round" opacity=".9"/></g>
+  <g><path d="M162 147Q153 144 152 135" stroke="${OUT}" stroke-width="7" fill="none" stroke-linecap="round"/><path d="M162 147Q153 144 152 135" stroke="#FFD0C9" stroke-width="3" fill="none" stroke-linecap="round"/>
+  <path d="M190 143Q203 143 201 153Q199 160 190 156" fill="none" stroke="${OUT}" stroke-width="3"/>
+  <ellipse cx="176" cy="147" rx="16" ry="12.5" fill="#FFD0C9" stroke="${OUT}" stroke-width="3"/>
+  <rect x="169" y="131" width="14" height="6" rx="3" fill="#E4574B" stroke="${OUT}" stroke-width="2.4"/>
+  <circle cx="170" cy="146" r="2" fill="#E4574B"/><circle cx="178" cy="142" r="2" fill="#E4574B"/><circle cx="182" cy="150" r="2" fill="#E4574B"/></g>
+
+  <g class="piece${c('fridge')}" data-act="furn" data-k="fridge" role="button" aria-label="Refri">
+    <rect x="6" y="44" width="76" height="190" rx="16" fill="#FFF3D6" stroke="${OUT}" stroke-width="3.2"/>
+    <path d="M6 100H82" stroke="${OUT}" stroke-width="3"/>
+    <rect x="68" y="60" width="7" height="25" rx="3.5" fill="#E9C48F" stroke="${OUT}" stroke-width="2.2"/>
+    <rect x="68" y="112" width="7" height="40" rx="3.5" fill="#E9C48F" stroke="${OUT}" stroke-width="2.2"/>
+    <rect x="13" y="52" width="5" height="40" rx="2.5" fill="#fff" opacity=".8"/><rect x="13" y="108" width="5" height="60" rx="2.5" fill="#fff" opacity=".8"/>
+    <use href="#sbk" transform="translate(22,130) scale(2.3)"/>
+    ${glow(2,40,84,198,18)}${tag(44,244,'Refri')}
+  </g>
+
+  <g class="piece${c('spice')}" data-act="furn" data-k="spice" role="button" aria-label="Especiero">
+    <rect x="208" y="26" width="150" height="124" rx="10" fill="transparent"/>
+    ${kjar(220,46,34,32,'#E4574B','#FFE3E0','🍓')}${kjar(262,50,28,28,'#7FA050','#DDF0DD','🌶️')}${kjar(298,46,34,32,'#8E6BC0','#E8DCF4','🍇')}
+    <rect x="212" y="78" width="142" height="9" rx="3.5" fill="var(--wood)" stroke="${OUT}" stroke-width="3"/>
+    <path d="M222 87V99L234 87M332 87V99L320 87" fill="var(--wood)" stroke="${OUT}" stroke-width="2.6" stroke-linejoin="round"/>
+    <path d="M232 87V93M264 87V93" stroke="${OUT}" stroke-width="2.4"/>
+    <path d="M224 94H242V110Q242 116 236 116H230Q224 116 224 110Z" fill="#F6B5AE" stroke="${OUT}" stroke-width="2.6"/><path d="M242 98Q250 98 248 106Q246 110 242 110" fill="none" stroke="${OUT}" stroke-width="2.6"/><text x="233" y="109" font-size="9" text-anchor="middle">❤️</text>
+    <path d="M256 94H274V110Q274 116 268 116H262Q256 116 256 110Z" fill="#FFF3D6" stroke="${OUT}" stroke-width="2.6"/><path d="M274 98Q282 98 280 106Q278 110 274 110" fill="none" stroke="${OUT}" stroke-width="2.6"/><text x="265" y="109" font-size="9" text-anchor="middle">🌸</text>
+    <rect x="294" y="96" width="16" height="25" rx="5" fill="#CBE9D6" stroke="${OUT}" stroke-width="2.6"/><rect x="297" y="91" width="10" height="6" rx="2" fill="#E4574B" stroke="${OUT}" stroke-width="2"/>
+    <rect x="316" y="100" width="18" height="21" rx="5" fill="#FFE3A0" stroke="${OUT}" stroke-width="2.6"/><rect x="320" y="95" width="10" height="6" rx="2" fill="#8E6BC0" stroke="${OUT}" stroke-width="2"/>
+    <rect x="338" y="97" width="13" height="24" rx="4" fill="#F6B5AE" stroke="${OUT}" stroke-width="2.6"/><rect x="340" y="92" width="9" height="6" rx="2" fill="#7FA050" stroke="${OUT}" stroke-width="2"/>
+    <rect x="212" y="122" width="142" height="9" rx="3.5" fill="var(--wood)" stroke="${OUT}" stroke-width="3"/>
+    ${glow(206,24,152,112,12)}${tag(282,145,'Especiero')}
+  </g>
+
+  <g class="piece${c('pantry')}" data-act="furn" data-k="pantry" role="button" aria-label="Alacena">
+    <rect x="206" y="170" width="148" height="66" rx="8" fill="var(--wood)" stroke="${OUT}" stroke-width="3"/>
+    <rect x="204" y="165" width="152" height="8" rx="4" fill="#9DC27A" stroke="${OUT}" stroke-width="2.8"/>
+    <path d="M280 173V236" stroke="${OUT}" stroke-width="3"/>
+    <rect x="213" y="180" width="60" height="48" rx="7" fill="#FFF0CF" stroke="${OUT}" stroke-width="2.6"/><rect x="287" y="180" width="60" height="48" rx="7" fill="#FFF0CF" stroke="${OUT}" stroke-width="2.6"/>
+    <rect x="221" y="203" width="13" height="25" rx="5" fill="#F6B5AE" stroke="${OUT}" stroke-width="2.2"/><rect x="239" y="209" width="15" height="19" rx="4" fill="#CBE9D6" stroke="${OUT}" stroke-width="2.2"/><rect x="258" y="197" width="11" height="31" rx="4" fill="#C4E5F0" stroke="${OUT}" stroke-width="2.2"/>
+    <rect x="294" y="208" width="20" height="20" rx="5" fill="#FFE3A0" stroke="${OUT}" stroke-width="2.2"/><rect x="320" y="200" width="22" height="28" rx="6" fill="#E8DCF4" stroke="${OUT}" stroke-width="2.2"/>
+    <path d="M217 185V190M283 185V190" stroke="#fff" stroke-width="2" opacity="0"/>
+    <circle cx="276" cy="204" r="3.6" fill="var(--butter)" stroke="${OUT}" stroke-width="2"/><circle cx="284" cy="204" r="3.6" fill="var(--butter)" stroke="${OUT}" stroke-width="2"/>
+    ${glow(200,161,160,78,12)}${tag(280,244,'Alacena')}
+  </g>
+  </svg>`;
+}
+const BANNERS={menu:['🍲','Menú y meal prep','Planea la semana sin estrés','--rose'],super:['🛒','Lista del súper','Todo lo que falta, en un solo lugar','--mint'],avisos:['🔔','Avisos y recordatorios','Que nada se te pase','--lilac']};
+function banner(t){const b=BANNERS[t];if(!b)return '';return `<div class="banner" style="--bn:var(${b[3]})"><div class="b-ic">${b[0]}</div><div><h2>${b[1]}</h2><small>${b[2]}</small></div>${bow(40)}</div>`}
+
+function flower(x,y,c){return `<g class="fl" style="animation-delay:${(x%7)*-.4}s"><path d="M${x} ${y}V${y+20}" stroke="#5E8040" stroke-width="2.6" fill="none"/><path d="M${x} ${y+13}q9-2 10-9" stroke="#5E8040" stroke-width="2.4" fill="none"/>${[0,72,144,216,288].map(a=>`<circle cx="${(x+Math.cos(a*Math.PI/180)*5.5).toFixed(1)}" cy="${(y+Math.sin(a*Math.PI/180)*5.5).toFixed(1)}" r="4.2" fill="${c}" stroke="${OUT}" stroke-width="1.6"/>`).join('')}<circle cx="${x}" cy="${y}" r="3" fill="#FFD36B" stroke="${OUT}" stroke-width="1.4"/></g>`}
+function butterfly(x,y,cls,c){return `<g transform="translate(${x},${y})"><g class="bf ${cls}"><ellipse class="wing" cx="-5" cy="0" rx="5.5" ry="7" fill="${c}" stroke="${OUT}" stroke-width="1.6"/><ellipse class="wing" cx="5" cy="0" rx="5.5" ry="7" fill="${c}" stroke="${OUT}" stroke-width="1.6"/><path d="M0 -6V6" stroke="${OUT}" stroke-width="2" stroke-linecap="round"/></g></g>`}
+function gardenSVG(){
+  let rays='';for(let i=0;i<10;i++){const a=i*36*Math.PI/180;rays+=`<path d="M${(50+Math.cos(a)*25).toFixed(1)} ${(50+Math.sin(a)*25).toFixed(1)}L${(50+Math.cos(a)*35).toFixed(1)} ${(50+Math.sin(a)*35).toFixed(1)}" stroke="#F2A93B" stroke-width="3.4" stroke-linecap="round"/>`}
+  let pk='';for(let i=0;i<12;i++){const x=4+i*30;pk+=`<path d="M${x} 216V178L${x+11} 166L${x+22} 178V216Z" fill="#FFF6E2" stroke="${OUT}" stroke-width="2.6" stroke-linejoin="round"/>`}
+  let tufts='';[[30,300],[120,262],[200,246],[300,290],[250,330],[60,360],[330,370]].forEach(t=>tufts+=`<path d="M${t[0]} ${t[1]}l-4-9M${t[0]} ${t[1]}v-11M${t[0]} ${t[1]}l4-9" stroke="#6E9A4B" stroke-width="2.4" stroke-linecap="round"/>`);
+  return `<svg viewBox="0 0 360 400" role="img" aria-label="Jardín de Rosco y Mali" preserveAspectRatio="xMidYMid slice">
+  <rect width="360" height="400" fill="var(--sky)"/>
+  <g transform="translate(0,0)"><g class="rays">${rays}</g></g>
+  <circle cx="50" cy="50" r="19" fill="#FFD36B" stroke="${OUT}" stroke-width="3"/>
+  <circle cx="44" cy="48" r="1.9" fill="${OUT}"/><circle cx="56" cy="48" r="1.9" fill="${OUT}"/><path d="M44 56Q50 62 56 56" stroke="${OUT}" stroke-width="2" fill="none" stroke-linecap="round"/><circle cx="40" cy="54" r="3" fill="#F6A5A0" opacity=".7"/><circle cx="60" cy="54" r="3" fill="#F6A5A0" opacity=".7"/>
+  <g transform="translate(110,78)"><g class="cld"><path d="M0 24Q-3 8 12 8Q16 -4 32 2Q46 -3 52 12Q68 10 64 26Z" fill="#fff" stroke="${OUT}" stroke-width="2.6" stroke-linejoin="round"/></g></g>
+  <g transform="translate(262,64)"><g class="cld c2"><path d="M0 22Q-3 8 10 8Q14 -3 28 2Q42 -2 46 12Q60 10 58 24Z" fill="#fff" stroke="${OUT}" stroke-width="2.6" stroke-linejoin="round"/></g></g>
+  <path d="M0 172Q80 140 160 166T360 150V400H0Z" fill="#CDEAB0" stroke="${OUT}" stroke-width="3"/>
+  <g class="tr"><rect x="46" y="120" width="18" height="86" rx="4" fill="#C98B5B" stroke="${OUT}" stroke-width="3"/>
+    <circle cx="55" cy="96" r="38" fill="#8DB05A" stroke="${OUT}" stroke-width="3"/><circle cx="26" cy="122" r="26" fill="#9CC06A" stroke="${OUT}" stroke-width="3"/><circle cx="86" cy="122" r="26" fill="#9CC06A" stroke="${OUT}" stroke-width="3"/><circle cx="55" cy="112" r="24" fill="#8DB05A"/>
+    <circle cx="40" cy="92" r="4.5" fill="#E4574B" stroke="${OUT}" stroke-width="1.6"/><circle cx="70" cy="104" r="4.5" fill="#E4574B" stroke="${OUT}" stroke-width="1.6"/><circle cx="52" cy="124" r="4.5" fill="#E4574B" stroke="${OUT}" stroke-width="1.6"/><circle cx="24" cy="126" r="4" fill="#E4574B" stroke="${OUT}" stroke-width="1.6"/></g>
+  <rect x="0" y="184" width="360" height="7" fill="#FFF6E2" stroke="${OUT}" stroke-width="2.4"/><rect x="0" y="202" width="360" height="7" fill="#FFF6E2" stroke="${OUT}" stroke-width="2.4"/>${pk}
+  <path d="M0 220Q100 200 200 216T360 208V400H0Z" fill="#A8D27F" stroke="${OUT}" stroke-width="3"/>
+  <polygon points="254,132 300,90 346,132" fill="#E4574B" stroke="${OUT}" stroke-width="3" stroke-linejoin="round"/>
+  <circle cx="288" cy="116" r="2.4" fill="#FFE3D0"/><circle cx="304" cy="110" r="2.4" fill="#FFE3D0"/><circle cx="318" cy="120" r="2.4" fill="#FFE3D0"/>
+  <rect x="262" y="132" width="76" height="86" rx="6" fill="#FFD8B5" stroke="${OUT}" stroke-width="3"/>
+  <path d="M283 218V190Q300 168 317 190V218Z" fill="#5A3524" stroke="${OUT}" stroke-width="3"/>
+  <text x="300" y="152" font-size="14" text-anchor="middle">🐾</text>
+  ${tufts}
+  ${flower(14,236,'#F58FA6')}${flower(30,250,'#FFD36B')}${flower(346,244,'#F58FA6')}${flower(328,252,'#C9B0E8')}${flower(176,262,'#fff')}${flower(10,330,'#C9B0E8')}${flower(350,336,'#FFD36B')}${flower(340,380,'#F58FA6')}
+  ${butterfly(120,236,'b1','#F58FA6')}${butterfly(240,270,'b2','#FFD36B')}
+  </svg>`;
+}
+function bowlSVG(full){
+  return `<svg viewBox="0 0 64 44" aria-hidden="true"><path d="M5 14H59Q57 38 32 40Q7 38 5 14Z" fill="#8EB8D0" stroke="${OUT}" stroke-width="3" stroke-linejoin="round"/><ellipse cx="32" cy="14" rx="27" ry="7" fill="${full?'#CDEFFA':'#EAD9B8'}" stroke="${OUT}" stroke-width="3"/>${full?'<path d="M20 13Q26 10 32 13" stroke="#fff" stroke-width="2" fill="none" stroke-linecap="round"/>':''}<text x="32" y="33" font-size="10" text-anchor="middle">🐾</text></svg>`;
+}
+function bot(x,y,w,h,fill,cap){return `<rect x="${x+w/2-5}" y="${y-7}" width="10" height="9" rx="2" fill="${cap}" stroke="${OUT}" stroke-width="2.2"/><rect x="${x}" y="${y}" width="${w}" height="${h}" rx="7" fill="${fill}" stroke="${OUT}" stroke-width="2.8"/><rect x="${x+4}" y="${y+h*.35}" width="${w-8}" height="${h*.3}" rx="4" fill="#FFF8EC" stroke="${OUT}" stroke-width="1.6"/><rect x="${x+4}" y="${y+4}" width="3" height="${h-12}" rx="1.5" fill="#fff" opacity=".6"/>`}
+function laundrySVG(){
+  const clip=(x,y)=>`<rect x="${x-3.5}" y="${y-5}" width="7" height="11" rx="2" fill="#E9C48F" stroke="${OUT}" stroke-width="1.8"/>`;
+  const drum=(cx,cy,tone)=>`<circle cx="${cx}" cy="${cy}" r="34" fill="${tone}" stroke="${OUT}" stroke-width="3.5"/><circle cx="${cx}" cy="${cy}" r="25" fill="#BFE3EE" stroke="${OUT}" stroke-width="3"/>
+    <g class="drum"><circle cx="${cx-8}" cy="${cy+6}" r="9" fill="#F58FA6"/><circle cx="${cx+9}" cy="${cy-3}" r="8" fill="#FFD36B"/><circle cx="${cx+1}" cy="${cy+13}" r="7" fill="#fff"/><circle cx="${cx-3}" cy="${cy-11}" r="6" fill="#C9B0E8"/></g>
+    <path d="M${cx-18} ${cy-14}Q${cx-10} ${cy-22} ${cx} ${cy-23}" stroke="#fff" stroke-width="3.5" fill="none" stroke-linecap="round" opacity=".85"/>`;
+  return `<svg viewBox="0 0 360 280" role="img" aria-label="Lavandería: toca la lavadora o la secadora">
+  <defs>
+    <pattern id="sub" width="36" height="36" patternUnits="userSpaceOnUse"><rect width="36" height="36" fill="var(--sky)"/><path d="M0 0H36M0 18H36M0 0V18M18 18V36" stroke="#fff" stroke-width="2" opacity=".6"/></pattern>
+    <pattern id="chk" width="40" height="40" patternUnits="userSpaceOnUse"><rect width="40" height="40" fill="#FFF6E2"/><rect width="20" height="20" fill="var(--rose)"/><rect x="20" y="20" width="20" height="20" fill="var(--rose)"/></pattern>
+  </defs>
+  <rect width="360" height="236" fill="url(#sub)"/><rect y="236" width="360" height="44" fill="url(#chk)"/><path d="M0 236H360" stroke="${OUT}" stroke-width="3"/>
+  <path d="M-4 30Q180 54 364 28" stroke="#8A5330" stroke-width="2.8" fill="none"/>
+  <g transform="translate(54,36)"><g class="sw">${clip(0,0)}<path d="M-16 4L-8 4Q0 12 8 4L16 4L27 16L19 22L13 16V44H-13V16L-19 22L-27 16Z" fill="#F58FA6" stroke="${OUT}" stroke-width="2.6" stroke-linejoin="round"/><path d="M-3 24l3 3 3-3" stroke="#fff" stroke-width="2" fill="none"/></g></g>
+  <g transform="translate(144,40)"><g class="sw s2">${clip(-8,0)}${clip(8,0)}<path d="M-14 4H-3V26Q-3 34 5 34V42H-7Q-14 42-14 34Z" fill="#FFD36B" stroke="${OUT}" stroke-width="2.4"/><path d="M2 4H13V26Q13 34 21 34V42H9Q2 42 2 34Z" fill="#C9B0E8" stroke="${OUT}" stroke-width="2.4"/><path d="M-14 12H-3M2 12H13M-14 20H-3M2 20H13" stroke="#fff" stroke-width="2"/></g></g>
+  <g transform="translate(234,40)"><g class="sw s3">${clip(0,0)}<rect x="-18" y="4" width="36" height="46" rx="3" fill="#8EB8D0" stroke="${OUT}" stroke-width="2.6"/><path d="M-18 16H18M-18 40H18" stroke="#fff" stroke-width="3"/></g></g>
+  <g transform="translate(318,36)"><g class="sw s2">${clip(0,0)}<path d="M-16 4H16V38Q0 46-16 38Z" fill="#FFF6E2" stroke="${OUT}" stroke-width="2.6"/><text y="30" font-size="14" text-anchor="middle">🍓</text></g></g>
+  <rect x="128" y="62" width="66" height="54" rx="5" fill="#E8F6FB" stroke="${OUT}" stroke-width="3"/><path d="M161 62V116M128 89H194" stroke="${OUT}" stroke-width="3"/><circle cx="144" cy="78" r="6" fill="#fff" opacity=".8"/>
+  <rect x="123" y="114" width="76" height="8" rx="3" fill="var(--wood)" stroke="${OUT}" stroke-width="3"/>
+
+  <g class="mach" data-act="laundry" role="button" aria-label="Lavadora">
+    <rect x="18" y="128" width="102" height="108" rx="12" fill="#FFF6E2" stroke="${OUT}" stroke-width="3.2"/>
+    <path d="M18 152H120" stroke="${OUT}" stroke-width="3"/><circle cx="34" cy="140" r="5" fill="#E4574B" stroke="${OUT}" stroke-width="2"/><circle cx="50" cy="140" r="5" fill="var(--butter)" stroke="${OUT}" stroke-width="2"/><rect x="82" y="134" width="28" height="12" rx="6" fill="#CBE9D6" stroke="${OUT}" stroke-width="2.2"/><text x="96" y="144" font-size="9" text-anchor="middle">🫧</text>
+    ${drum(69,195,'#F6E3C0')}
+    <circle class="bub" cx="55" cy="170" r="5" fill="#fff" stroke="${OUT}" stroke-width="1.8"/><circle class="bub d2" cx="75" cy="168" r="4" fill="#fff" stroke="${OUT}" stroke-width="1.8"/><circle class="bub d3" cx="86" cy="172" r="6" fill="#fff" stroke="${OUT}" stroke-width="1.8"/>
+  </g>
+  <g class="mach" data-act="laundry" role="button" aria-label="Secadora">
+    <rect x="126" y="128" width="102" height="108" rx="12" fill="#FFD8D3" stroke="${OUT}" stroke-width="3.2"/>
+    <path d="M126 152H228" stroke="${OUT}" stroke-width="3"/><circle cx="142" cy="140" r="5" fill="var(--butter)" stroke="${OUT}" stroke-width="2"/><circle cx="158" cy="140" r="5" fill="#E4574B" stroke="${OUT}" stroke-width="2"/><rect x="190" y="134" width="28" height="12" rx="6" fill="#FFF6E2" stroke="${OUT}" stroke-width="2.2"/><text x="204" y="144" font-size="9" text-anchor="middle">☀️</text>
+    ${drum(177,195,'#FFF6E2')}
+  </g>
+  <ellipse cx="96" cy="123" rx="10" ry="7" fill="#FFD36B" stroke="${OUT}" stroke-width="2.4"/><circle cx="103" cy="113" r="6.5" fill="#FFD36B" stroke="${OUT}" stroke-width="2.4"/><path d="M108 113l6 2-6 2z" fill="#F2A93B" stroke="${OUT}" stroke-width="1.6" stroke-linejoin="round"/><circle cx="104" cy="111.5" r="1.3" fill="${OUT}"/>
+
+  <rect x="238" y="106" width="114" height="8" rx="3.5" fill="var(--wood)" stroke="${OUT}" stroke-width="3"/><path d="M246 114V124L256 114M334 114V124L324 114" fill="var(--wood)" stroke="${OUT}" stroke-width="2.4" stroke-linejoin="round"/>
+  ${bot(246,68,26,38,'#8EB8D0','#E4574B')}${bot(278,74,22,32,'#F6B5AE','#8E6BC0')}${bot(306,66,24,40,'#fff','#4A8BB0')}<rect x="337" y="78" width="13" height="28" rx="4" fill="#CBE9D6" stroke="${OUT}" stroke-width="2.6"/><path d="M340 78V72H352" fill="none" stroke="${OUT}" stroke-width="3" stroke-linecap="round"/>
+  <rect x="238" y="168" width="114" height="8" rx="3.5" fill="var(--wood)" stroke="${OUT}" stroke-width="3"/><path d="M246 176V186L256 176M334 176V186L324 176" fill="var(--wood)" stroke="${OUT}" stroke-width="2.4" stroke-linejoin="round"/>
+  <rect x="246" y="160" width="44" height="8" rx="2" fill="#FFD36B" stroke="${OUT}" stroke-width="2.4"/><rect x="248" y="152" width="40" height="8" rx="2" fill="#CBE9D6" stroke="${OUT}" stroke-width="2.4"/><rect x="250" y="144" width="36" height="8" rx="2" fill="#F58FA6" stroke="${OUT}" stroke-width="2.4"/><rect x="252" y="136" width="32" height="8" rx="2" fill="#C9B0E8" stroke="${OUT}" stroke-width="2.4"/>
+  ${kjar(304,132,32,28,'#E4574B','#FFF8EC','🫧')}
+
+  <g class="sw s2"><ellipse cx="262" cy="206" rx="20" ry="12" fill="#8EB8D0" stroke="${OUT}" stroke-width="2.6"/><ellipse cx="296" cy="205" rx="17" ry="10" fill="#F58FA6" stroke="${OUT}" stroke-width="2.6"/></g>
+  <path d="M236 212H318L310 254H244Z" fill="#E0B07A" stroke="${OUT}" stroke-width="3" stroke-linejoin="round"/><path d="M240 226H314M242 240H312" stroke="${OUT}" stroke-width="2" opacity=".55"/>
+  <rect x="232" y="206" width="90" height="10" rx="5" fill="#C98B5B" stroke="${OUT}" stroke-width="3"/>
+  <path d="M338 128L342 244" stroke="${OUT}" stroke-width="8" stroke-linecap="round"/><path d="M338 128L342 244" stroke="#C98B5B" stroke-width="4" stroke-linecap="round"/>
+  <rect x="326" y="236" width="32" height="16" rx="8" fill="#FFF6E2" stroke="${OUT}" stroke-width="2.8"/><path d="M332 242V250M340 242V250M348 242V250" stroke="${OUT}" stroke-width="1.8" stroke-linecap="round"/>
+  </svg>`;
+}
+
+/* ---------- utilidades UI ---------- */
+let toastT;
+function toast(m){const t=$('#toast');t.textContent=m;t.classList.add('on');clearTimeout(toastT);toastT=setTimeout(()=>t.classList.remove('on'),2800)}
+function pop(txt,x,y){const e=document.createElement('div');e.className='pop';e.textContent=txt;e.style.left=(x||innerWidth/2)+'px';e.style.top=(y||innerHeight/2)+'px';document.body.appendChild(e);setTimeout(()=>e.remove(),1100)}
+function award(n,x,y){S.stars+=n;save();pop('+'+n+' ⭐',x,y)}
+function level(){let l=0;LEVELS.forEach((v,i)=>{if(S.stars>=v[0])l=i});return{n:l+1,name:LEVELS[l][1]}}
+function openSheet(h){const s=$('#sheet');s.innerHTML='<div class="sheet-bg" data-act="closeSheet"></div><div class="sheet"><div class="grab"></div>'+h+'</div>';s.classList.add('on')}
+function closeSheet(){const s=$('#sheet');s.classList.remove('on');s.innerHTML=''}
+function addToList(name,emoji,opt){
+  opt=opt||{};const k=name.trim().toLowerCase();if(!k)return false;
+  if(S.shop.some(x=>!x.checked&&x.name.toLowerCase()===k)){toast(name+' ya está en tu lista');return false}
+  S.shop.push({id:uid(),name:name.trim(),emoji:emoji||'🛒',qty:opt.qty||'1',place:opt.place||'pantry',ref:opt.ref||null,checked:false});save();return true;
+}
+const itemById=id=>S.items.find(x=>x.id===id);
+function lidFor(n){let h=0;for(const ch of n)h=(h*31+ch.charCodeAt(0))%97;return LIDS[h%LIDS.length]}
+function expInfo(it){const d=daysUntil(it.expiry);return d}
+
+/* ---------- avisos ---------- */
+function computeAlerts(){
+  const a=[];
+  S.items.forEach(it=>{
+    const add={name:it.name,emoji:it.emoji,place:it.place,ref:{type:'item',id:it.id}};
+    if(it.place==='clean'){
+      if(it.level<=20)a.push({lv:'y',ic:it.emoji,t:`${it.name}: queda poco (${it.level}%)`,add,go:'limpieza'});
+      return;
+    }
+    if(it.qty>0){
+      const d=daysUntil(it.expiry);
+      if(d!==null&&d<0)a.push({lv:'r',ic:it.emoji,t:`${it.name} venció hace ${-d} día${-d>1?'s':''}`,add,dmg:it.id});
+      else if(d!==null&&d<=3)a.push({lv:'y',ic:it.emoji,t:`${it.name} vence ${d===0?'hoy':d===1?'mañana':'en '+d+' días'}. Úsalo primero`,go:'menu'});
+    }
+    if(it.qty<=it.min)a.push({lv:it.qty===0?'r':'y',ic:it.emoji,t:it.qty===0?`${it.name} se acabó`:`Poco ${it.name.toLowerCase()}: queda ${it.qty}`,add});
+  });
+  const D=S.dogs,per=D.rosco.g+D.mali.g,dl=Math.floor(D.bag.left/per);
+  if(dl<=7)a.push({lv:dl<=3?'r':'y',ic:'🥣',t:`Comida de perros para ${dl} día${dl===1?'':'s'}`,add:{name:'Comida de perros',emoji:'🥣',place:'pantry',ref:{type:'dog'}},go:'perros'});
+  if(D.treats<=2)a.push({lv:'y',ic:'🦴',t:`Quedan ${D.treats} premios`,add:{name:'Premios para perros',emoji:'🦴',place:'pantry',ref:{type:'treat'}},go:'perros'});
+  S.chores.forEach(c=>{const due=c.every+daysUntil(c.last);if(due<=0)a.push({lv:due<0?'y':'b',ic:c.area==='dogs'?'🐾':'🧹',t:`${c.text}: ${due===0?'toca hoy':'atrasado '+(-due)+' día'+(-due>1?'s':'')}`,go:c.area==='dogs'?'perros':'limpieza'})});
+  const di=dayIdx();
+  if(!S.menu[di+'-cen'])a.push({lv:'b',ic:'🍝',t:'Hoy no tienes cena planeada',go:'menu'});
+  const now=new Date();
+  S.reminders.forEach(r=>{if(!r.done&&new Date(r.at)<=now)a.push({lv:'r',ic:'⏰',t:r.text,rem:r.id})});
+  const o={r:0,y:1,b:2};a.sort((x,y)=>o[x.lv]-o[y.lv]);return a;
+}
+
+/* ---------- vistas ---------- */
+function renderHeader(){
+  const l=level();const n=ALERTS.filter(a=>a.lv!=='b').length;
+  $('#hdr').innerHTML=`<div class="brand"><h1>${bow(32)}Mi Cocinita</h1><small>${DAYSL[dayIdx()]} ${new Date().getDate()} · ${esc(l.name)}</small></div>
+  <div class="pill-xp">⭐ ${S.stars}</div>
+  <button class="bell" data-act="tab" data-tab="avisos" aria-label="Avisos">🔔${n?`<b>${n}</b>`:''}</button>`;
+}
+function renderNav(){
+  const T=[['cocina','🏡','Cocina','--tile2'],['menu','🍲','Menú','--rose'],['super','🛒','Súper','--mint'],['perros','🐶','Perros','--peach'],['limpieza','🧽','Limpieza','--sky'],['avisos','🔔','Avisos','--lilac']];
+  $('#nav').innerHTML=T.map(t=>`<button class="${tab===t[0]?'on':''}" data-act="tab" data-tab="${t[0]}"><span style="--c:var(${t[3]})">${t[1]}</span>${t[2]}</button>`).join('');
+}
+function itemHTML(it){
+  const clean=it.place==='clean',gone=!clean&&it.qty===0,d=(!clean&&!gone)?daysUntil(it.expiry):null;
+  let extra='';
+  if(clean){const c=it.level<=20?'low':it.level<=50?'mid':'';extra=`<div class="lvl ${c}"><i style="width:${it.level}%"></i></div>`}
+  else{
+    if(it.qty>1||gone)extra+=`<span class="badge">${it.qty}</span>`;
+    if(d!==null&&d<0)extra+=`<span class="exb r">Vencido</span>`;
+    else if(d!==null&&d<=3)extra+=`<span class="exb y">${d===0?'Hoy':d+'d'}</span>`;
+  }
+  const cls=(gone?' gone':'')+(d!==null&&d<0?' rot':'');
+  const face=it.place==='spice'?`<div class="jar-w"><div class="jar-lid" style="--lid:${lidFor(it.name)}"></div><div class="jar-b">${it.emoji}</div></div>`:`<span class="em">${it.emoji}</span>`;
+  return `<div class="item${cls}" data-drag="item" data-id="${it.id}" data-act="openItem">${face}<div class="nm">${esc(it.name)}</div>${extra}</div>`;
+}
+function shelfHTML(place,i){
+  const its=S.items.filter(x=>x.place===place&&x.shelf===i);
+  return `<div class="shelf sh${i}" data-drop="shelf" data-place="${place}" data-shelf="${i}"><span class="s-label">${PLACES[place].shelves[i]}</span>${its.map(itemHTML).join('')||'<span class="s-empty">Arrastra algo aquí</span>'}</div>`;
+}
+function furnitureHTML(place){
+  const sh=PLACES[place].shelves.map((_,i)=>shelfHTML(place,i)).join('');
+  const door=doorAnim?`<div class="door ${place==='pantry'?'pd':place==='spice'?'sd':''}"></div>`:'';
+  if(place==='fridge')return `<div class="scene"><div class="fridge">${sh}</div>${door}</div>`;
+  if(place==='spice')return `<div class="scene"><div class="rack">${sh}</div>${door}</div>`;
+  if(place==='pantry')return `<div class="scene"><div class="pantry"><div class="valance"></div>${sh}</div>${door}</div>`;
+  return `<div class="scene"><div class="cabinet">${sh}</div>${door}</div>`;
+}
+function binsHTML(){return `<div class="bins">
+  <div class="bin" data-drop="cart"><span>🛒</span><small>Al súper</small></div>
+  <div class="bin" data-drop="empty"><span>😋</span><small>Se acabó</small></div>
+  <div class="bin" data-drop="trash"><span>🗑️</span><small>Dañado</small></div></div>`}
+
+function vCocina(){
+  const food=S.items.filter(i=>i.place!=='clean');
+  const soon=food.filter(i=>i.qty>0&&daysUntil(i.expiry)!==null&&daysUntil(i.expiry)<=3).length;
+  const list=S.shop.filter(x=>!x.checked).length;
+  const low=food.filter(i=>i.qty<=i.min).length;
+  const T={fridge:'el refri',spice:'el especiero',pantry:'la alacena'};
+  return `<div class="kitchen">${kitchenSVG(furn)}</div>
+  <div class="panel-title"><span>${PLACES[furn].ic}</span><h3>Dentro de ${T[furn]}</h3></div>
+  ${furnitureHTML(furn)}
+  ${binsHTML()}
+  <button class="btn terra block" data-act="newItem" data-place="${furn}">＋ Agregar a ${PLACES[furn].label.toLowerCase()}</button>
+  <p class="hint">Toca la cocina para abrir un mueble. Arrastra los productos a otro estante o a las cestas.</p>
+  <div class="strip">
+    <button class="stat" data-act="tab" data-tab="menu"><b>${food.filter(i=>i.qty>0).length}</b><small>Productos</small></button>
+    <button class="stat" data-act="tab" data-tab="menu"><b>${soon}</b><small>Por vencer</small></button>
+    <button class="stat" data-act="tab" data-tab="avisos"><b>${low}</b><small>Por reponer</small></button>
+    <button class="stat" data-act="tab" data-tab="super"><b>${list}</b><small>En el súper</small></button></div>
+  <div class="floor"><div class="walker w1" data-act="bark" data-dog="rosco">${dogSVG('rosco')}</div><div class="walker w2" data-act="bark" data-dog="mali">${dogSVG('mali')}</div></div>`;
+}
+
+function missingFor(ing){
+  return (ing||'').split(',').map(s=>s.trim()).filter(Boolean).map(t=>{
+    const k=t.toLowerCase();
+    const has=S.items.some(i=>i.place!=='clean'&&i.qty>0&&(i.name.toLowerCase().includes(k)||(k.length>=3&&k.includes(i.name.toLowerCase()))));
+    return{t,has};
+  });
+}
+function vMenu(){
+  const di=day;
+  const pills=DAYS.map((d,i)=>{const has=SLOTS.some(s=>S.menu[i+'-'+s[0]]);return `<button class="dpill ${di===i?'on':''}" data-act="menuDay" data-i="${i}">${d}<small>${i===dayIdx()?'hoy':' '}</small>${has?'<i></i>':''}</button>`}).join('');
+  const meals=SLOTS.map(s=>{
+    const m=S.menu[di+'-'+s[0]];
+    if(!m)return `<button class="meal empty" data-act="editMeal" data-k="${di}-${s[0]}"><span class="em">${s[2]}</span><div class="t"><b>${s[1]}</b><small>Toca para planear</small></div>＋</button>`;
+    const miss=missingFor(m.ing).filter(x=>!x.has).length;
+    return `<button class="meal" data-act="editMeal" data-k="${di}-${s[0]}"><span class="em">${s[2]}</span><div class="t"><b>${esc(m.name)}</b><small>${s[1]}${miss?` · faltan ${miss}`:m.ing?' · todo listo ✓':''}</small></div></button>`;
+  }).join('');
+  const soon=S.items.filter(i=>i.place!=='clean'&&i.qty>0&&daysUntil(i.expiry)!==null&&daysUntil(i.expiry)<=5).sort((a,b)=>daysUntil(a.expiry)-daysUntil(b.expiry));
+  const prep=S.prep.map(p=>`<div class="li ${p.done?'done':''}"><button class="ck ${p.done?'on':''}" data-act="prepToggle" data-id="${p.id}">${p.done?'✓':''}</button><div class="t"><b>${esc(p.text)}</b></div><button class="x" data-act="prepDel" data-id="${p.id}">✕</button></div>`).join('')||'<p class="sub">Aún no tienes tareas de meal prep.</p>';
+  const quick=['Lavar y cortar verduras','Cocinar arroz','Porcionar proteínas','Hacer salsas','Hervir huevos'].map(q=>`<button class="chip" data-act="prepQuick" data-t="${esc(q)}">＋ ${q}</button>`).join('');
+  return `<div class="card"><h2>🍲 Menú de la semana</h2><div class="days">${pills}</div>${meals}
+    <button class="btn block" data-act="weekMissing">🛒 Agregar al súper lo que falta de la semana</button></div>
+  <div class="card"><h2>⏳ Úsalo primero</h2>
+    ${soon.length?`<div class="chips">${soon.map(i=>{const d=daysUntil(i.expiry);return `<span class="chip ${d<0?'no':''}">${i.emoji} ${esc(i.name)} · ${d<0?'vencido':d===0?'hoy':d+'d'}</span>`}).join('')}</div>
+    <p class="sub" style="margin-top:8px">Con esto puedes armar una sopa, un salteado o una ensalada antes de que se dañe.</p>`:'<p class="sub">Nada vence en los próximos 5 días. ¡Bien!</p>'}</div>
+  <div class="card"><h2>🥡 Meal prep</h2>${prep}
+    <div class="row" style="margin-top:8px"><input id="prep-text" placeholder="Nueva tarea de prep"><button class="btn sm" style="flex:none" data-act="prepAdd">Agregar</button></div>
+    <div class="chips" style="margin-top:8px">${quick}</div>
+    <button class="btn ghost block" style="margin-top:10px" data-act="prepReminder">⏰ Recordarme el domingo a las 4 pm</button></div>`;
+}
+
+function suggestions(){
+  const out=[];
+  computeAlerts().forEach(a=>{if(a.add&&!S.shop.some(x=>!x.checked&&x.name.toLowerCase()===a.add.name.toLowerCase()))out.push(a)});
+  return out;
+}
+function vSuper(){
+  ALERTS=computeAlerts();
+  const sug=suggestions();
+  const list=S.shop.map(x=>`<div class="li ${x.checked?'done':''}"><button class="ck ${x.checked?'on':''}" data-act="shopCheck" data-id="${x.id}">${x.checked?'✓':''}</button><span class="em">${x.emoji}</span><div class="t"><b>${esc(x.name)}</b><small>${esc(x.qty)}</small></div><button class="x" data-act="shopDel" data-id="${x.id}">✕</button></div>`).join('');
+  const nChecked=S.shop.filter(x=>x.checked).length;
+  return `<div class="card"><h2>🛒 Lista del súper</h2>
+    <div class="row"><input id="shop-name" placeholder="¿Qué falta?"><input id="shop-qty" placeholder="Cant." style="max-width:74px;flex:none"></div>
+    <div class="row" style="margin-top:6px"><select id="shop-place"><option value="fridge">🧊 Va al refri</option><option value="spice">🧂 Va al especiero</option><option value="pantry" selected>🫙 Va a la alacena</option></select><button class="btn sm" style="flex:none;padding:11px 16px" data-act="shopAdd">Agregar</button></div>
+    <div style="margin-top:10px">${list||'<p class="sub">Tu lista está vacía. Arrastra productos a la cesta 🛒 o agrégalos aquí.</p>'}</div>
+    ${nChecked?`<button class="btn terra block" style="margin-top:8px" data-act="buyDone">✅ Ya compré ${nChecked}: guardar en mi cocina</button>`:''}</div>
+  ${sug.length?`<div class="card"><h2>💡 Te sugiero</h2><p class="sub">Calculado con lo que hay (o falta) en tu cocina.</p>${sug.map((a,i)=>`<div class="li"><span class="em">${a.ic}</span><div class="t"><b>${esc(a.add.name)}</b><small>${esc(a.t)}</small></div><button class="btn sm" data-act="sugAdd" data-i="${ALERTS.indexOf(a)}">＋</button></div>`).join('')}
+    <button class="btn ghost block" style="margin-top:8px" data-act="sugAll">Agregar todo</button></div>`:''}`;
+}
+
+function choreHTML(area){
+  const L=S.chores.filter(c=>c.area===area).map(c=>{
+    const due=c.every+daysUntil(c.last);
+    const tg=due<0?`<span class="tag r">Atrasado ${-due}d</span>`:due===0?`<span class="tag y">Toca hoy</span>`:`<span class="tag g">En ${due}d</span>`;
+    return `<div class="li"><div class="t"><b>${esc(c.text)}</b><small>Cada ${c.every} días</small></div>${tg}<button class="btn sm" data-act="choreDone" data-id="${c.id}">✔</button><button class="x" data-act="choreDel" data-id="${c.id}">✕</button></div>`;
+  }).join('');
+  return `${L||'<p class="sub">Sin tareas todavía.</p>'}
+  <div class="row" style="margin-top:8px"><input id="chore-text-${area}" placeholder="Nueva tarea"><input id="chore-days-${area}" type="number" min="1" placeholder="Días" style="max-width:70px;flex:none"><button class="btn sm" style="flex:none;padding:11px 14px" data-act="choreAdd" data-area="${area}">＋</button></div>`;
+}
+function dogCol(k){
+  const d=S.dogs[k];
+  return `<div class="dogcol" data-drop="dog" data-dog="${k}"><div class="dog" id="dog-${k}" data-act="bark" data-dog="${k}">${dogSVG(k)}</div><b>${d.name}</b>
+  <div class="pills"><button class="pill ${d.fed.am?'on':''}" data-act="feed" data-dog="${k}" data-slot="am">☀️ Mañana</button><button class="pill ${d.fed.pm?'on':''}" data-act="feed" data-dog="${k}" data-slot="pm">🌙 Noche</button></div></div>`;
+}
+function vPerros(){
+  const D=S.dogs,per=D.rosco.g+D.mali.g,dl=Math.floor(D.bag.left/per),pct=Math.round(D.bag.left/D.bag.total*100);
+  const water=D.water===today();
+  const col=(k,side)=>{const d=D[k];return `<div class="dogcol ${side}" data-drop="dog" data-dog="${k}"><div class="dog" id="dog-${k}" data-act="bark" data-dog="${k}">${dogSVG(k)}</div><span class="gname">${d.name}</span>
+    <div class="pills"><button class="pill ${d.fed.am?'on':''}" data-act="feed" data-dog="${k}" data-slot="am">☀️ Mañana</button><button class="pill ${d.fed.pm?'on':''}" data-act="feed" data-dog="${k}" data-slot="pm">🌙 Noche</button></div></div>`};
+  return `<div class="garden">${gardenSVG()}<div class="stitle" style="top:10px;left:50%;translate:-50% 0">🌼 Jardín de Rosco y Mali</div>${col('rosco','gl')}${col('mali','gr')}
+    <div class="gbowl" data-drop="bowl" data-act="water">${bowlSVG(water)}<small>${water?'Agua ✓':'Falta agua'}</small></div></div>
+  <div class="tools"><div class="tool" data-drag="tool" data-tool="scoop"><span>🥣</span><small>Croquetas</small></div><div class="tool" data-drag="tool" data-tool="treat"><span>🦴</span><small>Premio (${D.treats})</small></div><div class="tool" data-drag="tool" data-tool="water"><span>💧</span><small>Agua</small></div></div>
+  <p class="hint">Arrastra las croquetas o un premio hasta tu perrito, y el agua hasta el plato. También puedes tocar a los perros.</p>
+  <div class="card"><h2>🥣 Comida de perros</h2>
+    <div class="bar ${dl<=7?'low':''}"><i style="width:${pct}%"></i></div>
+    <p style="margin:0 0 8px"><b>${(D.bag.left/1000).toFixed(1)} kg</b> de ${(D.bag.total/1000).toFixed(0)} kg · alcanza para <b>${dl} días</b></p>
+    <div class="row"><button class="btn ghost" data-act="dogsEdit">⚙️ Ajustar</button><button class="btn terra" data-act="dogAdd">🛒 Al súper</button></div></div>
+  <div class="card"><h2>🛁 Cuidados</h2>${choreHTML('dogs')}</div>`;
+}
+function vLimpieza(){
+  return `<div class="laundry">${laundrySVG()}<div class="stitle" style="bottom:9px;left:10px">🫧 Lavandería</div></div>
+  <div class="panel-title"><span>🧺</span><h3>Estantes de limpieza</h3></div>
+  <p class="sub" style="margin:-4px 4px 10px">El nivel muestra cuánto queda. Toca un producto para ajustarlo.</p>
+  ${furnitureHTML('clean')}${binsHTML()}
+  <button class="btn terra block" data-act="newItem" data-place="clean">＋ Agregar producto</button>
+  <div class="card" style="margin-top:18px"><h2>🧹 Rutina de limpieza</h2>${choreHTML('clean')}</div>`;
+}
+function vAvisos(){
+  ALERTS=computeAlerts();
+  const al=ALERTS.map((a,i)=>`<div class="alert ${a.lv}"><span class="em">${a.ic}</span><div class="t">${esc(a.t)}</div><div class="acts">
+    ${a.add?`<button class="btn sm" data-act="alertAdd" data-i="${i}">＋ Súper</button>`:''}
+    ${a.dmg?`<button class="btn sm berry" data-act="alertDmg" data-id="${a.dmg}">🗑️ Dañado</button>`:''}
+    ${a.rem?`<button class="btn sm" data-act="remDone" data-id="${a.rem}">Listo</button>`:''}
+    ${a.go&&!a.add&&!a.rem?`<button class="btn sm ghost" data-act="tab" data-tab="${a.go}">Ver</button>`:''}</div></div>`).join('');
+  const rem=S.reminders.slice().sort((a,b)=>a.at.localeCompare(b.at)).map(r=>`<div class="li ${r.done?'done':''}"><span class="em">⏰</span><div class="t"><b>${esc(r.text)}</b><small>${fmtAt(r.at)}</small></div>${r.done?'':`<button class="btn sm" data-act="remDone" data-id="${r.id}">✔</button>`}<button class="x" data-act="remDel" data-id="${r.id}">✕</button></div>`).join('')||'<p class="sub">No tienes recordatorios propios.</p>';
+  const month=new Date().toISOString().slice(0,7);
+  const w=S.wasted.filter(x=>x.d.startsWith(month));
+  const notifOK='Notification' in window&&Notification.permission==='granted';
+  return `<div class="card"><h2>🔔 Ahora mismo</h2>${al||'<p class="sub">Todo en orden. Tu cocina está al día ✨</p>'}</div>
+  <div class="card"><h2>⏰ Mis recordatorios</h2>${rem}
+    <label>Qué quieres recordar</label><input id="rem-text" placeholder="Ej. Sacar el pollo del congelador">
+    <label>Cuándo</label><input id="rem-at" type="datetime-local">
+    <div class="chips" style="margin:8px 0"><button class="chip" data-act="remQuick" data-k="tonight">Hoy 6 pm</button><button class="chip" data-act="remQuick" data-k="tomorrow">Mañana 8 am</button><button class="chip" data-act="remQuick" data-k="sunday">Domingo 4 pm</button></div>
+    <button class="btn block" data-act="remAdd">Agregar recordatorio</button>
+    <button class="btn ghost block" style="margin-top:8px" data-act="notif">${notifOK?'🔔 Avisos del teléfono activados':'🔔 Activar avisos del teléfono'}</button>
+    <p class="sub" style="margin-top:8px">Los avisos suenan mientras la app esté abierta. Al abrirla siempre te muestro lo pendiente.</p></div>
+  <div class="card"><h2>🗑️ Comida dañada</h2><p class="sub">Este mes: <b>${w.length}</b> producto${w.length===1?'':'s'}</p>
+    <div class="chips">${S.wasted.slice(-10).reverse().map(x=>`<span class="chip">${x.e} ${esc(x.n)}</span>`).join('')||'<span class="sub">Ninguno todavía.</span>'}</div></div>
+  <div class="card"><h2>⚙️ Datos</h2><div class="row"><button class="btn ghost" data-act="resetDemo">Datos de ejemplo</button><button class="btn berry" data-act="clearAll">Empezar vacía</button></div></div>`;
+}
+function fmtAt(s){const d=new Date(s);return DAYS[(d.getDay()+6)%7]+' '+d.getDate()+' · '+pad(d.getHours())+':'+pad(d.getMinutes())}
+
+function render(){
+  dailyReset();ALERTS=computeAlerts();
+  const V={cocina:vCocina,menu:vMenu,super:vSuper,perros:vPerros,limpieza:vLimpieza,avisos:vAvisos};
+  const y=scrollY;$('#app').innerHTML=banner(tab)+V[tab]();renderHeader();renderNav();
+  doorAnim=false;scrollTo(0,y);
+}
+
+/* ---------- hojas (editar) ---------- */
+function pickerHTML(list){return `<div class="picker" id="picker">${list.map(e=>`<button type="button" data-act="pickEmoji" data-e="${e}">${e}</button>`).join('')}</div>`}
+function shelfOpts(place,sel){return PLACES[place].shelves.map((s,i)=>`<option value="${i}" ${i===sel?'selected':''}>${s}</option>`).join('')}
+function sheetItem(id){
+  const it=itemById(id);if(!it)return;const clean=it.place==='clean';
+  pendingEmoji=it.emoji;
+  openSheet(`<h3>${it.emoji} ${esc(it.name)}</h3>
+  <label>Nombre</label><input id="f-name" value="${esc(it.name)}">
+  <div class="row"><div><label>Emoji</label><button class="emoji-btn" id="f-eb" data-act="togglePicker">${it.emoji}</button></div>
+  <div><label>Dónde está</label><select id="f-place" data-act="placeChange">${Object.keys(PLACES).map(k=>`<option value="${k}" ${k===it.place?'selected':''}>${PLACES[k].ic} ${PLACES[k].label}</option>`).join('')}</select></div></div>
+  ${pickerHTML(clean?CLEAN_EM:FOOD_EM)}
+  <label>Estante</label><select id="f-shelf">${shelfOpts(it.place,it.shelf)}</select>
+  ${clean?`<label>Cuánto queda: <span id="lv-v">${it.level}</span>%</label><input id="f-level" type="range" min="0" max="100" step="5" value="${it.level}">`
+  :`<div class="row"><div><label>Cantidad</label><div class="step"><button data-act="step" data-t="f-qty" data-d="-1">−</button><input id="f-qty" type="number" min="0" value="${it.qty}"><button data-act="step" data-t="f-qty" data-d="1">＋</button></div></div>
+    <div><label>Avisar si quedan</label><div class="step"><button data-act="step" data-t="f-min" data-d="-1">−</button><input id="f-min" type="number" min="0" value="${it.min}"><button data-act="step" data-t="f-min" data-d="1">＋</button></div></div></div>
+    <label>Fecha de vencimiento</label><input id="f-exp" type="date" value="${it.expiry||''}">`}
+  <div class="acts-row"><button class="btn" data-act="saveItem" data-id="${id}">Guardar</button>
+  ${clean?'':`<button class="btn terra" data-act="useOne" data-id="${id}">Usé 1</button>`}
+  <button class="btn berry" data-act="delItem" data-id="${id}">Eliminar</button></div>`);
+}
+function sheetNew(place){
+  pendingEmoji=place==='clean'?'🧴':'🍎';
+  const clean=place==='clean';
+  openSheet(`<h3>Nuevo producto</h3>
+  <label>Nombre</label><input id="f-name" placeholder="${clean?'Ej. Limpiavidrios':'Ej. Yogurt'}">
+  <div class="row"><div><label>Emoji</label><button class="emoji-btn" id="f-eb" data-act="togglePicker">${pendingEmoji}</button></div>
+  <div><label>Dónde va</label><select id="f-place" data-act="placeChange">${Object.keys(PLACES).map(k=>`<option value="${k}" ${k===place?'selected':''}>${PLACES[k].ic} ${PLACES[k].label}</option>`).join('')}</select></div></div>
+  ${pickerHTML(clean?CLEAN_EM:FOOD_EM)}
+  <label>Estante</label><select id="f-shelf">${shelfOpts(place,0)}</select>
+  ${clean?'':`<div class="row"><div><label>Cantidad</label><div class="step"><button data-act="step" data-t="f-qty" data-d="-1">−</button><input id="f-qty" type="number" min="0" value="1"><button data-act="step" data-t="f-qty" data-d="1">＋</button></div></div>
+    <div><label>Avisar si quedan</label><div class="step"><button data-act="step" data-t="f-min" data-d="-1">−</button><input id="f-min" type="number" min="0" value="0"><button data-act="step" data-t="f-min" data-d="1">＋</button></div></div></div>
+    <label>Fecha de vencimiento</label><input id="f-exp" type="date">`}
+  <div class="acts-row"><button class="btn" data-act="saveNew">Guardar</button></div>`);
+  setTimeout(()=>$('#f-name')&&$('#f-name').focus(),50);
+}
+function sheetMeal(k){
+  const m=S.menu[k]||{name:'',ing:''};const [d,s]=k.split('-');const sl=SLOTS.find(x=>x[0]===s);
+  const miss=missingFor(m.ing);
+  openSheet(`<h3>${sl[2]} ${sl[1]} · ${DAYSL[+d]}</h3>
+  <label>¿Qué vas a cocinar?</label><input id="m-name" value="${esc(m.name)}" placeholder="Ej. Tacos de pollo">
+  <label>Ingredientes (separados por coma)</label><input id="m-ing" value="${esc(m.ing)}" placeholder="pollo, tortillas, lechuga">
+  ${miss.length?`<div class="chips" style="margin-top:8px">${miss.map(x=>`<span class="chip ${x.has?'ok':'no'}">${x.has?'✓':'✗'} ${esc(x.t)}</span>`).join('')}</div><p class="sub" style="margin-top:6px">Verde: ya lo tienes. Rojo: te falta.</p>`:''}
+  <div class="acts-row"><button class="btn" data-act="saveMeal" data-k="${k}">Guardar</button>
+  ${miss.some(x=>!x.has)?`<button class="btn terra" data-act="mealMissing" data-k="${k}">🛒 Pedir lo que falta</button>`:''}
+  ${S.menu[k]?`<button class="btn berry" data-act="delMeal" data-k="${k}">Quitar</button>`:''}</div>`);
+}
+function sheetDogs(){
+  const D=S.dogs;
+  openSheet(`<h3>⚙️ Comida de los perros</h3>
+  <div class="row"><div><label>Bolsa completa (kg)</label><input id="d-total" type="number" step="0.5" min="1" value="${D.bag.total/1000}"></div><div><label>Queda (kg)</label><input id="d-left" type="number" step="0.1" min="0" value="${(D.bag.left/1000).toFixed(1)}"></div></div>
+  <div class="row"><div><label>Rosco come (g al día)</label><input id="d-g1" type="number" min="10" value="${D.rosco.g}"></div><div><label>Mali come (g al día)</label><input id="d-g2" type="number" min="10" value="${D.mali.g}"></div></div>
+  <label>Premios que quedan</label><input id="d-treats" type="number" min="0" value="${D.treats}">
+  <div class="acts-row"><button class="btn" data-act="saveDogs">Guardar</button></div>`);
+}
+
+/* ---------- acciones ---------- */
+function markDamaged(it,x,y){
+  S.wasted.push({n:it.name,e:it.emoji,d:new Date().toISOString().slice(0,10)});
+  S.items=S.items.filter(i=>i.id!==it.id);
+  const ok=addToList(it.name,it.emoji,{place:it.place});
+  save();toast(`${it.name} anotado como dañado${ok?'. Lo agregué al súper':''}`);
+}
+function feed(k,slot,x,y){
+  const d=S.dogs[k],f=d.fed;
+  if(!slot)slot=!f.am?'am':!f.pm?'pm':null;
+  if(!slot||f[slot]){render();animDog(k,'nope');toast(`${d.name} ya comió ${slot==='am'?'en la mañana':slot==='pm'?'en la noche':'hoy'} 🐾`);return}
+  f[slot]=true;S.dogs.bag.left=Math.max(0,S.dogs.bag.left-d.g/2);
+  award(2,x,y);save();render();animDog(k,'eating',900,()=>animDog(k,'happy',1500));
+  if(S.dogs.bag.left===0)toast('Se acabó la comida de perros. Agrégala al súper 🛒');
+}
+function animDog(k,cls,ms,cb){const e=$('#dog-'+k);if(!e)return;e.classList.add(cls);setTimeout(()=>{e.classList.remove(cls);cb&&cb()},ms||600)}
+function bark(el){
+  const k=el.dataset.dog,say=['¡Guau!','¡Guau guau!','🐾','¿Hay premio?','¡Quiero paseo!'][Math.floor(Math.random()*5)];
+  el.insertAdjacentHTML('beforeend',`<div class="bubble">${say}</div>`);setTimeout(()=>{const b=$('.bubble',el);b&&b.remove()},1300);
+  if(el.classList.contains('dog')){el.classList.add('happy');setTimeout(()=>el.classList.remove('happy'),1500)}
+}
+function applyBuy(entry){
+  const r=entry.ref;
+  if(r&&r.type==='dog'){S.dogs.bag.left=S.dogs.bag.total;return}
+  if(r&&r.type==='treat'){S.dogs.treats+=10;return}
+  let it=r&&r.type==='item'?itemById(r.id):null;
+  if(!it)it=S.items.find(i=>i.name.toLowerCase()===entry.name.toLowerCase());
+  if(it){if(it.place==='clean')it.level=100;else{it.qty=Math.max(0,it.qty)+1;it.expiry=''}return}
+  S.items.push(mk(entry.name,entry.emoji,entry.place||'pantry',0,1));
+}
+function handleDrop(dr,tg){
+  if(!tg)return;
+  const kind=tg.dataset.drop;
+  if(dr.type==='item'){
+    const it=itemById(dr.id);if(!it)return;
+    if(kind==='shelf'){
+      const p=tg.dataset.place;
+      if(p!==it.place&&(p==='clean')!==(it.place==='clean')){toast('Ese producto no va ahí');return}
+      it.place=p;it.shelf=+tg.dataset.shelf;save();render();toast(`${it.name} → ${PLACES[p].shelves[it.shelf]}`);
+    }else if(kind==='cart'){if(addToList(it.name,it.emoji,{place:it.place,ref:{type:'item',id:it.id}}))toast(`${it.name} agregado al súper 🛒`);render()}
+    else if(kind==='empty'){if(it.place==='clean')it.level=0;else it.qty=0;addToList(it.name,it.emoji,{place:it.place,ref:{type:'item',id:it.id}});save();render();toast(`${it.name} se acabó. Lo pedí en el súper`)}
+    else if(kind==='trash'){
+      if(it.place==='clean'){S.items=S.items.filter(i=>i.id!==it.id);addToList(it.name,it.emoji,{place:'clean'});save();toast(`${it.name} eliminado`)}
+      else markDamaged(it);
+      render();
+    }
+  }else if(dr.type==='tool'){
+    const t=dr.tool;
+    if(t==='water'){if(kind==='bowl'){fillWater()}else toast('El agua va en el plato 💧')}
+    else if(kind==='dog'){
+      const k=tg.dataset.dog;
+      if(t==='scoop')feed(k,null,dr.x,dr.y);
+      else if(S.dogs.treats>0){S.dogs.treats--;award(1,dr.x,dr.y);save();render();animDog(k,'happy',1500);toast(`${S.dogs[k].name} ama su premio 🦴`)}
+      else toast('Ya no quedan premios');
+    }else toast(t==='scoop'?'Las croquetas son para tu perrito 🐶':'Los premios son para tu perrito 🐶');
+  }
+}
+function fillWater(){if(S.dogs.water===today()){toast('El agua ya está fresca hoy 💧');return}S.dogs.water=today();award(1);save();render()}
+
+/* ---------- arrastrar ---------- */
+let drag=null,suppress=false,scrollTimer=null;
+document.addEventListener('pointerdown',e=>{
+  const el=e.target.closest('[data-drag]');if(!el||e.button>0)return;
+  drag={el,type:el.dataset.drag,id:el.dataset.id,tool:el.dataset.tool,sx:e.clientX,sy:e.clientY,x:e.clientX,y:e.clientY,moved:false,ghost:null,tg:null};
+});
+document.addEventListener('pointermove',e=>{
+  if(!drag)return;drag.x=e.clientX;drag.y=e.clientY;
+  if(!drag.moved){
+    if(Math.hypot(e.clientX-drag.sx,e.clientY-drag.sy)<9)return;
+    drag.moved=true;const g=document.createElement('div');g.className='dgh';g.innerHTML=drag.el.outerHTML;
+    const c=g.firstElementChild;c.removeAttribute('data-drag');c.removeAttribute('data-act');c.style.opacity='1';
+    document.body.appendChild(g);drag.ghost=g;drag.el.classList.add('dragging');document.body.classList.add('is-dragging');
+    scrollTimer=setInterval(()=>{if(!drag)return;if(drag.y<130)scrollBy(0,-14);else if(drag.y>innerHeight-150)scrollBy(0,14)},16);
+  }
+  drag.ghost.style.left=e.clientX+'px';drag.ghost.style.top=e.clientY+'px';
+  const t=document.elementFromPoint(e.clientX,e.clientY),tg=t&&t.closest('[data-drop]');
+  if(tg!==drag.tg){drag.tg&&drag.tg.classList.remove('over');tg&&tg.classList.add('over');drag.tg=tg}
+  e.preventDefault();
+},{passive:false});
+function endDrag(e,cancel){
+  if(!drag)return;const d=drag;drag=null;clearInterval(scrollTimer);
+  if(!d.moved)return;
+  d.ghost&&d.ghost.remove();d.el.classList.remove('dragging');document.body.classList.remove('is-dragging');
+  d.tg&&d.tg.classList.remove('over');
+  suppress=true;setTimeout(()=>suppress=false,80);
+  if(!cancel)handleDrop(d,d.tg);
+}
+document.addEventListener('pointerup',e=>endDrag(e,false));
+document.addEventListener('pointercancel',e=>endDrag(e,true));
+document.addEventListener('contextmenu',e=>{if(e.target.closest('[data-drag]'))e.preventDefault()});
+
+/* ---------- clics ---------- */
+document.addEventListener('click',e=>{
+  if(suppress){e.preventDefault();e.stopPropagation();return}
+  const el=e.target.closest('[data-act]');if(!el)return;
+  const a=el.dataset.act,d=el.dataset,v=id=>$('#'+id);
+  const px=e.clientX,py=e.clientY;
+  switch(a){
+    case 'tab':tab=d.tab;scrollTo(0,0);render();break;
+    case 'furn':furn=d.k;doorAnim=true;render();break;
+    case 'closeSheet':closeSheet();break;
+    case 'openItem':sheetItem(d.id);break;
+    case 'newItem':sheetNew(d.place);break;
+    case 'togglePicker':v('picker').classList.toggle('on');break;
+    case 'pickEmoji':pendingEmoji=d.e;v('f-eb').textContent=d.e;v('picker').classList.remove('on');break;
+    case 'step':{const i=v(d.t);i.value=Math.max(0,(+i.value||0)+(+d.d))}break;
+    case 'saveItem':case 'saveNew':{
+      const name=v('f-name').value.trim();if(!name){toast('Ponle un nombre');return}
+      const place=v('f-place').value,clean=place==='clean';
+      let it=a==='saveItem'?itemById(d.id):null;
+      if(!it){it=mk(name,pendingEmoji,place,0,1);S.items.push(it)}
+      it.name=name;it.emoji=pendingEmoji;it.place=place;it.shelf=Math.min(+v('f-shelf').value,PLACES[place].shelves.length-1);
+      if(clean){it.level=v('f-level')?+v('f-level').value:100}
+      else{it.qty=Math.max(0,+v('f-qty').value||0);it.min=Math.max(0,+v('f-min').value||0);it.expiry=v('f-exp').value||''}
+      save();closeSheet();if(!clean)furn=place;if(clean)tab='limpieza';else if(tab!=='cocina'&&a==='saveNew'){}render();toast(a==='saveNew'?'Producto guardado ✨':'Cambios guardados');
+    }break;
+    case 'placeChange':break;
+    case 'useOne':{const it=itemById(d.id);if(it&&it.qty>0){it.qty--;award(1,px,py);save();closeSheet();render();toast(it.qty===0?`${it.name} se acabó`:`Usaste 1 ${it.name.toLowerCase()}`)}else toast('Ya no queda')}break;
+    case 'delItem':{S.items=S.items.filter(i=>i.id!==d.id);save();closeSheet();render();toast('Eliminado')}break;
+    case 'alertDmg':{const it=itemById(d.id);if(it){markDamaged(it);render()}}break;
+    case 'alertAdd':{const al=ALERTS[+d.i];if(al&&al.add&&addToList(al.add.name,al.add.emoji,al.add)){toast(al.add.name+' agregado al súper 🛒')}render()}break;
+    case 'sugAdd':{const al=ALERTS[+d.i];if(al&&al.add)addToList(al.add.name,al.add.emoji,al.add);render()}break;
+    case 'sugAll':{suggestions().forEach(al=>addToList(al.add.name,al.add.emoji,al.add));render();toast('Sugerencias agregadas 🛒')}break;
+    case 'shopAdd':{const n=v('shop-name').value;if(!n.trim())return;addToList(n,'🛒',{qty:v('shop-qty').value||'1',place:v('shop-place').value});render();const i=v('shop-name');i&&i.focus()}break;
+    case 'shopCheck':{const x=S.shop.find(s=>s.id===d.id);x.checked=!x.checked;save();render()}break;
+    case 'shopDel':S.shop=S.shop.filter(s=>s.id!==d.id);save();render();break;
+    case 'buyDone':{const done=S.shop.filter(x=>x.checked);done.forEach(applyBuy);S.shop=S.shop.filter(x=>!x.checked);award(5,px,py);save();render();toast(`Guardé ${done.length} compra${done.length>1?'s':''}. Pon la nueva fecha de vencimiento 📅`)}break;
+    case 'menuDay':day=+d.i;render();break;
+    case 'editMeal':sheetMeal(d.k);break;
+    case 'saveMeal':{const n=v('m-name').value.trim();if(!n){toast('Escribe qué vas a cocinar');return}S.menu[d.k]={name:n,ing:v('m-ing').value.trim()};save();closeSheet();render();toast('Menú actualizado 🍲')}break;
+    case 'delMeal':delete S.menu[d.k];save();closeSheet();render();break;
+    case 'mealMissing':{const m=S.menu[d.k]||{ing:v('m-ing').value};let c=0;missingFor(v('m-ing').value).filter(x=>!x.has).forEach(x=>{if(addToList(x.t[0].toUpperCase()+x.t.slice(1),'🛒'))c++});closeSheet();render();toast(c?`${c} ingrediente${c>1?'s':''} al súper 🛒`:'Nada nuevo que agregar')}break;
+    case 'weekMissing':{let c=0;Object.values(S.menu).forEach(m=>missingFor(m.ing).filter(x=>!x.has).forEach(x=>{if(addToList(x.t[0].toUpperCase()+x.t.slice(1),'🛒'))c++}));render();toast(c?`${c} ingrediente${c>1?'s':''} al súper 🛒`:'No te falta nada de lo planeado ✨')}break;
+    case 'prepAdd':{const t=v('prep-text').value.trim();if(!t)return;S.prep.push({id:uid(),text:t,done:false});save();render()}break;
+    case 'prepQuick':S.prep.push({id:uid(),text:d.t,done:false});save();render();break;
+    case 'prepToggle':{const p=S.prep.find(x=>x.id===d.id);p.done=!p.done;if(p.done)award(2,px,py);save();render()}break;
+    case 'prepDel':S.prep=S.prep.filter(x=>x.id!==d.id);save();render();break;
+    case 'prepReminder':{const t=new Date();t.setDate(t.getDate()+((7-t.getDay())%7||7));t.setHours(16,0,0,0);addRem('Domingo de meal prep 🥡',toLocal(t));toast('Recordatorio creado para el domingo ⏰')}break;
+    case 'feed':feed(d.dog,d.slot,px,py);break;
+    case 'bark':bark(el);break;
+    case 'water':fillWater();break;
+    case 'dogsEdit':sheetDogs();break;
+    case 'saveDogs':{const D=S.dogs;D.bag.total=Math.max(1,+v('d-total').value||15)*1000;D.bag.left=Math.min(D.bag.total,Math.max(0,(+v('d-left').value||0)*1000));D.rosco.g=+v('d-g1').value||260;D.mali.g=+v('d-g2').value||180;D.treats=Math.max(0,+v('d-treats').value||0);save();closeSheet();render()}break;
+    case 'dogAdd':{if(addToList('Comida de perros','🥣',{place:'pantry',ref:{type:'dog'}}))toast('Comida de perros al súper 🛒');render()}break;
+    case 'choreDone':{const c=S.chores.find(x=>x.id===d.id);c.last=today();award(3,px,py);save();render()}break;
+    case 'choreDel':S.chores=S.chores.filter(x=>x.id!==d.id);save();render();break;
+    case 'choreAdd':{const t=v('chore-text-'+d.area).value.trim(),n=+v('chore-days-'+d.area).value||7;if(!t)return;S.chores.push({id:uid(),area:d.area,text:t,every:n,last:today()});save();render()}break;
+    case 'remAdd':{const t=v('rem-text').value.trim(),at=v('rem-at').value;if(!t||!at){toast('Escribe qué y cuándo');return}addRem(t,at);toast('Recordatorio creado ⏰')}break;
+    case 'remQuick':{const t=new Date();if(d.k==='tonight')t.setHours(18,0,0,0);else if(d.k==='tomorrow'){t.setDate(t.getDate()+1);t.setHours(8,0,0,0)}else{t.setDate(t.getDate()+((7-t.getDay())%7||7));t.setHours(16,0,0,0)}v('rem-at').value=toLocal(t)}break;
+    case 'remDone':{const r=S.reminders.find(x=>x.id===d.id);if(r){r.done=true;save();render()}}break;
+    case 'remDel':S.reminders=S.reminders.filter(x=>x.id!==d.id);save();render();break;
+    case 'notif':{try{if(!('Notification' in window)){toast('Este navegador no permite avisos. Verás los recordatorios dentro de la app');return}Notification.requestPermission().then(()=>{render();toast(Notification.permission==='granted'?'Avisos activados 🔔':'No se activaron los avisos')})}catch(err){toast('No se pudieron activar los avisos')}}break;
+    case 'laundry':{const L=$('.laundry');if(L){L.classList.add('run');clearTimeout(L._t);L._t=setTimeout(()=>L.classList.remove('run'),3200)}toast(['¡A lavar! 🫧','Ciclo rápido de burbujas 🫧','Ropa limpia en camino 🧺'][Math.floor(Math.random()*3)])}break;
+    case 'resetDemo':S=seed();save();render();toast('Datos de ejemplo cargados');break;
+    case 'clearAll':{if(confirm('¿Borrar todo y empezar con la cocina vacía?')){const s=seed();s.items=[];s.menu={};s.prep=[];s.chores=s.chores.map(c=>({...c,last:today()}));s.dogs.bag.left=s.dogs.bag.total;S=s;save();render();toast('Cocina vacía. ¡A llenarla!')}}break;
+  }
+});
+document.addEventListener('keydown',e=>{
+  if(e.key!=='Enter')return;const id=e.target.id;
+  if(id==='shop-name')document.querySelector('[data-act=shopAdd]').click();
+  else if(id==='prep-text')document.querySelector('[data-act=prepAdd]').click();
+  else if(id==='rem-text')document.querySelector('[data-act=remAdd]').click();
+});
+document.addEventListener('input',e=>{if(e.target.id==='f-level')$('#lv-v').textContent=e.target.value});
+document.addEventListener('change',e=>{
+  if(e.target.id==='f-place'){const p=e.target.value;$('#f-shelf').innerHTML=shelfOpts(p,0);
+    const pk=$('#picker');if(pk)pk.outerHTML=pickerHTML(p==='clean'?CLEAN_EM:FOOD_EM)}
+});
+
+/* ---------- recordatorios ---------- */
+function toLocal(d){return fmt(d)+'T'+pad(d.getHours())+':'+pad(d.getMinutes())}
+function addRem(text,at){S.reminders.push({id:uid(),text,at,done:false,fired:false});save();render()}
+function checkReminders(){
+  const now=new Date();let ch=false;
+  S.reminders.forEach(r=>{
+    if(!r.done&&!r.fired&&new Date(r.at)<=now){
+      r.fired=true;ch=true;toast('⏰ '+r.text);
+      try{if('Notification' in window&&Notification.permission==='granted')new Notification('Mi Cocinita',{body:r.text})}catch(e){}
+    }
+  });
+  if(ch){save();render()}
+}
+setInterval(checkReminders,15000);
+document.addEventListener('visibilitychange',()=>{if(!document.hidden){render();checkReminders()}});
+
+/* ---------- inicio ---------- */
+render();
+setTimeout(()=>{
+  const n=ALERTS.filter(a=>a.lv!=='b').length;
+  if(!S.welcome){S.welcome=true;save();toast('¡Bienvenida! Arrastra los productos y toca a los perritos 🐾')}
+  else if(n)toast(`Tienes ${n} aviso${n>1?'s':''} pendiente${n>1?'s':''} 🔔`);
+  checkReminders();
+},700);
+})();
+</script>
+</body>
+</html>

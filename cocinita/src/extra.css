@@ -1,0 +1,91 @@
+
+/* ===== rediseño: hoja de personaje + cocinita de fresas ===== */
+:root{--shd:#EDB5A6;--sh:0 5px 0 var(--shd);
+  --paw:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cg fill='%23A9683A'%3E%3Cellipse cx='12' cy='16' rx='6' ry='5'/%3E%3Cellipse cx='4.5' cy='10.5' rx='2.4' ry='3'/%3E%3Cellipse cx='9' cy='5.5' rx='2.4' ry='3.2'/%3E%3Cellipse cx='15' cy='5.5' rx='2.4' ry='3.2'/%3E%3Cellipse cx='19.5' cy='10.5' rx='2.4' ry='3'/%3E%3C/g%3E%3C/svg%3E")}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--shd:#170E0B}}
+:root[data-theme="dark"]{--shd:#170E0B}
+
+.ic{width:1.3em;height:1.3em;vertical-align:-.3em;overflow:visible;flex:none}
+.ic-emo{font-style:normal}
+
+/* encabezado */
+header{border-bottom-width:2.5px;box-shadow:0 4px 0 var(--shd);padding:10px 14px}
+.brand h1{font-size:25px;font-weight:700;color:var(--ink);gap:5px;letter-spacing:.01em}
+.brand h1 .logo{width:30px;height:30px;vertical-align:0;transform:rotate(12deg)}
+.brand small{font-size:12px;padding-left:2px}
+.pill-xp{display:flex;align-items:center;gap:4px;font-family:var(--disp);font-weight:600;font-size:15px;padding:3px 12px 3px 8px}
+.pill-xp .ic{width:20px;height:20px;vertical-align:0}
+.bell{display:grid;place-items:center;background:var(--paper)}
+.bell .ic{width:26px;height:26px;vertical-align:0}
+.bell b{font-family:var(--disp)}
+
+/* navegación */
+nav{border-top-width:2.5px;box-shadow:0 -4px 0 var(--shd)}
+nav button{font-family:var(--disp);font-weight:600;font-size:11.5px;letter-spacing:.01em}
+nav button span{width:48px;height:34px;border-radius:17px}
+nav button span .ic{width:26px;height:26px;vertical-align:0}
+nav button.on{color:var(--ink)}
+
+/* títulos de sección con huellitas, como en la hoja de personaje */
+.panel-title{justify-content:center;gap:10px;margin:4px 2px 12px}
+.panel-title::before,.panel-title i{content:"";flex:1;height:2px;border-radius:2px;background:color-mix(in srgb,var(--out) 45%,transparent)}
+.panel-title h3{font-size:19px;display:flex;align-items:center;gap:8px;white-space:nowrap}
+.panel-title h3::before,.panel-title h3::after{content:"";width:17px;height:17px;background:var(--paw) center/contain no-repeat}
+.panel-title h3::before{transform:rotate(-14deg)}.panel-title h3::after{transform:rotate(14deg)}
+
+.banner{outline:2px dashed color-mix(in srgb,var(--out) 40%,transparent);outline-offset:-7px;padding:16px 18px}
+.banner h2{font-size:22px}
+.b-ic{background:var(--paper);border-radius:50%}
+.b-ic .ic{width:38px;height:38px;vertical-align:0}
+.card h2{font-size:20px}
+.btn,.pill,.chip,.tag,.dpill,.stat small,.bin small,.tool small,.s-label,.exb,.badge{font-family:var(--disp);font-weight:600;letter-spacing:.01em}
+.btn{font-size:15.5px}
+.chip{display:inline-flex;align-items:center;gap:4px}
+.chip .ic{width:19px;height:19px;vertical-align:0}
+.stat b{font-weight:700;font-size:23px}
+
+/* productos */
+.item{width:66px}
+.item .em{filter:drop-shadow(0 3px 0 rgba(107,58,30,.16));line-height:1;font-size:36px;height:46px;display:grid;place-items:center}
+.item .em .ic{width:46px;height:46px;vertical-align:0}
+.item .nm{position:relative;z-index:1;font-family:var(--disp);font-weight:500;font-size:11px;letter-spacing:0;border:1.8px solid var(--out);background:#FFFBF0;color:#5E3219;border-radius:9px;padding:0 6px;margin-top:3px}
+.badge,.exb{z-index:2}
+.item.gone .em{filter:grayscale(1) opacity(.7)}
+.jar-b .ic{width:30px;height:30px;vertical-align:0}
+.jar-b{font-size:22px}
+.s-label{font-size:11px;color:var(--muted)}
+.bin span,.tool span{display:grid;place-items:center;height:40px}
+.bin span .ic,.tool span .ic{width:40px;height:40px;vertical-align:0}
+.li .em .ic,.alert .em .ic{width:30px;height:30px;vertical-align:0;display:block}
+.meal .em .ic{width:34px;height:34px;vertical-align:0;display:block}
+.picker button{display:grid;place-items:center}
+.picker button .ic{width:30px;height:30px;vertical-align:0}
+.emoji-btn{display:grid;place-items:center}
+.emoji-btn .ic{width:34px;height:34px;vertical-align:0}
+.sheet h3 .ic{width:28px;height:28px}
+
+/* refri abierto: estantes de vidrio, cajón y puerta con repisas */
+.fridge{display:grid;grid-template-columns:minmax(0,1fr) 104px;padding:12px 10px 14px 12px;border-radius:34px 26px 24px 26px;border-width:3px}
+.fridge::after,.fridge::before{display:none}
+.fr-in{min-width:0;background-color:var(--fridge-in);border:3px solid var(--out);border-radius:22px 8px 8px 14px;padding:8px 9px 9px;
+  background-image:linear-gradient(90deg,transparent calc(50% - 1px),color-mix(in srgb,var(--out) 12%,transparent) calc(50% - 1px) calc(50% + 1px),transparent calc(50% + 1px))}
+.fridge .shelf{background:none;border:0;border-radius:6px;margin-bottom:17px;min-height:98px;padding:20px 2px 5px;gap:4px 3px}
+.fridge .shelf::after{left:-9px;right:-9px;bottom:-10px;height:9px;background:var(--glass);border:2.5px solid var(--out);border-radius:5px;z-index:0}
+.fridge .shelf.sh0{background:var(--freezer);border:3px solid var(--out);border-radius:15px 6px 6px 6px;margin-bottom:10px;padding:20px 4px 6px}
+.fridge .shelf.sh3{background:color-mix(in srgb,var(--glass) 55%,transparent);border:3px solid var(--out);border-radius:8px 8px 12px 12px;margin-bottom:0;padding:20px 4px 6px}
+.fridge .shelf.sh0::after,.fridge .shelf.sh3::after,.fr-door .shelf::after{display:none}
+.fr-door{margin-left:8px;background:color-mix(in srgb,var(--paper) 70%,transparent);border:3px solid var(--out);border-radius:8px 20px 18px 8px}
+.fr-door .shelf{flex-direction:column;flex-wrap:nowrap;align-items:center;gap:16px;min-height:100%;margin:0;padding:24px 2px 12px}
+.fr-door .item::after{content:"";position:absolute;left:-12px;right:-12px;top:27px;height:25px;border:2.5px solid var(--out);border-radius:4px 4px 10px 10px;background:color-mix(in srgb,var(--glass) 45%,transparent)}
+.fr-door .s-empty{writing-mode:vertical-rl}
+
+.kitchen,.garden,.laundry,.floor{border-radius:30px}
+.floor{height:104px}
+.walker{width:70px;height:80px}
+.rug,.gname,.dogcol b{font-family:var(--disp)}
+.gname,.dogcol b{font-weight:700}
+.stitle{font-weight:600}
+#toast{font-family:var(--disp);font-weight:500;border-width:0;box-shadow:0 5px 0 rgba(0,0,0,.18)}
+.pop{font-weight:700}
+
+.item .nm{font-size:10.5px;padding:0 5px;margin:3px -6px 0;max-width:78px;max-height:none;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;overflow-wrap:normal;vertical-align:top}
