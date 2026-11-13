@@ -10,7 +10,7 @@ const iso=n=>{const d=new Date();d.setDate(d.getDate()+n);return d.getFullYear()
   const has=(p,sel)=>p.evaluate(s=>!!document.querySelector(s),sel);
   const wait=(p,ms)=>p.waitForTimeout(ms);
   const tab=async(p,t)=>{await act(p,`nav [data-tab=${t}]`);await wait(p,150)};
-  const addItem=async(p,name,qty,min)=>{await tab(p,'cocina');await act(p,'[data-act=newItem]');await p.fill('#f-name',name);await p.fill('#f-qty',String(qty));await p.fill('#f-min',String(min||0));await p.selectOption('#f-unit','kg');await act(p,'[data-act=saveNew]');await wait(p,200)};
+  const addItem=async(p,name,qty,min)=>{await tab(p,'cocina');await act(p,'[data-act=newItem]');await wait(p,120);await p.fill('#f-name',name);await p.fill('#f-qty',String(qty));await p.fill('#f-min',String(min||0));await p.selectOption('#f-unit','kg');await act(p,'[data-act=saveNew]');await wait(p,200)};
 
   console.log('\n— Fase 1: persistencia y sincronización —');
   const A=await dev();
@@ -209,6 +209,16 @@ const iso=n=>{const d=new Date();d.setDate(d.getDate()+n);return d.getFullYear()
   await act(A,'[data-act=saveNew]');await wait(A,300);await A.evaluate(()=>[...document.querySelectorAll('.item[data-act=openItem]')].find(e=>e.textContent.includes('Queso')).click());await wait(A,200);
   await A.evaluate(()=>{const el=document.querySelector('.meterbig .botv.h'),r=el.getBoundingClientRect(),o={bubbles:true,clientX:r.left+r.width*(8/126)+r.width*(110/126)*.3,clientY:r.top+r.height/2,pointerId:1};el.dispatchEvent(new PointerEvent('pointerdown',o));document.dispatchEvent(new PointerEvent('pointerup',o))});await wait(A,900);
   ok(Object.values(store.docs).some(d=>d.name==='Queso'&&d.level===30),'deslizar de lado guarda cuánto queso queda (30%)');
+  await act(A,'[data-act=closeSheet]');
+  console.log('\n— Fase 11: envases en baño y lavandería —');
+  await tab(A,'bano');await act(A,'[data-act=newItem][data-place=clean]');await A.fill('#f-name','Detergente en polvo');await wait(A,100);
+  ok(await has(A,'#f-cont')&&(await A.inputValue('#f-cont'))==='polvo','al agregar en limpieza se elige envase y "Detergente en polvo" propone polvo');
+  await act(A,'[data-act=saveNew]');await wait(A,300);await A.evaluate(()=>[...document.querySelectorAll('.item[data-act=openItem]')].find(e=>e.textContent.includes('Detergente')).click());await wait(A,200);
+  ok(await has(A,'.meterbig .botv')&&await has(A,'.meterbig pattern'),'el producto de limpieza tiene su envase deslizable con textura de polvo');
+  await A.evaluate(()=>{const el=document.querySelector('.meterbig .botv'),r=el.getBoundingClientRect(),y=r.top+r.height*.97-(r.height*.73)*.6,o={bubbles:true,clientX:r.left+r.width/2,clientY:y,pointerId:1};el.dispatchEvent(new PointerEvent('pointerdown',o));document.dispatchEvent(new PointerEvent('pointerup',o))});await wait(A,900);
+  ok(Object.values(store.docs).some(d=>d.name==='Detergente en polvo'&&d.level===60&&d.cont==='polvo'),'deslizar guarda el nivel del detergente (60%)');
+  await A.selectOption('#f-cont','botella');await wait(A,700);
+  ok(Object.values(store.docs).some(d=>d.name==='Detergente en polvo'&&d.cont==='botella'),'se puede cambiar el envase de un producto de limpieza');
   await act(A,'[data-act=closeSheet]');
   ok(A.errs.length===0&&B.errs.length===0,'sin errores de JavaScript en ninguna de las dos sesiones');
   console.log(`\n${pass} pasaron, ${fail} fallaron`);

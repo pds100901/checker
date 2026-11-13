@@ -73,6 +73,9 @@ s=rep(s,'${unitSel(it.unit)}<div id="sl-box"></div>','${unitSel(it.unit)}<div id
 s=rep(s,'${unitSel()}<div id="sl-box"></div>','${unitSel()}<div id="sl-box"></div>${meterUI(null)}')
 s=rep(s,"it.unit=v('f-unit')?v('f-unit').value:(it.unit||'unid.')}","it.unit=v('f-unit')?v('f-unit').value:(it.unit||'unid.');if(v('f-meter')){it.meter=v('f-meter').value==='1';it.cont=v('f-cont').value}}")
 s=rep(s,"  if(clean){const c=it.level<=20?'low':it.level<=50?'mid':'';extra=`<div class=\"lvl ${c}\"><i style=\"width:${it.level}%\"></i></div>`}\n  else{","  if(clean||(it.meter&&!gone)){const c=it.level<=20?'low':it.level<=50?'mid':'';extra=`<div class=\"lvl ${c}\"><i style=\"width:${it.level}%\"></i></div>`}\n  if(!clean){")
+s=rep(s,'<input id="f-level" type="range" min="0" max="100" step="5" value="${it.level}">`','<input id="f-level" type="range" min="0" max="100" step="5" value="${it.level}">${cleanMeterUI(it)}`')
+s=rep(s,'${clean?\'\':`<div class="row"><div><label>Cantidad</label>','${clean?cleanMeterUI(null):`<div class="row"><div><label>Cantidad</label>')
+s=rep(s,"if(clean){it.level=v('f-level')?+v('f-level').value:100}","if(clean){it.level=v('f-level')?+v('f-level').value:100;if(v('f-cont'))it.cont=v('f-cont').value}")
 # --- voseo
 for a,b in [('Arrastra ','Arrastrá '),('Toca para planear','Tocá para planear'),('Ponle un nombre','Ponele un nombre'),('Escribe ','Escribí '),('Tienes ','Tenés '),('No tienes','No tenés'),('ya lo tienes','ya lo tenés'),
             ('Pon la nueva','Poné la nueva'),('puedes','podés'),('Agrégala','Agregala'),('agrégalos aquí','agregalos aquí'),('Qué quieres recordar','Qué querés recordar'),('Toca un producto','Tocá un producto'),
