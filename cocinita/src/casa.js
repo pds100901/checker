@@ -59,10 +59,10 @@ function renderNav(){
   const sv=svcAll();
   const warn={sala:!sv.luz.on||!sv.net.on,cocina:false,bano:!sv.agua.on,jardin:false};
   const col={sala:'--peach',cocina:'--rose',bano:'--sky',jardin:'--mint'};
-  $('#nav').innerHTML=Object.keys(ROOMS).map(k=>`<button class="${tab===k?'on':''}" data-act="tab" data-tab="${k}"><span style="--c:var(${col[k]})">${ic(ROOMS[k].ic)}${warn[k]?'<em>!</em>':''}</span>${ROOMS[k].n}</button>`).join('');
+  $('#nav').innerHTML=`<button class="${tab==='casa'?'on':''}" data-act="tab" data-tab="casa"><span style="--c:var(--butter)">${ic('🏡')}</span>Casa</button>`+Object.keys(ROOMS).map(k=>`<button class="${tab===k?'on':''}" data-act="tab" data-tab="${k}"><span style="--c:var(${col[k]})">${ic(ROOMS[k].ic)}${warn[k]?'<em>!</em>':''}</span>${ROOMS[k].n}</button>`).join('');
 }
-function backBar(){return `<button class="backbar" data-act="tab" data-tab="${lastRoom}">‹ Volver a la ${ROOMS[lastRoom].n.toLowerCase()==='jardín'?'casa':'casa'}</button>`}
-let lastRoom='cocina';
+function backBar(){return `<button class="backbar" data-act="tab" data-tab="${lastRoom}">‹ Volver a la casa</button>`}
+let lastRoom='casa';
 
 /* ---------- escena: contenedor común con perros, oscuridad y mensajes ---------- */
 function svcNotes(room,sv){
@@ -245,15 +245,16 @@ function dogSVG(k){return `<span class="dogslot" data-k="${k}"></span>`}
 function render(){
   dailyReset();ALERTS=computeAlerts();
   if(tab==='perros')tab='jardin';if(tab==='limpieza')tab='bano';
-  if(ROOMS[tab])lastRoom=tab;
+  if(ROOMS[tab]||tab==='casa')lastRoom=tab;
   const sv=svcAll();
-  const V={sala:vSala,cocina:vCocina,bano:vBano,jardin:vJardin,menu:vMenu,super:vSuper,avisos:vAvisos};
+  const V={casa:vIso,sala:vSala,cocina:vCocina,bano:vBano,jardin:vJardin,menu:vMenu,super:vSuper,avisos:vAvisos};
+  if(tab!=='casa')isoPanel=null;
   const y=scrollY,app=$('#app');
   app.className=(sv.luz.on?'':'no-luz ')+(sv.net.on?'':'no-net ')+(sv.agua.on?'':'no-agua ')+'t-'+tab;
   document.body.classList.toggle('dark-house',!sv.luz.on&&!!ROOMS[tab]);
-  app.innerHTML=(ROOMS[tab]?'':backBar()+banner(tab))+V[tab]();
+  app.innerHTML=(ROOMS[tab]||tab==='casa'?'':backBar()+banner(tab))+V[tab]();
   renderHeader();renderNav();doorAnim=false;scrollTo(0,y);
-  PETS.mount();
+  PETS.mount();isoAfterRender();
 }
 
 /* ---------- hojas: servicios ---------- */
@@ -350,6 +351,7 @@ function restoreFx(k,was){
 function casaAct(a,d,el,px,py){
   const v=id=>$('#'+id);
   switch(a){
+    case 'isoClose':ISO.closeFridge();return true;
     case 'bills':sheetBills();return true;
     case 'svc':sheetSvc(d.svc);return true;
     case 'tap':{const s=svcState('agua');if(!s.on){toast('No sale agua en la casita: hay un recibo de agua vencido 🚰');sheetSvc('agua')}else{const r=el.closest('.room');r.classList.add('run-tap');clearTimeout(r._tp);r._tp=setTimeout(()=>r.classList.remove('run-tap'),2400);if(!s.has)setTimeout(()=>sheetSvc('agua'),700);else if(s.next)toast(`Agua al día · próximo recibo vence ${inDays(s.d)}`);else toast('El agua corre bien 💧')}}return true;
@@ -388,7 +390,7 @@ function casaAct(a,d,el,px,py){
       let t=d.id?S.tuppers.find(x=>x.id===d.id):null;const at=new Date().toISOString();
       if(t){const used=t.total-t.left;t.name=name;t.prep=prep;t.safe=safe;t.total=Math.max(total,1);t.left=Math.max(0,t.total-used);t.place=v('t-place').value;t.log.push({a:'Editado',at})}
       else S.tuppers.push({id:uid(),name,prep,safe,total,left:total,place:v('t-place').value,status:'activo',log:[{a:`Guardado con ${total} porci${total===1?'ón':'ones'}`,at}]});
-      save();closeSheet();tab='cocina';furn='fridge';render();toast('Tupper guardado en la refri 🥡');
+      save();closeSheet();if(tab!=='casa')tab='cocina';furn='fridge';render();toast('Tupper guardado en la refri 🥡');
     }return true;
     case 'tupEat':{const t=S.tuppers.find(x=>x.id===d.id);if(!t||t.left<=0)return true;t.left--;t.log.push({a:'Se comió 1 porción',at:new Date().toISOString()});
       if(t.left===0){t.status='terminado';t.log.push({a:'Se terminó',at:new Date().toISOString()})}award(1,px,py);save();render();if(t.left===0){closeSheet();toast(`Se terminó el tupper de ${t.name}`)}else sheetTupper(t.id)}return true;

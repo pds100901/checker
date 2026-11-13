@@ -73,8 +73,11 @@ for a,b in [('Arrastra ','Arrastrá '),('Toca para planear','Tocá para planear'
     s=s.replace(a,b)
 
 # --- módulos y arranque
-s=rep(s,'/* ---------- inicio ---------- */\nrender();','/* ---------- casa ---------- */\n'+rd('casa.js')+'\n'+rd('pets.js')+'\n/* ---------- inicio ---------- */\nrender();initSync();window.PETS_TEST=PETS;\nsetInterval(()=>{if(!document.hidden&&!$("#sheet").classList.contains("on")&&!drag)render()},60000);')
+s=rep(s,'/* ---------- inicio ---------- */\nrender();','/* ---------- casa ---------- */\n'+rd('casa.js')+'\n'+rd('pets.js')+'\n'+rd('iso_art.js')+'\n'+rd('iso_engine.js')+'\n'+rd('iso_app.js')+'\n/* ---------- inicio ---------- */\nrender();initSync();window.PETS_TEST=PETS;window.ISO_TEST=ISO;\nsetInterval(()=>{if(!document.hidden&&!$("#sheet").classList.contains("on")&&!drag)render()},60000);')
 s=rep(s,"toast('¡Bienvenida! Arrastrá los productos y toca a los perritos 🐾')","toast('¡Bienvenida a tu casita! Tocá los objetos para usarlos 🐾')")
-s=rep(s,'</style>',rd('casa.css')+'\n</style>')
+s=rep(s,'</style>',rd('casa.css')+rd('iso.css')+'\n</style>')
+s=rep(s,'<script>\n(()=>{','<script src="pixi.min.js"></script>\n<script>\n(()=>{')
+s=rep(s,"let tab='sala',furn='fridge'","let tab='casa',furn='fridge'")
+s=rep(s,"if(!clean){furn=place;tab='cocina'}","if(!clean){furn=place;if(tab!=='casa')tab='cocina'}")
 open(os.path.join(here,'..','index.html'),'w',encoding='utf-8').write(s)
 print('ok',len(s))

@@ -3,7 +3,7 @@ const {chromium}=require('playwright');const {start,store,MOCK}=require('./testl
 let pass=0,fail=0;const ok=(c,n)=>{c?pass++:fail++;console.log((c?'PASS ':'FAIL ')+n)};
 const iso=n=>{const d=new Date();d.setDate(d.getDate()+n);return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')};
 (async()=>{
-  const srv=await start(8770);const b=await chromium.launch();
+  const srv=await start(8770);const b=await chromium.launch({args:['--use-gl=swiftshader','--enable-unsafe-swiftshader','--ignore-gpu-blocklist']});
   const dev=async()=>{const c=await b.newContext({viewport:{width:390,height:800},isMobile:true,hasTouch:true});await c.addInitScript(MOCK);const p=await c.newPage();p.errs=[];p.on('pageerror',e=>{p.errs.push(e.message);console.log('ERR',e.message)});await p.goto('http://localhost:8770/');await p.waitForTimeout(900);return p};
   const act=(p,sel)=>p.evaluate(s=>{const e=document.querySelector(s);if(!e)throw new Error('no '+s);e.dispatchEvent(new MouseEvent('click',{bubbles:true,clientX:100,clientY:100}))},sel);
   const txt=(p,sel)=>p.evaluate(s=>{const e=document.querySelector(s);return e?e.textContent:''},sel);
@@ -137,6 +137,21 @@ const iso=n=>{const d=new Date();d.setDate(d.getDate()+n);return d.getFullYear()
   ok(px>800,'el perro se dibuja en la escena ('+px+' px)');
   const mv=await A.evaluate(async()=>{const D=PETS_TEST.D;D.rosco.room='sala';D.rosco.st='walk';D.rosco.tx=330;D.rosco.x=60;D.rosco.dir=1;D.rosco.goRoom=null;const c=document.querySelector('canvas.pets');const snap=()=>c.toDataURL().length;const a=snap();await new Promise(r=>setTimeout(r,300));return[a,snap(),D.rosco.x]});
   ok(mv[0]!==mv[1]&&mv[2]>62,'se mueven cuadro a cuadro (Rosco avanzó a x='+Math.round(mv[2])+')');
+  console.log('\n— Fase 5: casa 2.5D (prueba) —');
+  await tab(A,'casa');await wait(A,4500);
+  const d0=await A.evaluate(()=>ISO_TEST.ready&&ISO_TEST._dbg());
+  ok(d0&&d0.objs>=30&&d0.view==='home','la casa isométrica carga con '+(d0&&d0.objs)+' objetos independientes');
+  await A.evaluate(()=>document.querySelector('.isoLabel').click());await wait(A,1100);
+  ok((await A.evaluate(()=>ISO_TEST.view))==='cocina','se entra a la cocina desde la vista general');
+  const fp=await A.evaluate(()=>ISO_TEST._pos('fbody'));await A.mouse.click(fp.x,fp.y);await wait(A,1500);
+  const d1=await A.evaluate(()=>ISO_TEST._dbg());
+  ok(d1.view==='fridge'&&d1.open>.95,'tocar la refri la abre (puerta '+d1.open.toFixed(2)+')');
+  ok(await has(A,'.isoPanel .fridge')&&(await txt(A,'.isoPanel')).includes('Leche'),'muestra el inventario real de la refri');
+  ok((await A.evaluate(()=>ISO_TEST._items()))>0,'los productos aparecen dibujados en los estantes');
+  await act(A,'.isoBack');await wait(A,1000);
+  ok((await A.evaluate(()=>ISO_TEST.view))==='cocina'&&!(await has(A,'.isoPanel')),'cerrar la refri regresa a la cocina');
+  await act(A,'.isoBack');await wait(A,900);
+  ok((await A.evaluate(()=>ISO_TEST.view))==='home','se regresa a la vista general');
   ok(A.errs.length===0&&B.errs.length===0,'sin errores de JavaScript en ninguna de las dos sesiones');
   console.log(`\n${pass} pasaron, ${fail} fallaron`);
   await b.close();srv.close();process.exit(fail?1:0);

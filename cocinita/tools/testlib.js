@@ -16,7 +16,7 @@ function start(port){
       }
       const f=path.join(ROOT,u.pathname==='/'?'index.html':decodeURIComponent(u.pathname));
       if(!f.startsWith(ROOT)||!fs.existsSync(f)){rsp.writeHead(404);return rsp.end()}
-      const ext=path.extname(f);rsp.writeHead(200,{'content-type':ext==='.png'?'image/png':'text/html; charset=utf-8'});fs.createReadStream(f).pipe(rsp);
+      const ext=path.extname(f);rsp.writeHead(200,{'content-type':ext==='.png'?'image/png':ext==='.js'?'text/javascript':'text/html; charset=utf-8'});fs.createReadStream(f).pipe(rsp);
     }).listen(port,()=>res(srv));
   });
 }
