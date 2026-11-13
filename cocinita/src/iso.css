@@ -93,3 +93,6 @@
 .meterbig{display:flex;gap:14px;align-items:center;margin-top:12px;background:var(--pantry-in);border:3px solid var(--out);border-radius:20px;padding:10px 14px}
 .meterbig .botv{margin:0;flex:none}.meterbig small{display:block;color:var(--muted);font-size:12px;line-height:1.3;margin-top:4px}
 .meterbig .botpct{font-size:24px}
+
+.botv.h{width:156px;height:109px;cursor:ew-resize}
+.meterbig.wide{flex-direction:column;align-items:stretch;text-align:center}.meterbig.wide .botv{margin:0 auto}

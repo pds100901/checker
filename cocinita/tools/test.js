@@ -204,6 +204,12 @@ const iso=n=>{const d=new Date();d.setDate(d.getDate()+n);return d.getFullYear()
   await drag(-.05);
   ok(Object.values(store.docs).some(d=>d.name==='Aceite'&&d.level===100&&d.qty===1),'al vaciarse el envase abierto pasa al siguiente (queda 1 lleno)');
   await act(A,'[data-act=closeSheet]');
+  await act(A,'[data-act=newItem]');await A.fill('#f-name','Queso');await wait(A,100);
+  ok((await A.inputValue('#f-cont'))==='pieza','"Queso" se propone como pieza');
+  await act(A,'[data-act=saveNew]');await wait(A,300);await A.evaluate(()=>[...document.querySelectorAll('.item[data-act=openItem]')].find(e=>e.textContent.includes('Queso')).click());await wait(A,200);
+  await A.evaluate(()=>{const el=document.querySelector('.meterbig .botv.h'),r=el.getBoundingClientRect(),o={bubbles:true,clientX:r.left+r.width*(8/126)+r.width*(110/126)*.3,clientY:r.top+r.height/2,pointerId:1};el.dispatchEvent(new PointerEvent('pointerdown',o));document.dispatchEvent(new PointerEvent('pointerup',o))});await wait(A,900);
+  ok(Object.values(store.docs).some(d=>d.name==='Queso'&&d.level===30),'deslizar de lado guarda cuánto queso queda (30%)');
+  await act(A,'[data-act=closeSheet]');
   ok(A.errs.length===0&&B.errs.length===0,'sin errores de JavaScript en ninguna de las dos sesiones');
   console.log(`\n${pass} pasaron, ${fail} fallaron`);
   await b.close();srv.close();process.exit(fail?1:0);

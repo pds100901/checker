@@ -1,0 +1,10 @@
+const {chromium}=require('playwright');const {start,MOCK}=require('./testlib');
+(async()=>{const srv=await start(8798);const b=await chromium.launch();const c=await b.newContext({viewport:{width:390,height:800},deviceScaleFactor:2});await c.addInitScript(MOCK);const p=await c.newPage();p.on('pageerror',e=>console.log('ERR',e.message));
+await p.goto('http://localhost:8798/');await p.waitForTimeout(700);
+const act=s=>p.evaluate(s=>document.querySelector(s).dispatchEvent(new MouseEvent('click',{bubbles:true})),s);
+await act('nav [data-tab=cocina]');await act('[data-act=newItem]');await p.fill('#f-name','Queso');await act('[data-act=saveNew]');await p.waitForTimeout(200);
+await p.evaluate(()=>[...document.querySelectorAll('.item[data-act=openItem]')].find(e=>e.textContent.includes('Queso')).click());await p.waitForTimeout(200);
+await p.evaluate(()=>{const el=document.querySelector('.meterbig .botv.h'),r=el.getBoundingClientRect(),o={bubbles:true,clientX:r.left+r.width*(8/126)+r.width*(110/126)*.6,clientY:r.top+r.height/2,pointerId:1};el.dispatchEvent(new PointerEvent('pointerdown',o));document.dispatchEvent(new PointerEvent('pointerup',o))});await p.waitForTimeout(700);
+await p.evaluate(()=>{document.querySelector('#toast').style.display='none';document.querySelector('.meterbig').scrollIntoView({block:'center'})});await p.waitForTimeout(200);
+const r=await p.evaluate(()=>{const e=document.querySelector('.meterbig').getBoundingClientRect();return{x:e.left-6,y:e.top-90,width:e.width+12,height:e.height+100}});
+await p.screenshot({path:process.argv[2],clip:r});await b.close();srv.close()})();
