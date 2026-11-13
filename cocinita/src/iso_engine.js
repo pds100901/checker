@@ -54,7 +54,10 @@ const ISO=(()=>{
       .forEach((c,i)=>{add('dirt'+i,a.stain(c[1],c[2],c[3]),-685+i*.01,c[0],'dirt');L[L.length-1].grp='dirt';L[L.length-1].n=i});
     add('vine1',a.vine(-.2,.2,H,0,.62,5),-750);add('vine2',a.vine(.5,-.2,H,.62,0,4),-749);add('vine3',a.vine(-.2,8.6,H,0,.6,4),-748);add('vine4',a.vine(9.2,-.2,H,.6,0,4),-747);
     add('stool1',a.stool(2.0,3.3),2.0+3.3+.3,'cocina');add('stool2',a.stool(1.1,4.5,'#FFD979'),1.1+4.5+.3,'cocina');
-    add('jars',a.jars(4.75,.4,1.5),3.35+1.9+FY+1.1+.02,'cocina');
+    add('ftop',a.fridgeTop(FX,FY,3.25),FX+1.45+FY+1.15-.28,'cocina','fridge');
+    add('toaster',a.toaster(3.42,.2,1.5),3.35+1.9+FY+1.1+.012,'cocina');
+    add('dishes',a.dishes(4.05,.72,1.5),3.35+1.9+FY+1.1+.03,'cocina');
+    add('jars',a.jars(4.55,.22,1.5),3.35+1.9+FY+1.1+.02,'cocina');
     add('khang',a.hang(wX1,.56,.74,.645),3.35+1.9+FY+1.1+.015,'cocina');
     add('kframe',a.frame(wY1,.9,.6),-799,'cocina');
     add('kroses',a.roses(.75,5.3,0,'#F7B3A9'),.75+5.3+.3,'cocina');
@@ -93,7 +96,7 @@ const ISO=(()=>{
     fridge={door,frames:dt,itemsC,open:0,target:0,glow:objs.fglow.s,texCache:{}};
     /* marcadores de objetos tocables */
     const pinT=await svgTex(AR.A.pin().svg(K)),heartT=await svgTex(AR.A.heart().svg(K));
-    [['fbody',FX+.7,FY+.6,3.55],['pantry',1,.6,3.75],['washer',.6,7.2,1.85],['mailbox',8.3,7.8,2.0],['vanity',7.7,.5,2.0]].forEach(p=>{const s=new PIXI.Sprite(pinT);s.anchor.set(.5,1);s.scale.set(.5/K*1.6);const q=pr(p[1],p[2],p[3]);s.position.set(q[0],q[1]);s._y=q[1];s.zIndex=900;s.eventMode='none';s._for=p[0];world.addChild(s);pins.push(s)});
+    [['fbody',FX+.7,FY+.6,4.15],['pantry',1,.6,3.75],['washer',.6,7.2,1.85],['mailbox',8.3,7.8,2.0],['vanity',7.7,.5,2.0]].forEach(p=>{const s=new PIXI.Sprite(pinT);s.anchor.set(.5,1);s.scale.set(.5/K*1.6);const q=pr(p[1],p[2],p[3]);s.position.set(q[0],q[1]);s._y=q[1];s.zIndex=900;s.eventMode='none';s._for=p[0];world.addChild(s);pins.push(s)});
     /* Rosco y Mali: ilustraciones originales sobre una malla que respira y mueve la cola */
     const DG={mali:{x:3.9,y:3.9,room:'cocina',tail:{x0:0,x1:46,base:246,top:158},sc:.36},rosco:{x:2.9,y:8.5,room:'lavanderia',tail:{x0:0,x1:42,base:306,top:212},sc:.36}};
     for(const k of Object.keys(DG)){

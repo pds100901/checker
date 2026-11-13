@@ -176,8 +176,7 @@ const iso=n=>{const d=new Date();d.setDate(d.getDate()+n);return d.getFullYear()
   console.log('\n— Fase 8: gabinete del baño y estado de la casa —');
   await tab(A,'bano');await act(A,'[data-act=bath]');await act(A,'[data-act=bathAdd][data-n=Shampoo]');await wait(A,150);
   ok(await has(A,'.botv'),'el shampoo aparece como botella');
-  const bb=await A.evaluate(()=>{const r=document.querySelector('.botv').getBoundingClientRect();return{x:r.left+r.width/2,y:r.top+r.height*.24+(r.height*.73)*.8}});
-  await A.touchscreen.tap(bb.x,bb.y);await wait(A,800);
+  await wait(A,400);await A.evaluate(()=>{const el=document.querySelector('.botv'),r=el.getBoundingClientRect(),y=r.top+r.height*.97-(r.height*.73)*.2,o={bubbles:true,clientX:r.left+r.width/2,clientY:y,pointerId:1};el.dispatchEvent(new PointerEvent('pointerdown',o));document.dispatchEvent(new PointerEvent('pointerup',o))});await wait(A,800);
   ok(Object.values(store.docs).some(d=>d.name==='Shampoo'&&d.level>=10&&d.level<=25),'marcar en la botella guarda el nivel');
   await act(A,'[data-act=bathAdd][data-n="Papel higiénico"]');await wait(A,100);await act(A,'[data-act=rollStep][data-d="1"]');await act(A,'[data-act=rollStep][data-d="1"]');await act(A,'[data-act=rollStep][data-d="1"]');await wait(A,800);
   ok((await txt(A,'.rolln'))==='3'&&Object.values(store.docs).some(d=>d.name==='Papel higiénico'&&d.qty===3),'el papel se cuenta por rollos (3)');

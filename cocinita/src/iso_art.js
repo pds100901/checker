@@ -35,7 +35,7 @@ const ISO_ART=(()=>{
         if(nx+ny>0.02){const lr=(a[0]-a[1])<(b[0]-b[1]);sides.push({p0:lr?a:b,p1:lr?b:a,nx,ny,dep:mx+my})}}
       sides.sort((s,t)=>s.dep-t.dep);
       const out={sides:[],top:{o:[foot[0][0],foot[0][1],z1],a:[foot[1][0]-foot[0][0],foot[1][1]-foot[0][1],0],b:[foot[3][0]-foot[0][0],foot[3][1]-foot[0][1],0]}};
-      const rad=o.r==null?9:o.r;let hull=null;
+      const rad=o.r==null?13:o.r;let hull=null;
       if(rad>0){const P=[];foot.forEach(p=>{P.push(pr(p[0],p[1],z0));P.push(pr(p[0],p[1],z1))});hull=this._hull(P);
         const id='c'+(this.n=(this.n||0)+1);this.s.push(`<clipPath id="${id}"><path d="${this._round(hull,rad)}"/></clipPath><g clip-path="url(#${id})">`)}
       const isw=rad>0?1.5:o.sw,ist=rad>0?shade(col,-.3):o.stroke;
@@ -43,8 +43,10 @@ const ISO_ART=(()=>{
         const S={o:[s.p0[0],s.p0[1],z0],a:[s.p1[0]-s.p0[0],s.p1[1]-s.p0[1],0],b:[0,0,z1-z0],nx:s.nx,ny:s.ny};
         this.rect(S,0,0,1,1,o.side||c,{lit:o.lit===false?null:'lv',sw:isw,stroke:ist});out.sides.push(S)});
       if(!o.notop)this.poly(foot.map(p=>[p[0],p[1],z1]),o.top||shade(col,.16),{sw:isw,stroke:ist,lit:o.lit===false?null:'lt'});
-      if(rad>0){this.s.push('</g>');this.s.push(`<path d="${this._round(hull,rad)}" fill="none" stroke="${o.stroke||INKC}" stroke-width="${o.sw||2.6}" stroke-linejoin="round"/>`)}
+      if(rad>0){this.s.push('</g>');this.s.push(`<path d="${this._round(hull,rad)}" fill="none" stroke="${o.stroke||INKC}" stroke-width="${o.sw||3}" stroke-linejoin="round"/>`)}
       return out}
+    clipBegin(P3,r){const hull=this._hull(P3.map(p=>pr(p[0],p[1],p[2]))),id='c'+(this.n=(this.n||0)+1);this.s.push(`<clipPath id="${id}"><path d="${this._round(hull,r)}"/></clipPath><g clip-path="url(#${id})">`);return hull}
+    clipEnd(hull,r){this.s.push('</g>');this.s.push(`<path d="${this._round(hull,r)}" fill="none" stroke="${INKC}" stroke-width="3" stroke-linejoin="round"/>`)}
     _hull(P){const p=P.slice().sort((a,b)=>a[0]-b[0]||a[1]-b[1]),cr=(o,a,b)=>(a[0]-o[0])*(b[1]-o[1])-(a[1]-o[1])*(b[0]-o[0]),lo=[],up=[];
       p.forEach(q=>{while(lo.length>1&&cr(lo[lo.length-2],lo[lo.length-1],q)<=0)lo.pop();lo.push(q)});
       p.slice().reverse().forEach(q=>{while(up.length>1&&cr(up[up.length-2],up[up.length-1],q)<=0)up.pop();up.push(q)});
@@ -157,29 +159,31 @@ const ISO_ART=(()=>{
   const FR={w:1.45,d:1.15,h:3.25,fz:2.4};
   A_.fridgeBody=(x,y)=>()=>{const g=new G(),w=FR.w,d=FR.d,h=FR.h;g.shadow(x,y,w,d,.24);
     g.box(x+.08,y+.1,0,w-.16,d-.2,.1,'#C9B58F',{sw:1.6});
+    const HUL=g.clipBegin([[x,y,0.03*h],[x+w,y,.03*h],[x+w,y+d,.03*h],[x,y+d,.03*h],[x,y,h],[x+w,y,h],[x+w,y+d,h],[x,y+d,h]],20),FC='#F7C6BF';
     const back={o:[x+.08,y+.12,.16],a:[w-.16,0,0],b:[0,0,FR.fz-.22]},side={o:[x+.08,y+d,.16],a:[0,-(d-.12),0],b:[0,0,FR.fz-.22]};
     g.rect(back,0,0,1,1,'url(#cold)',{sw:1.6});g.rect(side,0,0,1,1,'#E3F0F4',{sw:1.6});
     g.poly([[x+.08,y+.12,.16],[x+w-.08,y+.12,.16],[x+w-.08,y+d,.16],[x+.08,y+d,.16]],'#EEF6F8',{sw:1.6});
     [.86,1.56].forEach(z=>{g.poly([[x+.08,y+.14,z],[x+w-.08,y+.14,z],[x+w-.08,y+d-.06,z],[x+.08,y+d-.06,z]],'#FFFFFF',{sw:1.4,op:.92});g.poly([[x+.08,y+d-.06,z],[x+w-.08,y+d-.06,z],[x+w-.08,y+d-.06,z-.05],[x+.08,y+d-.06,z-.05]],'#CFE3EA',{sw:1.4})});
     g.poly([[x+.12,y+d-.08,.2],[x+w-.12,y+d-.08,.2],[x+w-.12,y+d-.08,.62],[x+.12,y+d-.08,.62]],'#FFFFFF',{sw:1.6,op:.55});
     /* marco: caras exteriores */
-    const R={o:[x+w,y+d,0],a:[0,-d,0],b:[0,0,h]};g.rect(R,0,.03,1,1,shade('#FFF3D9',-.15),{lit:'lv'});
-    g.poly([[x,y,h],[x+w,y,h],[x+w,y+d,h],[x,y+d,h]],shade('#FFF3D9',.2),{lit:'lt'});
+    const R={o:[x+w,y+d,0],a:[0,-d,0],b:[0,0,h]};g.rect(R,0,.03,1,1,shade(FC,-.13),{lit:'lv',sw:1.6});
+    g.poly([[x,y,h],[x+w,y,h],[x+w,y+d,h],[x,y+d,h]],shade(FC,.18),{lit:'lt',sw:1.6});
     const Fr={o:[x,y+d,0],a:[w,0,0],b:[0,0,h]};
-    g.pts(Fr,[[0,.03],[1,.03],[1,1],[0,1],[0,.03],[.055,.05],[.055,FR.fz/h-.012],[.945,FR.fz/h-.012],[.945,.05],[.055,.05]],'#FFF3D9',{stroke:'none'});
-    g.rect(Fr,0,.03,1,1,'none',{open:false});g.rect(Fr,.055,.05,.945,FR.fz/h-.012,'none',{open:false,sw:1.8});
+    g.pts(Fr,[[0,.03],[1,.03],[1,1],[0,1],[0,.03],[.055,.05],[.055,FR.fz/h-.012],[.945,FR.fz/h-.012],[.945,.05],[.055,.05]],FC,{stroke:'none'});
+    g.rect(Fr,0,.03,1,1,'none',{open:false,sw:1.6});g.rect(Fr,.055,.05,.945,FR.fz/h-.012,'none',{open:false,sw:1.8});
     /* puerta del congelador (cerrada) */
-    g.rect(Fr,.02,FR.fz/h+.008,.98,.985,'#FFF6E2',{sw:2.2,lit:'lv'});g.rect(Fr,.82,FR.fz/h+.05,.88,.94,'#D5DCE2',{sw:1.6});g.berry(Fr,.3,(FR.fz/h+1)/2,.1,.05);
+    g.rect(Fr,.02,FR.fz/h+.008,.98,.985,shade(FC,.1),{sw:2.2,lit:'lv'});g.rect(Fr,.66,FR.fz/h+.05,.9,FR.fz/h+.085,'#F2C45A',{sw:1.6});g.berry(Fr,.3,(FR.fz/h+1)/2,.1,.05);
+    g.clipEnd(HUL,20);
     return g};
   A_.fridgeGlow=(x,y)=>()=>{const g=new G();g.disc({o:[x-.3,y+FR.d,-.1],a:[FR.w+.6,0,0],b:[0,0,FR.fz+.5]},.5,.5,.5,.5,'url(#warm)',{stroke:'none'});return g};
   A_.fridgeDoor=(x,y,ang)=>()=>{const g=new G(),w=FR.w,d=FR.d,t=.13,a=ang*Math.PI/180;
     const hx=x+.02,hy=y+d,ux=Math.cos(a),uy=Math.sin(a),nx=-uy,ny=ux;          // u: a lo largo de la puerta; n: hacia afuera (cara exterior)
     const p=(s,q)=>[hx+ux*s+nx*q,hy+uy*s+ny*q];
     const foot=[p(0,0),p(w-.04,0),p(w-.04,t),p(0,t)];
-    const f=g.prism(foot,.1,FR.fz-.02,'#FFF6E2',{});
+    const f=g.prism(foot,.1,FR.fz-.02,'#FBD3CC',{r:16});
     f.sides.forEach(S=>{const dot=S.nx*nx+S.ny*ny,len=Math.hypot(S.a[0],S.a[1]);if(len<.5)return;
       const flip=(S.a[0]*ux+S.a[1]*uy)<0,U_=u=>flip?1-u:u;
-      if(dot>.5){g.rect(S,U_(.06),.05,U_(.94),.95,'none',{open:false,stroke:'#E9D2AC',sw:1.8});g.rect(S,Math.min(U_(.82),U_(.88)),.3,Math.max(U_(.82),U_(.88)),.78,'#D5DCE2',{sw:1.6});g.berry(S,U_(.42),.42,.2*(.9),.15)}
+      if(dot>.5){g.rect(S,U_(.06),.05,U_(.94),.95,'none',{open:false,stroke:'#E9D2AC',sw:1.8});g.rect(S,Math.min(U_(.64),U_(.9)),.86,Math.max(U_(.64),U_(.9)),.9,'#F2C45A',{sw:1.6});g.berry(S,U_(.42),.42,.2*(.9),.15)}
       else if(dot<-.5){g.rect(S,.05,.04,.95,.96,'#EEF6F8',{sw:1.6});[.16,.44,.72].forEach((v,i)=>{g.rect(S,.1,v,.9,v+.13,'#FFFFFF',{sw:1.5,op:.85});
         [[.22,'#F7B3A9'],[.4,'#FFD979'],[.58,'#A9C58B'],[.76,'#C8E6F0']].slice(i,i+3).forEach(j=>g.rect(S,U_(j[0])-.05,v+.03,U_(j[0])+.05,v+.2+(i%2)*.03,j[1],{sw:1.4}))})}});
     return g};
@@ -259,6 +263,11 @@ const ISO_ART=(()=>{
   A_.hang=(S,u0,u1,v)=>()=>{const g=new G();for(let i=0;i<5;i++){const u=u0+(u1-u0)*(i+.5)/5,l=.1+((i*3)%3)*.045;g.line(S,[[u,v],[u+.004,v-l*.5],[u-.003,v-l]],'#6E9A4B',2.2);
       for(let j=0;j<4;j++)g.disc(S,u+(j%2?-.012:.012),v-l*(j+.6)/4,.012,.022,j%2?'#93B878':'#A9CB8B',{sw:1.2})}return g};
   A_.frame=(S,u,v)=>()=>{const g=new G();g.rect(S,u-.06,v-.11,u+.06,v+.11,'#FFF6E2',{sw:2.2});g.rect(S,u-.045,v-.085,u+.045,v+.085,'url(#sunset)',{sw:1.4});g.berry(S,u,v-.01,.03,.055);return g};
+  A_.fridgeTop=(x,y,z)=>()=>{const g=new G();g.cyl(x+.42,y+.6,z,z+.2,.26,'#8E7BD6',{top:'#A898E6',sw:2});
+    const b=g.box(x+.85,y+.35,z,.42,.2,.62,'#5DB1EE',{r:5});g.rect(b.L,0,0,1,.36,'#FFD36B',{sw:1.4});g.disc(b.L,.5,.66,.24,.17,'#F2A93B',{sw:1.4});return g};
+  A_.toaster=(x,y,z)=>()=>{const g=new G();const b=g.box(x,y,z,.5,.3,.3,'#FFD36B',{r:11});g.rect(b.T,.12,.25,.88,.45,'#8A5A3A',{sw:1.3});g.rect(b.T,.12,.58,.88,.78,'#8A5A3A',{sw:1.3});
+    g.rect(b.L,.78,.3,.9,.72,'#FFF6E2',{sw:1.3});g.poly([[x+.1,y+.11,z+.3],[x+.1,y+.11,z+.42],[x+.4,y+.11,z+.42],[x+.4,y+.11,z+.3]],'#E9B46A',{sw:1.5});return g};
+  A_.dishes=(x,y,z)=>()=>{const g=new G();g.box(x,y,z,.62,.34,.06,C.wood,{r:4,sw:2});[0,.14,.28,.42].forEach(o=>g.disc({o:[x+.08+o,y+.3,z+.05],a:[0,-.26,0],b:[0,0,.34]},.5,.5,.5,.5,'#FFFDF6',{sw:1.7}));return g};
   A_.shaft=(y0,y1,z0,z1,len)=>()=>{const g=new G();g.poly([[0,y1,z0],[0,y0,z0],[0,y0,z1],[0,y1,z1]],'#FFF4C8',{stroke:'none',op:0});
     g.poly([[0,y0,z1],[0,y1,z1],[len,y1+len*.35,0],[len+.2,y0+len*.35,0]],'#FFF1B8',{stroke:'none',op:.5,filter:'soft'});
     g.poly([[.3,y0+.4,0],[.3,y1+.4,0],[len,y1+len*.35+.3,0],[len,y0+len*.35+.3,0]],'#FFF6D8',{stroke:'none',op:.55,filter:'soft'});return g};

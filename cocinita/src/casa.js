@@ -198,7 +198,16 @@ function furnitureHTML(place){
     const S_=i=>shelfHTML(place,i),sv=svcState('luz');
     const note=sv.out?`<div class="frnote r">⚠️ Corte real de luz desde el ${dLong(sv.out.start)}. Mantené la refri cerrada el mayor tiempo posible y revisá cada alimento antes de consumirlo; no des por hecho que se dañó ni que sigue bien.</div>`
       :sv.cut?`<div class="frnote">⚠️ La refri de tu casita está sin energía (simulación). Tus alimentos reales no se ven afectados por esto.</div>`:'';
-    return `${note}<div class="scene"><div class="fridge${sv.on?'':' off'}"><div class="fr-in">${S_(0)}${S_(1)}${tupShelf()}${S_(2)}${S_(3)}</div><div class="fr-door">${S_(4)}</div></div>${door}</div>`;
+    const inS=i=>S.items.filter(x=>x.place==='fridge'&&x.shelf===i),d4=inS(4),c3=inS(3);
+    const rack=it=>`<div class="drack">${it?itemHTML(it):''}</div>`;
+    const fdoor=(side,its)=>{const a=its.slice();while(a.length<2)a.push(null);return `<div class="fdoor ${side}" data-drop="shelf" data-place="fridge" data-shelf="4">${side==='l'?'<span class="s-label">Puerta</span>':''}${a.map(rack).join('')}</div>`};
+    const drawer=its=>`<div class="drawer" data-drop="shelf" data-place="fridge" data-shelf="3">${its.map(itemHTML).join('')}</div>`;
+    return `${note}<div class="scene"><div class="fridge fr2${sv.on?'':' off'}">
+      <div class="fr2top"><i class="tin"></i><i class="box"></i></div>
+      <div class="fr2row">${fdoor('l',d4.filter((_,i)=>i%2===0))}
+        <div class="fr2cav">${S_(1)}${tupShelf()}${S_(2)}<div class="crisp"><span class="s-label">Cajones de verduras</span>${drawer(c3.filter((_,i)=>i%2===0))}${drawer(c3.filter((_,i)=>i%2===1))}</div></div>
+        ${fdoor('r',d4.filter((_,i)=>i%2===1))}</div>
+      <div class="fzr">${S_(0)}<div class="fzfront"><i></i></div></div></div>${door}</div>`;
   }
   if(place==='spice')return `<div class="scene"><div class="rack">${sh}</div>${door}</div>`;
   if(place==='pantry')return `<div class="scene"><div class="pantry"><div class="valance"></div>${sh}</div>${door}</div>`;
