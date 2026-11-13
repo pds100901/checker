@@ -36,7 +36,7 @@ const ISO=(()=>{
     add('kshelf',a.shelfWall(wX1,.56,.74,.66,[[.15,.3,'#F7B3A9',.11],[.42,.24,'#FFD979',.1,'#8E6BC0'],[.68,.34,'#CDE8D8',.11,'#7FA050'],[.9,.22,'#FFF6E2',.09]]),3.35+1.9+FY+1.1+.01,'cocina');
     add('table',a.table(.3,2.7),.3+1.3+2.7+1.3,'cocina');
     add('fbody',a.fridgeBody(FX,FY),FX+1.45+FY+1.15-.3,'cocina','fridge','Refri');
-    add('vanity',a.vanity(6.95,FY),6.95+1.5+FY+.95,'bano','sink');
+    add('vanity',a.vanity(6.95,FY),6.95+1.5+FY+.95,'bano','vanity','Gabinete');
     add('mirror',a.mirror(wX2,.27,.66),6.95+1.5+FY+.95+.01,'bano');
     add('tub',a.tub(8.55,.1),8.55+2.3+.1+1.15,'bano','tub');
     add('mat',a.mat(8.9,1.7),-690,'bano');
@@ -45,7 +45,13 @@ const ISO=(()=>{
     add('dryer',a.washer(.05,8,'#FFD8D3'),.05+1.1+8+1.3,'lavanderia','laundry');
     add('lshelf',a.shelfWall(wY2,.42,.92,.66,[[.12,.36,'#8EB8D0',.12],[.34,.28,'#F6B5AE',.11,'#8E6BC0'],[.56,.38,'#FFFDF6',.12,'#4A8BB0'],[.8,.26,'#CDE8D8',.1,'#7FA050']]),.05+1.1+8+1.3+.01,'lavanderia');
     add('lrug',a.rug(2.9,8.4,1.3,1.1,'#CFE6EE','#FFFDF6'),-690,'lavanderia');
-    add('basket',a.basket(.6,9.95),.6+9.95+.5,'lavanderia','laundry');
+    for(let l=0;l<4;l++)add('basket'+l,a.basketL(.6,9.95,l),.6+9.95+.5,'lavanderia','basket');
+    add('pile',a.pile(1.7,10.0),-680,'lavanderia','basket');
+    [['cocina',2.6,4.9,'sock'],['cocina',4.9,2.7,'ball'],['cocina',1.7,1.9,'paper'],['cocina',5.5,4.7,'cup'],['cocina',3.1,2.2,'bone'],
+     ['bano',8.0,3.3,'sock'],['bano',9.9,3.0,'paper'],['bano',7.6,1.7,'cup'],['lavanderia',2.0,7.2,'sock'],['lavanderia',3.7,9.0,'paper'],['lavanderia',4.4,7.9,'ball']]
+      .forEach((c,i)=>{add('mess'+i,a.clutter(c[1],c[2],c[3]),c[1]+c[2]+.1,c[0],'mess');L[L.length-1].grp='mess:'+c[0]});
+    [['cocina',4.4,4.9,.5],['cocina',2.2,3.9,.4],['cocina',5.6,2.1,.45],['bano',8.4,3.9,.5],['bano',10,1.9,.4],['lavanderia',2.6,7.5,.45],['lavanderia',3.9,9.9,.5]]
+      .forEach((c,i)=>{add('dirt'+i,a.stain(c[1],c[2],c[3]),-685+i*.01,c[0],'dirt');L[L.length-1].grp='dirt';L[L.length-1].n=i});
     add('vine1',a.vine(-.2,.2,H,0,.62,5),-750);add('vine2',a.vine(.5,-.2,H,.62,0,4),-749);add('vine3',a.vine(-.2,8.6,H,0,.6,4),-748);add('vine4',a.vine(9.2,-.2,H,.6,0,4),-747);
     add('stool1',a.stool(2.0,3.3),2.0+3.3+.3,'cocina');add('stool2',a.stool(1.1,4.5,'#FFD979'),1.1+4.5+.3,'cocina');
     add('jars',a.jars(4.75,.4,1.5),3.35+1.9+FY+1.1+.02,'cocina');
@@ -87,7 +93,7 @@ const ISO=(()=>{
     fridge={door,frames:dt,itemsC,open:0,target:0,glow:objs.fglow.s,texCache:{}};
     /* marcadores de objetos tocables */
     const pinT=await svgTex(AR.A.pin().svg(K)),heartT=await svgTex(AR.A.heart().svg(K));
-    [['fbody',FX+.7,FY+.6,3.55],['pantry',1,.6,3.75],['washer',.6,7.2,1.85],['mailbox',8.3,7.8,2.0]].forEach(p=>{const s=new PIXI.Sprite(pinT);s.anchor.set(.5,1);s.scale.set(.5/K*1.6);const q=pr(p[1],p[2],p[3]);s.position.set(q[0],q[1]);s._y=q[1];s.zIndex=900;s.eventMode='none';s._for=p[0];world.addChild(s);pins.push(s)});
+    [['fbody',FX+.7,FY+.6,3.55],['pantry',1,.6,3.75],['washer',.6,7.2,1.85],['mailbox',8.3,7.8,2.0],['vanity',7.7,.5,2.0]].forEach(p=>{const s=new PIXI.Sprite(pinT);s.anchor.set(.5,1);s.scale.set(.5/K*1.6);const q=pr(p[1],p[2],p[3]);s.position.set(q[0],q[1]);s._y=q[1];s.zIndex=900;s.eventMode='none';s._for=p[0];world.addChild(s);pins.push(s)});
     /* Rosco y Mali: ilustraciones originales sobre una malla que respira y mueve la cola */
     const DG={mali:{x:3.9,y:3.9,room:'cocina',tail:{x0:0,x1:46,base:246,top:158},sc:.36},rosco:{x:2.9,y:8.5,room:'lavanderia',tail:{x0:0,x1:42,base:306,top:212},sc:.36}};
     for(const k of Object.keys(DG)){
@@ -147,7 +153,7 @@ const ISO=(()=>{
     bounce(d.id==='pot'||d.id==='kettle'?objs.stove.s:s);
     if(d.act==='fridge')openFridge();
     else if(d.act==='mailbox')api.onMailbox&&api.onMailbox();
-    else api.onObject&&api.onObject(d.act,d.id);
+    else api.onObject&&api.onObject(d.act,d.id,d.room);
   }
   function go(v){if(view==='fridge'&&v!=='fridge'){fridge.target=0;api.onFridge&&api.onFridge(false)}view=v;bottomPad=0;flyTo(v);syncUi()}
   function openFridge(){view='fridge';fridge.target=1;refreshItems();bottomPad=(app.renderer.height/app.renderer.resolution)*.5;flyTo('fridge',800);syncUi();api.onFridge&&api.onFridge(true)}
@@ -170,7 +176,7 @@ const ISO=(()=>{
       const i=Math.round(e*(DOOR_A.length-1)),f=fridge.frames[i];if(fridge.door.texture!==f.t){fridge.door.texture=f.t;fridge.door.position.set(f.o.x,f.o.y)}
       fridge.itemsC.alpha=Math.min(1,e*3);fridge.glow.alpha=dark?0:e*.4}
     /* marcadores */
-    pins.forEach((p,i)=>{const vis=(view==='home'&&p._for==='mailbox')||(view==='cocina'&&(p._for==='fbody'||p._for==='pantry'))||(view==='lavanderia'&&p._for==='washer');
+    pins.forEach((p,i)=>{const vis=(view==='home'&&p._for==='mailbox')||(view==='cocina'&&(p._for==='fbody'||p._for==='pantry'))||(view==='lavanderia'&&p._for==='washer')||(view==='bano'&&p._for==='vanity');
       p.alpha+=((vis?1:0)-p.alpha)*.15;p.y=p._y+Math.sin(now*2.4+i)*5});
     /* rebote al tocar */
     Object.values(objs).forEach(o=>{const s=o.s;if(s._bn>0){s._bn-=dt*2.6;const k=Math.max(0,s._bn),a=Math.sin((1-k)*Math.PI*3)*k*.045;s.scale.set((1+a)/K,(1-a)/K);s.position.set(s._b.x-s._b.w*a/2,s._b.y+s._b.h*a);if(k<=0){s.scale.set(1/K);s.position.set(s._b.x,s._b.y)}}});
@@ -189,6 +195,9 @@ const ISO=(()=>{
     /* etiquetas de habitaciones */
     labels.forEach(l=>{const q=pr(l.p[0],l.p[1],l.p[2]);l.el.style.transform=`translate(-50%,-50%) translate(${(q[0]*cam.s+cam.x).toFixed(1)}px,${(q[1]*cam.s+cam.y).toFixed(1)}px)`});
   }
+  function setHouse(){if(!ready||!api.house)return;const h=api.house();
+    for(let l=0;l<4;l++)objs['basket'+l].s.visible=l===Math.min(3,h.laundry);objs.pile.s.visible=h.laundry>=3;
+    Object.values(objs).forEach(o=>{const g=o.def.grp;if(!g)return;if(g==='dirt')o.s.visible=h.dirty>0&&o.def.n<(h.dirty>=3?7:h.dirty===2?5:3);else o.s.visible=!!h.mess[g.slice(5)]})}
   function setDark(v){if(v===dark&&setDark._done)return;dark=v;setDark._done=true;const t=v?0x7F7AAE:0xFFFFFF;
     Object.values(objs).forEach(o=>{if(o.def.id!=='shaft'&&o.def.id!=='fglow')o.s.tint=t});if(fridge)fridge.door.tint=t;Object.values(dogs).forEach(d=>{d.mesh.tint=t;d.beg.tint=t});if(shaft)shaft.visible=!v}
   /* ---------- interfaz mínima sobre el lienzo ---------- */
@@ -197,12 +206,13 @@ const ISO=(()=>{
     ui.querySelector('.isoBack').hidden=view==='home';
     ui.querySelector('.isoBack').textContent=view==='fridge'?'‹ Cerrar la refri':'‹ Ver toda la casa';
     ui.querySelector('.isoTitle').textContent=view==='home'?'Mi casita':view==='fridge'?'Refrigeradora':NAMES[view];
-    ui.querySelector('.isoHint').textContent=view==='home'?'Tocá una habitación para entrar · arrastrá para moverte · pellizcá para acercar':view==='cocina'?'Tocá la refri o la alacena':view==='fridge'?'':view==='lavanderia'?'Tocá la lavadora':'';
+    ui.querySelector('.isoHint').textContent=view==='home'?'Tocá una habitación para entrar · arrastrá para moverte · pellizcá para acercar':view==='cocina'?'Tocá la refri o la alacena':view==='fridge'?'':view==='lavanderia'?'Tocá la lavadora o la canasta de ropa':view==='bano'?'Tocá el gabinete del lavamanos':'';
     labels.forEach(l=>l.el.hidden=view!=='home');
   }
   function makeUi(){
     ui=document.createElement('div');ui.className='isoUi';
-    ui.innerHTML=`<button class="isoBack" hidden></button><div class="isoTitle"></div><div class="isoHint"></div>`;
+    ui.innerHTML=`<button class="isoBack" hidden></button><div class="isoTitle"></div><div class="isoHint"></div><button class="isoState">🧹 Estado de la casa</button>`;
+    ui.querySelector('.isoState').addEventListener('click',()=>api.onObject('house'));
     ui.querySelector('.isoBack').addEventListener('click',()=>{if(view==='fridge')closeFridge();else go('home')});
     [['cocina',[2.6,2.6,H+1.3]],['bano',[9.2,1.6,H+1.1]],['lavanderia',[1.2,8.6,H+1.1]]].forEach(r=>{const el=document.createElement('button');el.className='isoLabel';el.textContent=NAMES[r[0]];el.addEventListener('click',()=>go(r[0]));ui.appendChild(el);labels.push({el,p:r[1]})});
   }
@@ -219,10 +229,10 @@ const ISO=(()=>{
     if(app.view.parentNode!==h){h.appendChild(app.view);h.appendChild(ui)}
     app.ticker.start();resize();
     if(!mount._first){mount._first=true;cam=targetFor('home');cam.s*=.86;cam.y+=30;applyCam();flyTo('home',1100)}
-    setDark(!api.power());syncUi();if(view==='fridge')refreshItems();
+    setDark(!api.power());setHouse();syncUi();if(view==='fridge')refreshItems();
   }
   function pause(){if(app)app.ticker.stop()}
   addEventListener('resize',()=>{if(host&&host.isConnected)resize()});
   function _pos(id){const o=objs[id].s,r=app.view.getBoundingClientRect();return{x:r.left+(o._b.x+o._b.w/2)*cam.s+cam.x,y:r.top+(o._b.y+o._b.h*.6)*cam.s+cam.y}}
-  return{_items:()=>fridge?fridge.itemsC.children.length:0,_pos,mount,pause,go,closeFridge,get view(){return view},get ready(){return ready},_dbg:()=>({cam,view,open:fridge&&fridge.open,objs:Object.keys(objs).length})};
+  return{_vis:()=>({basket3:objs.basket3.s.visible,pile:objs.pile.s.visible,messCocina:objs.mess0.s.visible,messBano:objs.mess5.s.visible,dirt:objs.dirt0.s.visible}),_items:()=>fridge?fridge.itemsC.children.length:0,_pos,mount,pause,go,closeFridge,get view(){return view},get ready(){return ready},_dbg:()=>({cam,view,open:fridge&&fridge.open,objs:Object.keys(objs).length})};
 })();

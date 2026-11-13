@@ -543,6 +543,29 @@ nav button span em{position:absolute;top:-6px;right:-4px;width:17px;height:17px;
 .rcrow input,.rcrow select{padding:6px 8px;border-width:2.5px;border-radius:12px;font-size:14px;min-width:0}
 .rcrow .rc-p{grid-column:3;grid-row:2}.rcrow .rc-u{grid-column:4;grid-row:2}
 
+.slbox{display:flex;gap:10px;align-items:center;margin-top:10px;background:var(--mint);border:2.5px solid var(--out);border-radius:16px;padding:8px 10px;font-size:13.5px;line-height:1.3}
+.slbox>div{flex:1}.slbox small{display:block;color:var(--muted);font-size:11.5px;margin-top:2px}
+.rcdates{display:flex;gap:10px;align-items:center;text-align:left;width:100%;margin:8px 0;font-size:13.5px;line-height:1.3}
+.rcdates small{color:var(--muted)}
+
+/* gabinete del baño y estado de la casa */
+.bathgrid{display:flex;flex-wrap:wrap;gap:14px 10px;justify-content:center;background:var(--pantry-in);border:3px solid var(--out);border-radius:20px;padding:14px 8px}
+.bathit{width:96px;text-align:center}
+.botv{width:78px;height:140px;margin:0 auto;touch-action:none;cursor:ns-resize;border-radius:14px}
+.botv:focus-visible{outline:3px dashed var(--terra)}
+.botsvg{width:100%;height:100%;display:block;pointer-events:none}
+.botpct{display:block;font:700 17px var(--disp)}
+.bathnm{font:600 12.5px var(--disp);background:var(--paper);border:2px solid var(--out);border-radius:10px;padding:1px 8px;margin-top:3px;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.rolls{display:flex;flex-wrap:wrap;gap:1px;justify-content:center;min-height:96px;align-content:flex-end}
+.rolls span .ic{width:28px;height:28px;display:block}.rolls em{font-style:normal;color:var(--muted);font-size:12px;align-self:center}
+.bathit .step{justify-content:center;margin:6px 0 2px}.bathit .step button{width:32px;height:32px;font-size:17px;border-radius:11px}
+.rolln{font:700 19px var(--disp);min-width:26px}
+.seg{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
+.seg button{border:2.5px solid var(--out);border-radius:14px;padding:8px 2px;background:var(--paper);font:600 12.5px var(--disp);box-shadow:0 3px 0 var(--shd)}
+.seg button.on{background:var(--terra);color:#fff}
+.isoState{position:absolute;right:10px;top:50px;background:var(--paper);color:var(--ink);border:2.5px solid var(--out);border-radius:999px;padding:3px 11px;font:600 12px var(--disp);box-shadow:0 3px 0 var(--shd)}
+.isoUi[data-view=fridge] .isoState{display:none}
+
 </style>
 </head>
 <body>
@@ -621,17 +644,19 @@ function seed(){
 const KEY='casa-fresita-v2',KEY_OLD='cocinita-v1';
 const COLS=['items','shop','prep','chores','reminders','bills','tuppers','moves','outages'];
 function emptyState(){
-  return{v:2,stars:0,welcome:false,items:[],shop:[],menu:{},prep:[],chores:[],reminders:[],wasted:[],bills:[],tuppers:[],moves:[],outages:[],
+  return{v:2,stars:0,welcome:false,items:[],shop:[],menu:{},prep:[],chores:[],reminders:[],wasted:[],bills:[],tuppers:[],moves:[],outages:[],house:{laundry:0,mess:{}},
     dogs:{rosco:{name:'Rosco',g:0,fed:{date:'',am:false,pm:false}},mali:{name:'Mali',g:0,fed:{date:'',am:false,pm:false}},bag:{left:0,total:0},treats:0,water:''}};
 }
 function normalize(s){const e=emptyState();Object.keys(e).forEach(k=>{if(s[k]==null)s[k]=e[k]});COLS.forEach(c=>{if(!Array.isArray(s[c]))s[c]=[]});
-  s.items.forEach(i=>{if(!i.unit)i.unit='unid.'});return s}
+  s.items.forEach(i=>{if(!i.unit)i.unit='unid.'});if(!s.house.mess)s.house.mess={};return s}
+const isCount=it=>it.place==='clean'&&String(it.emoji||'').replace(/\uFE0F/g,'')==='🧻';
 /* S <-> documentos (ruta -> JSON) */
 function flatten(s){
   const f={};
   COLS.forEach(c=>s[c].forEach(x=>{if(x&&x.id)f[c+'/'+x.id]=JSON.stringify(x)}));
   f['home/dogs']=JSON.stringify(s.dogs);
   f['home/menu']=JSON.stringify({menu:s.menu});
+  f['home/house']=JSON.stringify(s.house);
   f['home/misc']=JSON.stringify({stars:s.stars,welcome:s.welcome,wasted:s.wasted});
   return f;
 }
@@ -641,6 +666,7 @@ function applyDoc(path,json){
     if(!d)return;
     if(id==='dogs')S.dogs=Object.assign(emptyState().dogs,d);
     else if(id==='menu')S.menu=d.menu||{};
+    else if(id==='house')S.house=Object.assign({laundry:0,mess:{}},d);
     else if(id==='misc'){S.stars=d.stars||0;S.welcome=!!d.welcome;S.wasted=d.wasted||[]}
     return;
   }
@@ -648,7 +674,7 @@ function applyDoc(path,json){
   const i=S[c].findIndex(x=>x.id===id);
   if(!d){if(i>=0)S[c].splice(i,1)}else if(i>=0)S[c][i]=d;else S[c].push(d);
 }
-const SYNC={db:null,state:'local',queue:[],flat:{},loaded:{},firstLoad:false,fromOld:false,flushing:false,timer:null,err:''};
+const SYNC={wrote:{},late:{},db:null,state:'local',queue:[],flat:{},loaded:{},firstLoad:false,fromOld:false,flushing:false,timer:null,err:''};
 function loadLocal(){
   try{const r=localStorage.getItem(KEY);if(r){const o=JSON.parse(r);if(o&&o.S){SYNC.queue=o.queue||[];SYNC.firstLoad=!!o.firstLoad;return normalize(o.S)}}}catch(e){}
   try{const r=localStorage.getItem(KEY_OLD);if(r){const s=JSON.parse(r);if(s&&s.items){SYNC.fromOld=true;return normalize(s)}}}catch(e){}
@@ -666,7 +692,7 @@ function enqueue(path,json){
 function localEffects(prev){
   S.items.forEach(it=>{
     const p=prev['items/'+it.id]?JSON.parse(prev['items/'+it.id]):null;
-    const clean=it.place==='clean';
+    const clean=it.place==='clean'&&!isCount(it);
     const now=clean?it.level:it.qty,was=p?(clean?p.level:p.qty):null;
     if(was===null){if(now>0)S.moves.push({id:uid(),item:it.id,name:it.name,d:now,q:now,u:clean?'%':it.unit,k:'alta',at:new Date().toISOString()})}
     else if(now!==was){
@@ -692,6 +718,7 @@ async function flush(){
       const q=SYNC.queue[0];
       const ref=SYNC.db.doc(q.path);
       if(q.json==null)await ref.delete();else await ref.set(JSON.parse(q.json));
+      SYNC.wrote[q.path]=Date.now();
       if(SYNC.queue[0]===q)SYNC.queue.shift();else SYNC.queue=SYNC.queue.filter(x=>x!==q);
       persist();SYNC.err='';
     }
@@ -710,15 +737,21 @@ function onRemote(col,snap){
     const path=col+'/'+d.id;seen.add(path);
     if(pend.has(path))return;
     const j=JSON.stringify(d.data());
-    if(SYNC.flat[path]!==j){applyDoc(path,j);SYNC.flat[path]=j;ch=true}
+    if(SYNC.flat[path]===j){delete SYNC.late[path];return}
+    /* una copia vieja puede llegar justo después de escribir: se espera a confirmarla antes de aceptarla */
+    if(Date.now()-(SYNC.wrote[path]||0)<4000){SYNC.late[path]=j;setTimeout(applyLate,4200);return}
+    applyDoc(path,j);SYNC.flat[path]=j;ch=true
   });
   const definitive=!(snap.metadata&&snap.metadata.fromCache);
   if(definitive&&SYNC.firstLoad){
-    Object.keys(SYNC.flat).forEach(p=>{if(p.startsWith(col+'/')&&!seen.has(p)&&!pend.has(p)){applyDoc(p,null);delete SYNC.flat[p];ch=true}});
+    Object.keys(SYNC.flat).forEach(p=>{if(p.startsWith(col+'/')&&!seen.has(p)&&!pend.has(p)&&Date.now()-(SYNC.wrote[p]||0)>4000){applyDoc(p,null);delete SYNC.flat[p];ch=true}});
   }
   if(definitive&&!SYNC.loaded[col]){SYNC.loaded[col]={n:snap.docs.length};checkFirstLoad()}
   if(ch){persist();remoteRender()}
 }
+function applyLate(){const pend=new Set(SYNC.queue.map(q=>q.path));let ch=false;
+  Object.keys(SYNC.late).forEach(p=>{if(pend.has(p)||Date.now()-(SYNC.wrote[p]||0)<4000)return;const j=SYNC.late[p];delete SYNC.late[p];if(SYNC.flat[p]!==j){applyDoc(p,j);SYNC.flat[p]=j;ch=true}});
+  if(ch){persist();remoteRender()}}
 /* primera vez que este aparato ve la base: si está vacía sube lo local; si ya tiene datos, manda la base */
 function checkFirstLoad(){
   const all=COLS.concat(['home']);
@@ -1113,7 +1146,7 @@ function toast(m){const t=$('#toast');t.textContent=m;t.classList.add('on');clea
 function pop(txt,x,y){const e=document.createElement('div');e.className='pop';e.textContent=txt;e.style.left=(x||innerWidth/2)+'px';e.style.top=(y||innerHeight/2)+'px';document.body.appendChild(e);setTimeout(()=>e.remove(),1100)}
 function award(n,x,y){S.stars+=n;save();pop('+'+n+' ⭐',x,y)}
 function level(){let l=0;LEVELS.forEach((v,i)=>{if(S.stars>=v[0])l=i});return{n:l+1,name:LEVELS[l][1]}}
-function openSheet(h){const s=$('#sheet');s.innerHTML='<div class="sheet-bg" data-act="closeSheet"></div><div class="sheet"><div class="grab"></div>'+h+'</div>';s.classList.add('on')}
+function openSheet(h){const s=$('#sheet');s.innerHTML='<div class="sheet-bg" data-act="closeSheet"></div><div class="sheet"><div class="grab"></div>'+h+'</div>';s.classList.add('on');slUpdate()}
 function closeSheet(){const s=$('#sheet');s.classList.remove('on');s.innerHTML='';if(SYNC.dirty){SYNC.dirty=false;setTimeout(render,0)}}
 function addToList(name,emoji,opt){
   opt=opt||{};const k=name.trim().toLowerCase();if(!k)return false;
@@ -1346,7 +1379,7 @@ function sheetItem(id){
   ${clean?`<label>Cuánto queda: <span id="lv-v">${it.level}</span>%</label><input id="f-level" type="range" min="0" max="100" step="5" value="${it.level}">`
   :`<div class="row"><div><label>Cantidad</label><div class="step"><button data-act="step" data-t="f-qty" data-d="-1">−</button><input id="f-qty" type="number" min="0" value="${it.qty}"><button data-act="step" data-t="f-qty" data-d="1">＋</button></div></div>
     <div><label>Avisar si quedan</label><div class="step"><button data-act="step" data-t="f-min" data-d="-1">−</button><input id="f-min" type="number" min="0" value="${it.min}"><button data-act="step" data-t="f-min" data-d="1">＋</button></div></div></div>
-    <label>Fecha de vencimiento (si aplica)</label><input id="f-exp" type="date" value="${it.expiry||''}">${unitSel(it.unit)}`}
+    <label>Fecha de vencimiento (si aplica)</label><input id="f-exp" type="date" value="${it.expiry||''}">${unitSel(it.unit)}<div id="sl-box"></div>`}
   <div class="acts-row"><button class="btn" data-act="saveItem" data-id="${id}">Guardar</button>
   ${clean?'':`<button class="btn terra" data-act="useOne" data-id="${id}">Usé 1</button><button class="btn ghost" data-act="addOne" data-id="${id}">Repuse 1</button>`}
   <button class="btn berry" data-act="delItem" data-id="${id}">Eliminar</button></div>${histHTML(id)}`);
@@ -1362,7 +1395,7 @@ function sheetNew(place){
   <label>Estante</label><select id="f-shelf">${shelfOpts(place,place==='fridge'?1:0)}</select>
   ${clean?'':`<div class="row"><div><label>Cantidad</label><div class="step"><button data-act="step" data-t="f-qty" data-d="-1">−</button><input id="f-qty" type="number" min="0" value="1"><button data-act="step" data-t="f-qty" data-d="1">＋</button></div></div>
     <div><label>Avisar si quedan</label><div class="step"><button data-act="step" data-t="f-min" data-d="-1">−</button><input id="f-min" type="number" min="0" value="0"><button data-act="step" data-t="f-min" data-d="1">＋</button></div></div></div>
-    <label>Fecha de vencimiento (si aplica)</label><input id="f-exp" type="date">${unitSel()}`}
+    <label>Fecha de vencimiento (si aplica)</label><input id="f-exp" type="date">${unitSel()}<div id="sl-box"></div>`}
   <div class="acts-row"><button class="btn" data-act="saveNew">Guardar</button></div>`);
   setTimeout(()=>$('#f-name')&&$('#f-name').focus(),50);
 }
@@ -1483,7 +1516,7 @@ document.addEventListener('click',e=>{
   const el=e.target.closest('[data-act]');if(!el)return;
   const a=el.dataset.act,d=el.dataset,v=id=>$('#'+id);
   const px=e.clientX,py=e.clientY;
-  if(casaAct(a,d,el,px,py)||receiptAct(a,d))return;
+  if(casaAct(a,d,el,px,py)||receiptAct(a,d)||slAct(a,d)||houseAct(a,d,el,px,py))return;
   switch(a){
     case 'tab':closeSheet();tab=d.tab;scrollTo(0,0);render();break;
     case 'furn':furn=d.k;doorAnim=true;render();break;
@@ -1809,6 +1842,7 @@ function banoExtras(){
 function vBano(){
   return sceneWrap('bano',laundrySVG())+`
   <p class="hint">Tocá la pila para ver el recibo del agua, o la lavadora para ponerla a lavar.</p>
+  <div class="row" style="margin-bottom:14px"><button class="btn ghost" data-act="bath">🚿 Gabinete del baño</button><button class="btn ghost" data-act="house">🧹 Estado de la casa</button></div>
   <div class="panel-title"><h3>Gabinete de limpieza</h3><i></i></div>
   ${furnitureHTML('clean')}${binsHTML()}
   <button class="btn terra block" data-act="newItem" data-place="clean">＋ Agregar producto</button>
@@ -2369,6 +2403,25 @@ const ISO_ART=(()=>{
     g.disc(b.R,.5,.43,.25,.22,'url(#glass)',{sw:2});g.rect(b.R,0,0,1,.08,shade(col,-.1),{sw:1.6});return g};
   A_.basket=(x,y)=>()=>{const g=new G();g.shadow(x-.4,y-.4,.8,.8,.16);const c=g.cyl(x,y,0,.62,.38,'#E0B07A',{top:'#F58FA6'});
     g.disc(c.T,.42,.5,.2,.2,'#8EB8D0',{sw:1.5});g.disc(c.T,.62,.42,.16,.16,'#FFF6E2',{sw:1.5});return g};
+  A_.basketL=(x,y,l)=>()=>{const g=new G();g.shadow(x-.4,y-.4,.8,.8,.16);const c=g.cyl(x,y,0,.62,.38,'#E0B07A',{top:l?'#F58FA6':'#8A5A3A'});
+    [.2,.42].forEach(z=>{const a=[];for(let i=0;i<=10;i++){const t=-Math.PI/4+Math.PI*i/10;a.push([x+Math.cos(t)*.385,y+Math.sin(t)*.385,z])}g.poly(a,'none',{open:true,stroke:'#B98552',sw:1.6})});
+    const blob=(dx,dy,z,r,col)=>g.disc({o:[x+dx-r*.55,y+dy+r*.55,z],a:[r*1.1,-r*1.1,0],b:[0,0,r*1.5]},.5,.5,.5,.5,col,{sw:1.8,lit:'lv'});
+    if(l>=1){g.disc(c.T,.42,.5,.2,.2,'#8EB8D0',{sw:1.5});g.disc(c.T,.62,.42,.16,.16,'#FFF6E2',{sw:1.5})}
+    if(l>=2){blob(-.12,0,.5,.3,'#8EB8D0');blob(.14,.02,.55,.28,'#FFD979');blob(0,.08,.72,.26,'#F58FA6')}
+    if(l>=3){blob(-.06,.02,.95,.26,'#C9B0E8');blob(.1,.06,1.1,.2,'#FFF6E2');g.poly([[x+.3,y+.25,.62],[x+.36,y+.3,.2],[x+.2,y+.36,.16],[x+.14,y+.33,.6]],'#A9CDE0',{sw:1.8})}return g};
+  A_.pile=(x,y)=>()=>{const g=new G();g.shadow(x-.5,y-.4,1,.8,.14);const fl=(dx,dy,rx,ry,col)=>g.disc({o:[x+dx-rx,y+dy-ry,.02],a:[2*rx,0,0],b:[0,2*ry,0]},.5,.5,.5,.5,col,{sw:1.8});
+    fl(0,0,.42,.3,'#F58FA6');fl(.3,.22,.3,.24,'#8EB8D0');fl(-.28,.2,.26,.2,'#FFD979');
+    g.disc({o:[x-.12,y+.25,.02],a:[.3,-.3,0],b:[0,0,.34]},.5,.5,.5,.5,'#FFF6E2',{sw:1.8,lit:'lv'});return g};
+  A_.clutter=(x,y,kind)=>()=>{const g=new G();g.shadow(x-.2,y-.2,.4,.4,.14);
+    if(kind==='sock'){const S={o:[x-.22,y-.14,.02],a:[.44,0,0],b:[0,.28,0]};g.pts(S,[[0,.1],[.55,0],[.7,.45],[1,.6],[.95,.95],[.5,1],[.35,.5],[.05,.5]],'#FFF6E2',{sw:1.8});g.pts(S,[[0,.1],[.2,.06],[.24,.46],[.05,.5]],'#F58FA6',{sw:1.4})}
+    else if(kind==='ball'){const S={o:[x-.13,y+.13,0],a:[.26,-.26,0],b:[0,0,.42]};g.disc(S,.5,.5,.5,.5,'#C7E26A',{sw:2,lit:'lv'});g.line(S,[[.12,.4],[.5,.56],[.88,.4]],'#fff',2)}
+    else if(kind==='paper'){const S={o:[x-.12,y+.12,0],a:[.24,-.24,0],b:[0,0,.32]};g.pts(S,[[.1,.2],[.3,0],[.62,.1],[.95,.3],[.86,.7],[.6,1],[.3,.86],[0,.6]],'#FFFDF6',{sw:1.8});g.line(S,[[.3,.3],[.5,.55],[.7,.35]],'#C9B8A0',1.4)}
+    else if(kind==='bone'){const S={o:[x-.24,y-.1,.02],a:[.48,0,0],b:[0,.2,0]};g.rect(S,.15,.3,.85,.7,'#FFF6E2',{sw:1.8});[[.1,.2],[.1,.8],[.9,.2],[.9,.8]].forEach(q=>g.disc(S,q[0],q[1],.1,.26,'#FFF6E2',{sw:1.8}));g.rect(S,.14,.36,.86,.64,'#FFF6E2',{stroke:'none'})}
+    else{g.cyl(x,y,0,.26,.12,'#C9B0E8',{sw:1.8,top:'#8A5A3A'})}return g};
+  A_.stain=(x,y,r)=>()=>{const g=new G(),S={o:[x-r,y-r,.015],a:[2*r,0,0],b:[0,2*r,0]};
+    g.pts(S,[[.1,.4],[.3,.1],[.6,.05],[.9,.3],[1,.6],[.75,.92],[.45,1],[.15,.8]],'#9A7B5B',{stroke:'none',op:.38});g.disc(S,.42,.5,.2,.2,'#7A5C40',{stroke:'none',op:.3});
+    [[.15,.1],[.9,.85],[.95,.12]].forEach(q=>g.disc(S,q[0],q[1],.06,.06,'#9A7B5B',{stroke:'none',op:.4}));
+    [[.2,.9],[.8,.2]].forEach(q=>{const P=g.P(S,q[0],q[1]);g.poly([[P[0],P[1],.1],[P[0],P[1],.3]],'none',{open:true,stroke:'#B9A48C',sw:2,dash:'3 4'})});return g};
   A_.rack=(S)=>()=>{const g=new G();g.line(S,[[.08,.62],[.92,.62]],'#8A5330',3);
     [[.2,'#F58FA6'],[.42,'#FFD979'],[.64,'#8EB8D0'],[.84,'#FFF6E2']].forEach(q=>{g.rect(S,q[0]-.07,.42,q[0]+.07,.62,q[1],{sw:1.8});g.rect(S,q[0]-.012,.6,q[0]+.012,.66,'#E9C48F',{sw:1.2})});return g};
   /* ---------- exterior ---------- */
@@ -2441,7 +2494,7 @@ const ISO=(()=>{
     add('kshelf',a.shelfWall(wX1,.56,.74,.66,[[.15,.3,'#F7B3A9',.11],[.42,.24,'#FFD979',.1,'#8E6BC0'],[.68,.34,'#CDE8D8',.11,'#7FA050'],[.9,.22,'#FFF6E2',.09]]),3.35+1.9+FY+1.1+.01,'cocina');
     add('table',a.table(.3,2.7),.3+1.3+2.7+1.3,'cocina');
     add('fbody',a.fridgeBody(FX,FY),FX+1.45+FY+1.15-.3,'cocina','fridge','Refri');
-    add('vanity',a.vanity(6.95,FY),6.95+1.5+FY+.95,'bano','sink');
+    add('vanity',a.vanity(6.95,FY),6.95+1.5+FY+.95,'bano','vanity','Gabinete');
     add('mirror',a.mirror(wX2,.27,.66),6.95+1.5+FY+.95+.01,'bano');
     add('tub',a.tub(8.55,.1),8.55+2.3+.1+1.15,'bano','tub');
     add('mat',a.mat(8.9,1.7),-690,'bano');
@@ -2450,7 +2503,13 @@ const ISO=(()=>{
     add('dryer',a.washer(.05,8,'#FFD8D3'),.05+1.1+8+1.3,'lavanderia','laundry');
     add('lshelf',a.shelfWall(wY2,.42,.92,.66,[[.12,.36,'#8EB8D0',.12],[.34,.28,'#F6B5AE',.11,'#8E6BC0'],[.56,.38,'#FFFDF6',.12,'#4A8BB0'],[.8,.26,'#CDE8D8',.1,'#7FA050']]),.05+1.1+8+1.3+.01,'lavanderia');
     add('lrug',a.rug(2.9,8.4,1.3,1.1,'#CFE6EE','#FFFDF6'),-690,'lavanderia');
-    add('basket',a.basket(.6,9.95),.6+9.95+.5,'lavanderia','laundry');
+    for(let l=0;l<4;l++)add('basket'+l,a.basketL(.6,9.95,l),.6+9.95+.5,'lavanderia','basket');
+    add('pile',a.pile(1.7,10.0),-680,'lavanderia','basket');
+    [['cocina',2.6,4.9,'sock'],['cocina',4.9,2.7,'ball'],['cocina',1.7,1.9,'paper'],['cocina',5.5,4.7,'cup'],['cocina',3.1,2.2,'bone'],
+     ['bano',8.0,3.3,'sock'],['bano',9.9,3.0,'paper'],['bano',7.6,1.7,'cup'],['lavanderia',2.0,7.2,'sock'],['lavanderia',3.7,9.0,'paper'],['lavanderia',4.4,7.9,'ball']]
+      .forEach((c,i)=>{add('mess'+i,a.clutter(c[1],c[2],c[3]),c[1]+c[2]+.1,c[0],'mess');L[L.length-1].grp='mess:'+c[0]});
+    [['cocina',4.4,4.9,.5],['cocina',2.2,3.9,.4],['cocina',5.6,2.1,.45],['bano',8.4,3.9,.5],['bano',10,1.9,.4],['lavanderia',2.6,7.5,.45],['lavanderia',3.9,9.9,.5]]
+      .forEach((c,i)=>{add('dirt'+i,a.stain(c[1],c[2],c[3]),-685+i*.01,c[0],'dirt');L[L.length-1].grp='dirt';L[L.length-1].n=i});
     add('vine1',a.vine(-.2,.2,H,0,.62,5),-750);add('vine2',a.vine(.5,-.2,H,.62,0,4),-749);add('vine3',a.vine(-.2,8.6,H,0,.6,4),-748);add('vine4',a.vine(9.2,-.2,H,.6,0,4),-747);
     add('stool1',a.stool(2.0,3.3),2.0+3.3+.3,'cocina');add('stool2',a.stool(1.1,4.5,'#FFD979'),1.1+4.5+.3,'cocina');
     add('jars',a.jars(4.75,.4,1.5),3.35+1.9+FY+1.1+.02,'cocina');
@@ -2492,7 +2551,7 @@ const ISO=(()=>{
     fridge={door,frames:dt,itemsC,open:0,target:0,glow:objs.fglow.s,texCache:{}};
     /* marcadores de objetos tocables */
     const pinT=await svgTex(AR.A.pin().svg(K)),heartT=await svgTex(AR.A.heart().svg(K));
-    [['fbody',FX+.7,FY+.6,3.55],['pantry',1,.6,3.75],['washer',.6,7.2,1.85],['mailbox',8.3,7.8,2.0]].forEach(p=>{const s=new PIXI.Sprite(pinT);s.anchor.set(.5,1);s.scale.set(.5/K*1.6);const q=pr(p[1],p[2],p[3]);s.position.set(q[0],q[1]);s._y=q[1];s.zIndex=900;s.eventMode='none';s._for=p[0];world.addChild(s);pins.push(s)});
+    [['fbody',FX+.7,FY+.6,3.55],['pantry',1,.6,3.75],['washer',.6,7.2,1.85],['mailbox',8.3,7.8,2.0],['vanity',7.7,.5,2.0]].forEach(p=>{const s=new PIXI.Sprite(pinT);s.anchor.set(.5,1);s.scale.set(.5/K*1.6);const q=pr(p[1],p[2],p[3]);s.position.set(q[0],q[1]);s._y=q[1];s.zIndex=900;s.eventMode='none';s._for=p[0];world.addChild(s);pins.push(s)});
     /* Rosco y Mali: ilustraciones originales sobre una malla que respira y mueve la cola */
     const DG={mali:{x:3.9,y:3.9,room:'cocina',tail:{x0:0,x1:46,base:246,top:158},sc:.36},rosco:{x:2.9,y:8.5,room:'lavanderia',tail:{x0:0,x1:42,base:306,top:212},sc:.36}};
     for(const k of Object.keys(DG)){
@@ -2552,7 +2611,7 @@ const ISO=(()=>{
     bounce(d.id==='pot'||d.id==='kettle'?objs.stove.s:s);
     if(d.act==='fridge')openFridge();
     else if(d.act==='mailbox')api.onMailbox&&api.onMailbox();
-    else api.onObject&&api.onObject(d.act,d.id);
+    else api.onObject&&api.onObject(d.act,d.id,d.room);
   }
   function go(v){if(view==='fridge'&&v!=='fridge'){fridge.target=0;api.onFridge&&api.onFridge(false)}view=v;bottomPad=0;flyTo(v);syncUi()}
   function openFridge(){view='fridge';fridge.target=1;refreshItems();bottomPad=(app.renderer.height/app.renderer.resolution)*.5;flyTo('fridge',800);syncUi();api.onFridge&&api.onFridge(true)}
@@ -2575,7 +2634,7 @@ const ISO=(()=>{
       const i=Math.round(e*(DOOR_A.length-1)),f=fridge.frames[i];if(fridge.door.texture!==f.t){fridge.door.texture=f.t;fridge.door.position.set(f.o.x,f.o.y)}
       fridge.itemsC.alpha=Math.min(1,e*3);fridge.glow.alpha=dark?0:e*.4}
     /* marcadores */
-    pins.forEach((p,i)=>{const vis=(view==='home'&&p._for==='mailbox')||(view==='cocina'&&(p._for==='fbody'||p._for==='pantry'))||(view==='lavanderia'&&p._for==='washer');
+    pins.forEach((p,i)=>{const vis=(view==='home'&&p._for==='mailbox')||(view==='cocina'&&(p._for==='fbody'||p._for==='pantry'))||(view==='lavanderia'&&p._for==='washer')||(view==='bano'&&p._for==='vanity');
       p.alpha+=((vis?1:0)-p.alpha)*.15;p.y=p._y+Math.sin(now*2.4+i)*5});
     /* rebote al tocar */
     Object.values(objs).forEach(o=>{const s=o.s;if(s._bn>0){s._bn-=dt*2.6;const k=Math.max(0,s._bn),a=Math.sin((1-k)*Math.PI*3)*k*.045;s.scale.set((1+a)/K,(1-a)/K);s.position.set(s._b.x-s._b.w*a/2,s._b.y+s._b.h*a);if(k<=0){s.scale.set(1/K);s.position.set(s._b.x,s._b.y)}}});
@@ -2594,6 +2653,9 @@ const ISO=(()=>{
     /* etiquetas de habitaciones */
     labels.forEach(l=>{const q=pr(l.p[0],l.p[1],l.p[2]);l.el.style.transform=`translate(-50%,-50%) translate(${(q[0]*cam.s+cam.x).toFixed(1)}px,${(q[1]*cam.s+cam.y).toFixed(1)}px)`});
   }
+  function setHouse(){if(!ready||!api.house)return;const h=api.house();
+    for(let l=0;l<4;l++)objs['basket'+l].s.visible=l===Math.min(3,h.laundry);objs.pile.s.visible=h.laundry>=3;
+    Object.values(objs).forEach(o=>{const g=o.def.grp;if(!g)return;if(g==='dirt')o.s.visible=h.dirty>0&&o.def.n<(h.dirty>=3?7:h.dirty===2?5:3);else o.s.visible=!!h.mess[g.slice(5)]})}
   function setDark(v){if(v===dark&&setDark._done)return;dark=v;setDark._done=true;const t=v?0x7F7AAE:0xFFFFFF;
     Object.values(objs).forEach(o=>{if(o.def.id!=='shaft'&&o.def.id!=='fglow')o.s.tint=t});if(fridge)fridge.door.tint=t;Object.values(dogs).forEach(d=>{d.mesh.tint=t;d.beg.tint=t});if(shaft)shaft.visible=!v}
   /* ---------- interfaz mínima sobre el lienzo ---------- */
@@ -2602,12 +2664,13 @@ const ISO=(()=>{
     ui.querySelector('.isoBack').hidden=view==='home';
     ui.querySelector('.isoBack').textContent=view==='fridge'?'‹ Cerrar la refri':'‹ Ver toda la casa';
     ui.querySelector('.isoTitle').textContent=view==='home'?'Mi casita':view==='fridge'?'Refrigeradora':NAMES[view];
-    ui.querySelector('.isoHint').textContent=view==='home'?'Tocá una habitación para entrar · arrastrá para moverte · pellizcá para acercar':view==='cocina'?'Tocá la refri o la alacena':view==='fridge'?'':view==='lavanderia'?'Tocá la lavadora':'';
+    ui.querySelector('.isoHint').textContent=view==='home'?'Tocá una habitación para entrar · arrastrá para moverte · pellizcá para acercar':view==='cocina'?'Tocá la refri o la alacena':view==='fridge'?'':view==='lavanderia'?'Tocá la lavadora o la canasta de ropa':view==='bano'?'Tocá el gabinete del lavamanos':'';
     labels.forEach(l=>l.el.hidden=view!=='home');
   }
   function makeUi(){
     ui=document.createElement('div');ui.className='isoUi';
-    ui.innerHTML=`<button class="isoBack" hidden></button><div class="isoTitle"></div><div class="isoHint"></div>`;
+    ui.innerHTML=`<button class="isoBack" hidden></button><div class="isoTitle"></div><div class="isoHint"></div><button class="isoState">🧹 Estado de la casa</button>`;
+    ui.querySelector('.isoState').addEventListener('click',()=>api.onObject('house'));
     ui.querySelector('.isoBack').addEventListener('click',()=>{if(view==='fridge')closeFridge();else go('home')});
     [['cocina',[2.6,2.6,H+1.3]],['bano',[9.2,1.6,H+1.1]],['lavanderia',[1.2,8.6,H+1.1]]].forEach(r=>{const el=document.createElement('button');el.className='isoLabel';el.textContent=NAMES[r[0]];el.addEventListener('click',()=>go(r[0]));ui.appendChild(el);labels.push({el,p:r[1]})});
   }
@@ -2624,12 +2687,12 @@ const ISO=(()=>{
     if(app.view.parentNode!==h){h.appendChild(app.view);h.appendChild(ui)}
     app.ticker.start();resize();
     if(!mount._first){mount._first=true;cam=targetFor('home');cam.s*=.86;cam.y+=30;applyCam();flyTo('home',1100)}
-    setDark(!api.power());syncUi();if(view==='fridge')refreshItems();
+    setDark(!api.power());setHouse();syncUi();if(view==='fridge')refreshItems();
   }
   function pause(){if(app)app.ticker.stop()}
   addEventListener('resize',()=>{if(host&&host.isConnected)resize()});
   function _pos(id){const o=objs[id].s,r=app.view.getBoundingClientRect();return{x:r.left+(o._b.x+o._b.w/2)*cam.s+cam.x,y:r.top+(o._b.y+o._b.h*.6)*cam.s+cam.y}}
-  return{_items:()=>fridge?fridge.itemsC.children.length:0,_pos,mount,pause,go,closeFridge,get view(){return view},get ready(){return ready},_dbg:()=>({cam,view,open:fridge&&fridge.open,objs:Object.keys(objs).length})};
+  return{_vis:()=>({basket3:objs.basket3.s.visible,pile:objs.pile.s.visible,messCocina:objs.mess0.s.visible,messBano:objs.mess5.s.visible,dirt:objs.dirt0.s.visible}),_items:()=>fridge?fridge.itemsC.children.length:0,_pos,mount,pause,go,closeFridge,get view(){return view},get ready(){return ready},_dbg:()=>({cam,view,open:fridge&&fridge.open,objs:Object.keys(objs).length})};
 })();
 
 /* ---------- puente entre la aplicación (datos) y el motor 2.5D (dibujo) ---------- */
@@ -2644,9 +2707,12 @@ const ISO_API={
     return out},
   onFridge:open=>{isoPanel=open?'fridge':null;render()},
   onMailbox:()=>sheetBills(),
+  house:()=>({laundry:S.house.laundry||0,mess:S.house.mess||{},dirty:overdueChores().length}),
   onObject:act=>{
     if(act==='pantry')openSheet(`<h3>Alacena</h3>${furnitureHTML('pantry')}<button class="btn terra block" data-act="newItem" data-place="pantry">＋ Agregar a la alacena</button>`);
     else if(act==='laundry')openSheet(`<h3>Lavandería y limpieza</h3>${furnitureHTML('clean')}<button class="btn terra block" data-act="newItem" data-place="clean">＋ Agregar producto</button>`);
+    else if(act==='vanity')sheetBath();
+    else if(act==='basket'||act==='mess'||act==='dirt'||act==='house')sheetHouse();
     else if(act==='sink'||act==='tub')toast(svcState('agua').on?'El agua corre bien 💧':'No sale agua en la casita: hay un recibo de agua vencido 🚰');
     else if(act==='stove')toast('Mmm… algo rico se está cocinando 🍲');
   },
@@ -2668,8 +2734,69 @@ function isoAfterRender(){
   ISO.mount(h,ISO_API);
 }
 
+/* ---------- gabinete del baño: botellas que se llenan con el dedo y rollos de papel ---------- */
+const bathItems=()=>S.items.filter(i=>i.place==='clean'&&i.shelf===1);
+function bottleSVG(it){
+  const k=icKey(it.emoji),col=k==='🧼'?'#F7B6C8':k==='🧴'?'#9ED3C6':'#A9CDE0',lv=Math.max(0,Math.min(100,it.level||0)),y=118-lv*.92;
+  return `<svg viewBox="0 0 70 126" class="botsvg" aria-hidden="true"><defs><clipPath id="bc-${it.id}"><path d="M14 40Q14 30 24 30H46Q56 30 56 40V112Q56 122 46 122H24Q14 122 14 112Z"/></clipPath></defs>
+  <rect x="27" y="14" width="16" height="17" fill="#FFF6E2" stroke="${INK}" stroke-width="2.6"/><path d="M22 14H50M35 14V6H48" fill="none" stroke="${INK}" stroke-width="2.6" stroke-linecap="round"/>
+  <path d="M14 40Q14 30 24 30H46Q56 30 56 40V112Q56 122 46 122H24Q14 122 14 112Z" fill="#FFFDF6"/>
+  <g clip-path="url(#bc-${it.id})"><rect class="botfill" x="10" y="${y}" width="50" height="${126-y}" fill="${col}"/><path class="botwave" d="M10 ${y}q6 -4 12 0t12 0t12 0t12 0" fill="none" stroke="#fff" stroke-width="2" opacity=".7"/></g>
+  <path d="M14 40Q14 30 24 30H46Q56 30 56 40V112Q56 122 46 122H24Q14 122 14 112Z" fill="none" stroke="${INK}" stroke-width="2.8"/><path d="M21 44V100" stroke="#fff" stroke-width="3" stroke-linecap="round" opacity=".8"/></svg>`;
+}
+function bathItemHTML(it){
+  if(isCount(it)){const n=Math.max(0,Math.round(it.qty||0));
+    return `<div class="bathit"><div class="rolls">${n?Array.from({length:Math.min(n,12)},()=>`<span>${ic('🧻')}</span>`).join(''):'<em>Sin rollos</em>'}${n>12?`<b>+${n-12}</b>`:''}</div>
+    <div class="step"><button data-act="rollStep" data-id="${it.id}" data-d="-1" aria-label="Quitar un rollo">−</button><b class="rolln">${n}</b><button data-act="rollStep" data-id="${it.id}" data-d="1" aria-label="Agregar un rollo">＋</button></div>
+    <button class="bathnm" data-act="openItem" data-id="${it.id}">${esc(it.name)}</button></div>`}
+  return `<div class="bathit"><div class="botv" data-id="${it.id}" role="slider" tabindex="0" aria-label="Nivel de ${esc(it.name)}" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${it.level}">${bottleSVG(it)}</div>
+    <b class="botpct" id="bp-${it.id}">${it.level}%</b><button class="bathnm" data-act="openItem" data-id="${it.id}">${esc(it.name)}</button></div>`;
+}
+function sheetBath(){
+  const its=bathItems(),has=n=>its.some(i=>slNorm(i.name).includes(n));
+  const quick=[['Shampoo','🧴','shampoo'],['Jabón','🧼','jabon'],['Papel higiénico','🧻','papel']].filter(q=>!has(q[2]));
+  openSheet(`<h3>${ic('🚿')} Debajo del lavamanos</h3>
+  <p class="sub">Deslizá el dedo sobre cada botella para marcar por dónde va. El papel se cuenta por rollos.</p>
+  <div class="bathgrid">${its.map(bathItemHTML).join('')||'<p class="sub">El gabinete está vacío. Agregá lo que tenés.</p>'}</div>
+  <div class="chips" style="margin-top:10px">${quick.map(q=>`<button class="chip" data-act="bathAdd" data-n="${q[0]}" data-e="${q[1]}">＋ ${q[0]}</button>`).join('')}<button class="chip" data-act="newItem" data-place="clean">＋ Otro producto</button></div>`);
+}
+/* ---------- estado de la casa: ropa sucia, orden y limpieza ---------- */
+function overdueChores(){return S.chores.filter(c=>c.area==='clean'&&c.last&&daysUntil(c.last)+c.every<0)}
+const HROOMS=[['cocina','Cocina'],['bano','Baño'],['lavanderia','Lavandería']];
+function sheetHouse(){
+  const h=S.house,od=overdueChores(),L=['Nada','Poca','Bastante','Una montaña'];
+  openSheet(`<h3>🧹 Estado de la casa</h3><p class="sub">Lo que marqués aquí se ve dentro de la casita.</p>
+  <h4>🧺 Ropa sucia</h4><div class="seg">${L.map((t,i)=>`<button class="${(h.laundry||0)===i?'on':''}" data-act="hLaundry" data-l="${i}">${t}</button>`).join('')}</div>
+  ${h.laundry?'<button class="btn block" style="margin-top:8px" data-act="hLaundry" data-l="0" data-done="1">Ya lavé todo ✨</button>':''}
+  <h4>🧸 Orden</h4>${HROOMS.map(r=>`<div class="li"><div class="t"><b>${r[1]}</b><small>${h.mess[r[0]]?'Desordenada':'Ordenada'}</small></div><button class="btn sm ${h.mess[r[0]]?'':'ghost'}" data-act="hMess" data-r="${r[0]}">${h.mess[r[0]]?'Ya ordené':'Está desordenada'}</button></div>`).join('')}
+  <h4>🧽 Limpieza pendiente</h4>${od.length?od.map(c=>`<div class="li"><div class="t"><b>${esc(c.text)}</b><small>Tocaba hace ${-(daysUntil(c.last)+c.every)} día${-(daysUntil(c.last)+c.every)===1?'':'s'}</small></div><button class="btn sm" data-act="hChore" data-id="${c.id}">Hecho</button></div>`).join(''):`<p class="sub">${S.chores.some(c=>c.area==='clean')?'Nada atrasado: la casa se ve limpia ✨':'No tenés tareas de limpieza registradas. Agregalas en Baño → Rutina de limpieza y cuando se atrasen la casa se verá sucia.'}</p>`}`);
+}
+function houseAct(a,d,el,px,py){
+  switch(a){
+    case 'hLaundry':{const was=S.house.laundry||0;S.house.laundry=+d.l;if(d.done&&was)award(3,px,py);save();render();sheetHouse();if(d.done)toast('¡Ropa limpia! 🧺')}return true;
+    case 'hMess':{const m=S.house.mess;m[d.r]=!m[d.r];if(!m[d.r])award(2,px,py);save();render();sheetHouse()}return true;
+    case 'hChore':{const c=S.chores.find(x=>x.id===d.id);if(c){c.last=today();award(3,px,py);save();render();sheetHouse()}}return true;
+    case 'bathAdd':{const it=mk(d.n,d.e,'clean',1,icKey(d.e)==='🧻'?0:1);it.level=50;if(isCount(it))it.unit='rollos';S.items.push(it);save();render();sheetBath();toast(isCount(it)?'Poné cuántos rollos hay':'Marcá en la botella por dónde va')}return true;
+    case 'rollStep':{const it=itemById(d.id);if(it){it.qty=Math.max(0,Math.round(it.qty||0)+(+d.d));save();render();sheetBath();if(it.qty===0)toast('Se acabó el papel: lo anoté en la lista 🛒')}}return true;
+    case 'bath':sheetBath();return true;
+    case 'house':sheetHouse();return true;
+  }
+  return false;
+}
+/* arrastrar sobre la botella para fijar el nivel */
+let botDrag=null;
+function botSet(e){const r=botDrag.el.getBoundingClientRect(),top=r.top+r.height*.24,bot=r.top+r.height*.97;
+  const lv=Math.max(0,Math.min(100,Math.round((bot-e.clientY)/(bot-top)*20)*5));botDrag.lv=lv;
+  const y=118-lv*.92,f=botDrag.el.querySelector('.botfill'),w=botDrag.el.querySelector('.botwave');f.setAttribute('y',y);f.setAttribute('height',126-y);w.setAttribute('d',`M10 ${y}q6 -4 12 0t12 0t12 0t12 0`);
+  const p=document.getElementById('bp-'+botDrag.id);if(p)p.textContent=lv+'%'}
+document.addEventListener('pointerdown',e=>{const el=e.target.closest&&e.target.closest('.botv');if(!el)return;botDrag={el,id:el.dataset.id,lv:null};botSet(e);e.preventDefault()});
+document.addEventListener('pointermove',e=>{if(botDrag){botSet(e);e.preventDefault()}},{passive:false});
+const botEnd=()=>{if(!botDrag)return;const b=botDrag;botDrag=null;const it=itemById(b.id);if(it&&b.lv!==null&&b.lv!==it.level){it.level=b.lv;save();render();sheetBath();if(b.lv===0)toast(`${it.name} se acabó: lo anoté en la lista 🛒`)}};
+document.addEventListener('pointerup',botEnd);document.addEventListener('pointercancel',botEnd);
+document.addEventListener('keydown',e=>{const el=e.target.closest&&e.target.closest('.botv');if(!el||!['ArrowUp','ArrowDown'].includes(e.key))return;const it=itemById(el.dataset.id);if(!it)return;it.level=Math.max(0,Math.min(100,it.level+(e.key==='ArrowUp'?5:-5)));save();render();sheetBath();const n=document.querySelector(`.botv[data-id="${it.id}"]`);n&&n.focus();e.preventDefault()});
+
 /* ---------- leer la factura del súper con una foto ---------- */
-let RC={rows:[],busy:false,ctl:null};
+let RC={rows:[],busy:false,ctl:null,dates:false};
 const RC_PLACES=[['fridge','Refri'],['freezer','Congelador'],['pantry','Alacena'],['spice','Especiero'],['clean','Limpieza'],['skip','No guardar']];
 function sheetReceipt(){
   RC.rows=[];
@@ -2719,6 +2846,7 @@ function sheetReceiptReview(){
     <select class="rc-p" data-i="${i}" data-f="place" aria-label="Dónde va">${RC_PLACES.map(p=>`<option value="${p[0]}" ${p[0]===r.place?'selected':''}>${p[1]}</option>`).join('')}</select></div>`).join('');
   openSheet(`<h3>${ic('🧾')} Revisá lo que leí</h3><p class="sub">Encontré ${RC.rows.length} producto${RC.rows.length===1?'':'s'}. Corregí nombres, cantidades o lugar, y quitá lo que no querás guardar. La lectura puede tener errores.</p>
   <div class="rclist">${rows}</div>
+  <button class="rcdates" data-act="rcDates"><span class="ck ${RC.dates?'on':''}">${RC.dates?'✓':''}</span><span>Poner fecha orientativa a lo que va a la refri o al congelador <small>(guía general, contando desde hoy; la podés cambiar después)</small></span></button>
   <div class="acts-row"><button class="btn" data-act="rcSave">Guardar en la casita</button><button class="btn ghost" data-act="receipt">Otra foto</button></div>`);
 }
 function receiptSave(){
@@ -2728,6 +2856,7 @@ function receiptSave(){
     let it=S.items.find(i=>i.name.toLowerCase()===key&&(i.place==='clean')===clean);
     if(it){if(clean)it.level=100;else{it.qty=(+it.qty||0)+r.qty;if(!it.unit||it.qty===r.qty)it.unit=r.unit}}
     else{it=mk(r.name.trim(),r.emoji,place,shelf,clean?1:r.qty);it.unit=r.unit;S.items.push(it)}
+    if(RC.dates&&(r.place==='fridge'||r.place==='freezer')&&!it.expiry){const g=shelfLife(it.name,r.place);if(g&&g.days)it.expiry=addDays(g.days)}
     S.shop=S.shop.filter(x=>x.name.toLowerCase()!==key);n++;
   });
   save();closeSheet();if(tab!=='casa')tab='cocina';render();toast(n?`Guardé ${n} producto${n===1?'':'s'} de la factura 🧾`:'No se guardó nada');
@@ -2747,8 +2876,80 @@ document.addEventListener('change',e=>{
   if(t.dataset&&t.dataset.f&&t.closest('.rcrow')){const r=RC.rows[+t.dataset.i];if(r)r[t.dataset.f]=t.dataset.f==='qty'?Math.max(0,+t.value||0):t.value}
 });
 
+/* ---------- cuánto dura la comida: guía general orientativa ----------
+   [palabras clave, refri [mín,máx] días, congelador [mín,máx] días, alacena [mín,máx] días]
+   Valores conservadores de guías comunes de conservación en casa (refri a 4 °C o menos, congelador a -18 °C).
+   No reemplazan la fecha del empaque ni revisar olor y aspecto. */
+const SHELF=[
+  [/molid/,[1,2],[90,120],null],
+  [/pollo|pavo|gallina/,[1,2],[270,365],null],
+  [/pescado|tilapia|atun fresco|salmon|corvina/,[1,2],[90,180],null],
+  [/camaron|marisco/,[1,2],[90,180],null],
+  [/salchich|hot ?dog|chorizo/,[7,7],[30,60],null],
+  [/jamon|mortadela|embutido|salami/,[3,5],[30,60],null],
+  [/tocin/,[7,7],[30,30],null],
+  [/res|bistec|carne|cerdo|chuleta|lomo|costilla|posta/,[3,5],[120,365],null],
+  [/huevo/,[21,35],null,null],
+  [/leche/,[5,7],[90,90],null],
+  [/yogur/,[7,14],[30,60],null],
+  [/natilla|crema dulce|crema/,[7,10],null,null],
+  [/queso (tierno|fresco|turrialba|crema)|requeson|ricotta/,[7,7],[60,60],null],
+  [/queso/,[21,28],[180,180],null],
+  [/mantequilla|margarina/,[30,90],[180,270],null],
+  [/sobras|comida hecha|arroz cocido|frijoles cocidos|sopa/,[3,4],[60,90],null],
+  [/lechuga|espinaca|culantro|cilantro|perejil|albahaca/,[5,7],null,null],
+  [/fresa|mora|frambuesa|arandano/,[3,5],[240,365],null],
+  [/tomate/,[5,7],null,[3,5]],
+  [/zanahoria/,[21,28],[300,365],null],
+  [/brocoli|coliflor|vainica|ayote|zucchini/,[4,7],[240,365],null],
+  [/chile dulce|pepino|apio/,[7,10],null,null],
+  [/aguacate/,[3,4],null,[2,4]],
+  [/manzana/,[28,42],null,[5,7]],
+  [/banano|platano/,null,[60,90],[4,7]],
+  [/limon|naranja|mandarina/,[21,28],null,[7,10]],
+  [/papaya|pina|melon|sandia|mango/,[5,7],[240,365],[2,5]],
+  [/uva/,[7,14],null,null],
+  [/cebolla/,null,null,[30,60]],
+  [/papa|yuca|camote/,null,null,[21,35]],
+  [/ajo/,null,null,[60,90]],
+  [/tortilla/,[7,10],[90,90],[3,5]],
+  [/pan/,[7,10],[90,90],[4,6]],
+  [/jugo/,[7,10],[240,365],null],
+  [/arroz|frijol|pasta|fideo|lenteja|garbanzo|avena|harina|azucar|cereal/,null,null,[180,365]],
+  [/atun|lata|enlatad|sardina|maiz dulce/,null,null,[365,730]],
+  [/cafe/,null,null,[60,120]],
+  [/aceite/,null,null,[180,365]],
+  [/galleta|snack|papas tostadas/,null,null,[30,90]]
+];
+const slNorm=s=>String(s||'').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'');
+const slSpan=r=>{const f=d=>d>=60?[Math.round(d/30),'mes','meses']:d>=14&&d%7===0?[d/7,'semana','semanas']:[d,'día','días'];const a=f(r[0]),b=f(r[1]);
+  if(a[1]!==b[1])return `${a[0]} ${a[0]===1?a[1]:a[2]} a ${b[0]} ${b[0]===1?b[1]:b[2]}`;return a[0]===b[0]?`${a[0]} ${a[0]===1?a[1]:a[2]}`:`${a[0]}–${b[0]} ${b[2]}`};
+/* where: 'fridge' | 'freezer' | 'pantry' */
+function shelfLife(name,where){
+  const n=slNorm(name);if(n.length<3)return null;
+  const row=SHELF.find(r=>r[0].test(n));if(!row)return null;
+  const idx={fridge:1,freezer:2,pantry:3}[where],r=row[idx];
+  const names={fridge:'en la refri',freezer:'en el congelador',pantry:'en la alacena'};
+  if(!r){const alt=[['fridge',1],['freezer',2],['pantry',3]].filter(a=>row[a[1]]).map(a=>`${slSpan(row[a[1]])} ${names[a[0]]}`);
+    return{days:null,text:`No tengo una guía para guardarlo ${names[where]}.`+(alt.length?` Suele durar ${alt.join(' o ')}.`:'')}}
+  return{days:r[0],text:`Suele durar ${slSpan(r)} ${names[where]}`+(where==='freezer'?' (con buena calidad)':'')+'.'};
+}
+const slWhere=(place,shelf)=>place==='fridge'?(+shelf===0?'freezer':'fridge'):place==='clean'?null:'pantry';
+function slUpdate(){
+  const box=$('#sl-box');if(!box)return;const nm=$('#f-name'),pl=$('#f-place'),sh=$('#f-shelf');
+  const where=nm&&pl?slWhere(pl.value,sh?sh.value:0):null,s=where?shelfLife(nm.value,where):null;
+  box.innerHTML=s?`<div class="slbox"><div><b>Guía:</b> ${esc(s.text)} <small>Contando desde hoy. Es una orientación general: manda la fecha del empaque y revisá olor y aspecto.</small></div>${s.days?`<button type="button" class="btn sm" data-act="slUse" data-d="${s.days}">Usar como fecha</button>`:''}</div>`:'';
+}
+function slAct(a,d){
+  if(a==='slUse'){const e=$('#f-exp');if(e){e.value=addDays(+d.d);toast('Puse la fecha más prudente de la guía. Podés cambiarla.')}return true}
+  if(a==='rcDates'){RC.dates=!RC.dates;sheetReceiptReview();return true}
+  return false;
+}
+document.addEventListener('input',e=>{if(e.target.id==='f-name')slUpdate()});
+document.addEventListener('change',e=>{if(e.target.id==='f-place'||e.target.id==='f-shelf')setTimeout(slUpdate,0)});
+
 /* ---------- inicio ---------- */
-render();initSync();window.PETS_TEST=PETS;window.ISO_TEST=ISO;
+render();initSync();window.PETS_TEST=PETS;window.ISO_TEST=ISO;window.SYNC_TEST=SYNC;
 setInterval(()=>{if(!document.hidden&&!$("#sheet").classList.contains("on")&&!drag)render()},60000);
 setTimeout(()=>{
   const n=ALERTS.filter(a=>a.lv!=='b').length;

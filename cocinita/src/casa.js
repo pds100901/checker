@@ -234,6 +234,7 @@ function banoExtras(){
 function vBano(){
   return sceneWrap('bano',laundrySVG())+`
   <p class="hint">Tocá la pila para ver el recibo del agua, o la lavadora para ponerla a lavar.</p>
+  <div class="row" style="margin-bottom:14px"><button class="btn ghost" data-act="bath">🚿 Gabinete del baño</button><button class="btn ghost" data-act="house">🧹 Estado de la casa</button></div>
   <div class="panel-title"><h3>Gabinete de limpieza</h3><i></i></div>
   ${furnitureHTML('clean')}${binsHTML()}
   <button class="btn terra block" data-act="newItem" data-place="clean">＋ Agregar producto</button>

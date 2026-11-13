@@ -19,8 +19,8 @@ s=rep(s,"  switch(a){\n    case 'tab':tab=d.tab;","  if(casaAct(a,d,el,px,py))re
 s=rep(s,"function closeSheet(){const s=$('#sheet');s.classList.remove('on');s.innerHTML=''}","function closeSheet(){const s=$('#sheet');s.classList.remove('on');s.innerHTML='';if(SYNC.dirty){SYNC.dirty=false;setTimeout(render,0)}}")
 
 # --- inventario: unidad, historial, reponer
-s=rep(s,"""<label>Fecha de vencimiento</label><input id="f-exp" type="date" value="${it.expiry||''}">`}""","""<label>Fecha de vencimiento (si aplica)</label><input id="f-exp" type="date" value="${it.expiry||''}">${unitSel(it.unit)}`}""")
-s=rep(s,"""<label>Fecha de vencimiento</label><input id="f-exp" type="date">`}""","""<label>Fecha de vencimiento (si aplica)</label><input id="f-exp" type="date">${unitSel()}`}""")
+s=rep(s,"""<label>Fecha de vencimiento</label><input id="f-exp" type="date" value="${it.expiry||''}">`}""","""<label>Fecha de vencimiento (si aplica)</label><input id="f-exp" type="date" value="${it.expiry||''}">${unitSel(it.unit)}<div id="sl-box"></div>`}""")
+s=rep(s,"""<label>Fecha de vencimiento</label><input id="f-exp" type="date">`}""","""<label>Fecha de vencimiento (si aplica)</label><input id="f-exp" type="date">${unitSel()}<div id="sl-box"></div>`}""")
 s=rep(s,"""${clean?'':`<button class="btn terra" data-act="useOne" data-id="${id}">Usé 1</button>`}
   <button class="btn berry" data-act="delItem" data-id="${id}">Eliminar</button></div>`);""","""${clean?'':`<button class="btn terra" data-act="useOne" data-id="${id}">Usé 1</button><button class="btn ghost" data-act="addOne" data-id="${id}">Repuse 1</button>`}
   <button class="btn berry" data-act="delItem" data-id="${id}">Eliminar</button></div>${histHTML(id)}`);""")
@@ -67,7 +67,8 @@ s=rep(s,'type="number" step="0.5" min="1" value="${D.bag.total/1000}"','type="nu
 
 s=rep(s,'<label>Estante</label><select id="f-shelf">${shelfOpts(place,0)}</select>','<label>Estante</label><select id="f-shelf">${shelfOpts(place,place===\'fridge\'?1:0)}</select>')
 s=rep(s,'return `<div class="card"><h2>🛒 Lista del súper</h2>','return `<button class="btn block rcbtn" data-act="receipt">📷 Leer factura del súper</button><div class="card"><h2>🛒 Lista del súper</h2>')
-s=rep(s,"  if(casaAct(a,d,el,px,py))return;","  if(casaAct(a,d,el,px,py)||receiptAct(a,d))return;")
+s=rep(s,"  if(casaAct(a,d,el,px,py))return;","  if(casaAct(a,d,el,px,py)||receiptAct(a,d)||slAct(a,d)||houseAct(a,d,el,px,py))return;")
+s=rep(s,"h+'</div>';s.classList.add('on')}","h+'</div>';s.classList.add('on');slUpdate()}")
 # --- voseo
 for a,b in [('Arrastra ','Arrastrá '),('Toca para planear','Tocá para planear'),('Ponle un nombre','Ponele un nombre'),('Escribe ','Escribí '),('Tienes ','Tenés '),('No tienes','No tenés'),('ya lo tienes','ya lo tenés'),
             ('Pon la nueva','Poné la nueva'),('puedes','podés'),('Agrégala','Agregala'),('agrégalos aquí','agregalos aquí'),('Qué quieres recordar','Qué querés recordar'),('Toca un producto','Tocá un producto'),
@@ -75,7 +76,7 @@ for a,b in [('Arrastra ','Arrastrá '),('Toca para planear','Tocá para planear'
     s=s.replace(a,b)
 
 # --- módulos y arranque
-s=rep(s,'/* ---------- inicio ---------- */\nrender();','/* ---------- casa ---------- */\n'+rd('casa.js')+'\n'+rd('pets.js')+'\n'+rd('iso_art.js')+'\n'+rd('iso_engine.js')+'\n'+rd('iso_app.js')+'\n'+rd('receipt.js')+'\n/* ---------- inicio ---------- */\nrender();initSync();window.PETS_TEST=PETS;window.ISO_TEST=ISO;\nsetInterval(()=>{if(!document.hidden&&!$("#sheet").classList.contains("on")&&!drag)render()},60000);')
+s=rep(s,'/* ---------- inicio ---------- */\nrender();','/* ---------- casa ---------- */\n'+rd('casa.js')+'\n'+rd('pets.js')+'\n'+rd('iso_art.js')+'\n'+rd('iso_engine.js')+'\n'+rd('iso_app.js')+'\n'+rd('receipt.js')+'\n'+rd('shelflife.js')+'\n/* ---------- inicio ---------- */\nrender();initSync();window.PETS_TEST=PETS;window.ISO_TEST=ISO;window.SYNC_TEST=SYNC;\nsetInterval(()=>{if(!document.hidden&&!$("#sheet").classList.contains("on")&&!drag)render()},60000);')
 s=rep(s,"toast('¡Bienvenida! Arrastrá los productos y toca a los perritos 🐾')","toast('¡Bienvenida a tu casita! Tocá los objetos para usarlos 🐾')")
 s=rep(s,'</style>',rd('casa.css')+rd('iso.css')+'\n</style>')
 s=rep(s,'<script>\n(()=>{','<script src="pixi.min.js"></script>\n<script>\n(()=>{')

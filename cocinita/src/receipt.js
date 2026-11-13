@@ -1,5 +1,5 @@
 /* ---------- leer la factura del súper con una foto ---------- */
-let RC={rows:[],busy:false,ctl:null};
+let RC={rows:[],busy:false,ctl:null,dates:false};
 const RC_PLACES=[['fridge','Refri'],['freezer','Congelador'],['pantry','Alacena'],['spice','Especiero'],['clean','Limpieza'],['skip','No guardar']];
 function sheetReceipt(){
   RC.rows=[];
@@ -49,6 +49,7 @@ function sheetReceiptReview(){
     <select class="rc-p" data-i="${i}" data-f="place" aria-label="Dónde va">${RC_PLACES.map(p=>`<option value="${p[0]}" ${p[0]===r.place?'selected':''}>${p[1]}</option>`).join('')}</select></div>`).join('');
   openSheet(`<h3>${ic('🧾')} Revisá lo que leí</h3><p class="sub">Encontré ${RC.rows.length} producto${RC.rows.length===1?'':'s'}. Corregí nombres, cantidades o lugar, y quitá lo que no querás guardar. La lectura puede tener errores.</p>
   <div class="rclist">${rows}</div>
+  <button class="rcdates" data-act="rcDates"><span class="ck ${RC.dates?'on':''}">${RC.dates?'✓':''}</span><span>Poner fecha orientativa a lo que va a la refri o al congelador <small>(guía general, contando desde hoy; la podés cambiar después)</small></span></button>
   <div class="acts-row"><button class="btn" data-act="rcSave">Guardar en la casita</button><button class="btn ghost" data-act="receipt">Otra foto</button></div>`);
 }
 function receiptSave(){
@@ -58,6 +59,7 @@ function receiptSave(){
     let it=S.items.find(i=>i.name.toLowerCase()===key&&(i.place==='clean')===clean);
     if(it){if(clean)it.level=100;else{it.qty=(+it.qty||0)+r.qty;if(!it.unit||it.qty===r.qty)it.unit=r.unit}}
     else{it=mk(r.name.trim(),r.emoji,place,shelf,clean?1:r.qty);it.unit=r.unit;S.items.push(it)}
+    if(RC.dates&&(r.place==='fridge'||r.place==='freezer')&&!it.expiry){const g=shelfLife(it.name,r.place);if(g&&g.days)it.expiry=addDays(g.days)}
     S.shop=S.shop.filter(x=>x.name.toLowerCase()!==key);n++;
   });
   save();closeSheet();if(tab!=='casa')tab='cocina';render();toast(n?`Guardé ${n} producto${n===1?'':'s'} de la factura 🧾`:'No se guardó nada');

@@ -214,6 +214,25 @@ const ISO_ART=(()=>{
     g.disc(b.R,.5,.43,.25,.22,'url(#glass)',{sw:2});g.rect(b.R,0,0,1,.08,shade(col,-.1),{sw:1.6});return g};
   A_.basket=(x,y)=>()=>{const g=new G();g.shadow(x-.4,y-.4,.8,.8,.16);const c=g.cyl(x,y,0,.62,.38,'#E0B07A',{top:'#F58FA6'});
     g.disc(c.T,.42,.5,.2,.2,'#8EB8D0',{sw:1.5});g.disc(c.T,.62,.42,.16,.16,'#FFF6E2',{sw:1.5});return g};
+  A_.basketL=(x,y,l)=>()=>{const g=new G();g.shadow(x-.4,y-.4,.8,.8,.16);const c=g.cyl(x,y,0,.62,.38,'#E0B07A',{top:l?'#F58FA6':'#8A5A3A'});
+    [.2,.42].forEach(z=>{const a=[];for(let i=0;i<=10;i++){const t=-Math.PI/4+Math.PI*i/10;a.push([x+Math.cos(t)*.385,y+Math.sin(t)*.385,z])}g.poly(a,'none',{open:true,stroke:'#B98552',sw:1.6})});
+    const blob=(dx,dy,z,r,col)=>g.disc({o:[x+dx-r*.55,y+dy+r*.55,z],a:[r*1.1,-r*1.1,0],b:[0,0,r*1.5]},.5,.5,.5,.5,col,{sw:1.8,lit:'lv'});
+    if(l>=1){g.disc(c.T,.42,.5,.2,.2,'#8EB8D0',{sw:1.5});g.disc(c.T,.62,.42,.16,.16,'#FFF6E2',{sw:1.5})}
+    if(l>=2){blob(-.12,0,.5,.3,'#8EB8D0');blob(.14,.02,.55,.28,'#FFD979');blob(0,.08,.72,.26,'#F58FA6')}
+    if(l>=3){blob(-.06,.02,.95,.26,'#C9B0E8');blob(.1,.06,1.1,.2,'#FFF6E2');g.poly([[x+.3,y+.25,.62],[x+.36,y+.3,.2],[x+.2,y+.36,.16],[x+.14,y+.33,.6]],'#A9CDE0',{sw:1.8})}return g};
+  A_.pile=(x,y)=>()=>{const g=new G();g.shadow(x-.5,y-.4,1,.8,.14);const fl=(dx,dy,rx,ry,col)=>g.disc({o:[x+dx-rx,y+dy-ry,.02],a:[2*rx,0,0],b:[0,2*ry,0]},.5,.5,.5,.5,col,{sw:1.8});
+    fl(0,0,.42,.3,'#F58FA6');fl(.3,.22,.3,.24,'#8EB8D0');fl(-.28,.2,.26,.2,'#FFD979');
+    g.disc({o:[x-.12,y+.25,.02],a:[.3,-.3,0],b:[0,0,.34]},.5,.5,.5,.5,'#FFF6E2',{sw:1.8,lit:'lv'});return g};
+  A_.clutter=(x,y,kind)=>()=>{const g=new G();g.shadow(x-.2,y-.2,.4,.4,.14);
+    if(kind==='sock'){const S={o:[x-.22,y-.14,.02],a:[.44,0,0],b:[0,.28,0]};g.pts(S,[[0,.1],[.55,0],[.7,.45],[1,.6],[.95,.95],[.5,1],[.35,.5],[.05,.5]],'#FFF6E2',{sw:1.8});g.pts(S,[[0,.1],[.2,.06],[.24,.46],[.05,.5]],'#F58FA6',{sw:1.4})}
+    else if(kind==='ball'){const S={o:[x-.13,y+.13,0],a:[.26,-.26,0],b:[0,0,.42]};g.disc(S,.5,.5,.5,.5,'#C7E26A',{sw:2,lit:'lv'});g.line(S,[[.12,.4],[.5,.56],[.88,.4]],'#fff',2)}
+    else if(kind==='paper'){const S={o:[x-.12,y+.12,0],a:[.24,-.24,0],b:[0,0,.32]};g.pts(S,[[.1,.2],[.3,0],[.62,.1],[.95,.3],[.86,.7],[.6,1],[.3,.86],[0,.6]],'#FFFDF6',{sw:1.8});g.line(S,[[.3,.3],[.5,.55],[.7,.35]],'#C9B8A0',1.4)}
+    else if(kind==='bone'){const S={o:[x-.24,y-.1,.02],a:[.48,0,0],b:[0,.2,0]};g.rect(S,.15,.3,.85,.7,'#FFF6E2',{sw:1.8});[[.1,.2],[.1,.8],[.9,.2],[.9,.8]].forEach(q=>g.disc(S,q[0],q[1],.1,.26,'#FFF6E2',{sw:1.8}));g.rect(S,.14,.36,.86,.64,'#FFF6E2',{stroke:'none'})}
+    else{g.cyl(x,y,0,.26,.12,'#C9B0E8',{sw:1.8,top:'#8A5A3A'})}return g};
+  A_.stain=(x,y,r)=>()=>{const g=new G(),S={o:[x-r,y-r,.015],a:[2*r,0,0],b:[0,2*r,0]};
+    g.pts(S,[[.1,.4],[.3,.1],[.6,.05],[.9,.3],[1,.6],[.75,.92],[.45,1],[.15,.8]],'#9A7B5B',{stroke:'none',op:.38});g.disc(S,.42,.5,.2,.2,'#7A5C40',{stroke:'none',op:.3});
+    [[.15,.1],[.9,.85],[.95,.12]].forEach(q=>g.disc(S,q[0],q[1],.06,.06,'#9A7B5B',{stroke:'none',op:.4}));
+    [[.2,.9],[.8,.2]].forEach(q=>{const P=g.P(S,q[0],q[1]);g.poly([[P[0],P[1],.1],[P[0],P[1],.3]],'none',{open:true,stroke:'#B9A48C',sw:2,dash:'3 4'})});return g};
   A_.rack=(S)=>()=>{const g=new G();g.line(S,[[.08,.62],[.92,.62]],'#8A5330',3);
     [[.2,'#F58FA6'],[.42,'#FFD979'],[.64,'#8EB8D0'],[.84,'#FFF6E2']].forEach(q=>{g.rect(S,q[0]-.07,.42,q[0]+.07,.62,q[1],{sw:1.8});g.rect(S,q[0]-.012,.6,q[0]+.012,.66,'#E9C48F',{sw:1.2})});return g};
   /* ---------- exterior ---------- */

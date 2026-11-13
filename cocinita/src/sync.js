@@ -2,17 +2,19 @@
 const KEY='casa-fresita-v2',KEY_OLD='cocinita-v1';
 const COLS=['items','shop','prep','chores','reminders','bills','tuppers','moves','outages'];
 function emptyState(){
-  return{v:2,stars:0,welcome:false,items:[],shop:[],menu:{},prep:[],chores:[],reminders:[],wasted:[],bills:[],tuppers:[],moves:[],outages:[],
+  return{v:2,stars:0,welcome:false,items:[],shop:[],menu:{},prep:[],chores:[],reminders:[],wasted:[],bills:[],tuppers:[],moves:[],outages:[],house:{laundry:0,mess:{}},
     dogs:{rosco:{name:'Rosco',g:0,fed:{date:'',am:false,pm:false}},mali:{name:'Mali',g:0,fed:{date:'',am:false,pm:false}},bag:{left:0,total:0},treats:0,water:''}};
 }
 function normalize(s){const e=emptyState();Object.keys(e).forEach(k=>{if(s[k]==null)s[k]=e[k]});COLS.forEach(c=>{if(!Array.isArray(s[c]))s[c]=[]});
-  s.items.forEach(i=>{if(!i.unit)i.unit='unid.'});return s}
+  s.items.forEach(i=>{if(!i.unit)i.unit='unid.'});if(!s.house.mess)s.house.mess={};return s}
+const isCount=it=>it.place==='clean'&&String(it.emoji||'').replace(/\uFE0F/g,'')==='🧻';
 /* S <-> documentos (ruta -> JSON) */
 function flatten(s){
   const f={};
   COLS.forEach(c=>s[c].forEach(x=>{if(x&&x.id)f[c+'/'+x.id]=JSON.stringify(x)}));
   f['home/dogs']=JSON.stringify(s.dogs);
   f['home/menu']=JSON.stringify({menu:s.menu});
+  f['home/house']=JSON.stringify(s.house);
   f['home/misc']=JSON.stringify({stars:s.stars,welcome:s.welcome,wasted:s.wasted});
   return f;
 }
@@ -22,6 +24,7 @@ function applyDoc(path,json){
     if(!d)return;
     if(id==='dogs')S.dogs=Object.assign(emptyState().dogs,d);
     else if(id==='menu')S.menu=d.menu||{};
+    else if(id==='house')S.house=Object.assign({laundry:0,mess:{}},d);
     else if(id==='misc'){S.stars=d.stars||0;S.welcome=!!d.welcome;S.wasted=d.wasted||[]}
     return;
   }
@@ -29,7 +32,7 @@ function applyDoc(path,json){
   const i=S[c].findIndex(x=>x.id===id);
   if(!d){if(i>=0)S[c].splice(i,1)}else if(i>=0)S[c][i]=d;else S[c].push(d);
 }
-const SYNC={db:null,state:'local',queue:[],flat:{},loaded:{},firstLoad:false,fromOld:false,flushing:false,timer:null,err:''};
+const SYNC={wrote:{},late:{},db:null,state:'local',queue:[],flat:{},loaded:{},firstLoad:false,fromOld:false,flushing:false,timer:null,err:''};
 function loadLocal(){
   try{const r=localStorage.getItem(KEY);if(r){const o=JSON.parse(r);if(o&&o.S){SYNC.queue=o.queue||[];SYNC.firstLoad=!!o.firstLoad;return normalize(o.S)}}}catch(e){}
   try{const r=localStorage.getItem(KEY_OLD);if(r){const s=JSON.parse(r);if(s&&s.items){SYNC.fromOld=true;return normalize(s)}}}catch(e){}
@@ -47,7 +50,7 @@ function enqueue(path,json){
 function localEffects(prev){
   S.items.forEach(it=>{
     const p=prev['items/'+it.id]?JSON.parse(prev['items/'+it.id]):null;
-    const clean=it.place==='clean';
+    const clean=it.place==='clean'&&!isCount(it);
     const now=clean?it.level:it.qty,was=p?(clean?p.level:p.qty):null;
     if(was===null){if(now>0)S.moves.push({id:uid(),item:it.id,name:it.name,d:now,q:now,u:clean?'%':it.unit,k:'alta',at:new Date().toISOString()})}
     else if(now!==was){
@@ -73,6 +76,7 @@ async function flush(){
       const q=SYNC.queue[0];
       const ref=SYNC.db.doc(q.path);
       if(q.json==null)await ref.delete();else await ref.set(JSON.parse(q.json));
+      SYNC.wrote[q.path]=Date.now();
       if(SYNC.queue[0]===q)SYNC.queue.shift();else SYNC.queue=SYNC.queue.filter(x=>x!==q);
       persist();SYNC.err='';
     }
@@ -91,15 +95,21 @@ function onRemote(col,snap){
     const path=col+'/'+d.id;seen.add(path);
     if(pend.has(path))return;
     const j=JSON.stringify(d.data());
-    if(SYNC.flat[path]!==j){applyDoc(path,j);SYNC.flat[path]=j;ch=true}
+    if(SYNC.flat[path]===j){delete SYNC.late[path];return}
+    /* una copia vieja puede llegar justo después de escribir: se espera a confirmarla antes de aceptarla */
+    if(Date.now()-(SYNC.wrote[path]||0)<4000){SYNC.late[path]=j;setTimeout(applyLate,4200);return}
+    applyDoc(path,j);SYNC.flat[path]=j;ch=true
   });
   const definitive=!(snap.metadata&&snap.metadata.fromCache);
   if(definitive&&SYNC.firstLoad){
-    Object.keys(SYNC.flat).forEach(p=>{if(p.startsWith(col+'/')&&!seen.has(p)&&!pend.has(p)){applyDoc(p,null);delete SYNC.flat[p];ch=true}});
+    Object.keys(SYNC.flat).forEach(p=>{if(p.startsWith(col+'/')&&!seen.has(p)&&!pend.has(p)&&Date.now()-(SYNC.wrote[p]||0)>4000){applyDoc(p,null);delete SYNC.flat[p];ch=true}});
   }
   if(definitive&&!SYNC.loaded[col]){SYNC.loaded[col]={n:snap.docs.length};checkFirstLoad()}
   if(ch){persist();remoteRender()}
 }
+function applyLate(){const pend=new Set(SYNC.queue.map(q=>q.path));let ch=false;
+  Object.keys(SYNC.late).forEach(p=>{if(pend.has(p)||Date.now()-(SYNC.wrote[p]||0)<4000)return;const j=SYNC.late[p];delete SYNC.late[p];if(SYNC.flat[p]!==j){applyDoc(p,j);SYNC.flat[p]=j;ch=true}});
+  if(ch){persist();remoteRender()}}
 /* primera vez que este aparato ve la base: si está vacía sube lo local; si ya tiene datos, manda la base */
 function checkFirstLoad(){
   const all=COLS.concat(['home']);
