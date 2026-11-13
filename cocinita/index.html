@@ -407,6 +407,107 @@ nav button.on{color:var(--ink)}
 
 .item .nm{font-size:10.5px;padding:0 5px;margin:3px -6px 0;max-width:78px;max-height:none;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;overflow-wrap:normal;vertical-align:top}
 
+
+/* ===== casa interactiva ===== */
+:root{--wall2:#FBDCCB}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--wall2:#5A4038}}
+:root[data-theme="dark"]{--wall2:#5A4038}
+body{transition:background-color 1.2s}
+body.dark-house{background-color:color-mix(in srgb,var(--bg) 62%,#2A2140)}
+h4{font-family:var(--disp);font-weight:600;font-size:16px;margin:18px 0 6px}
+
+.room{position:relative;border:3px solid var(--out);border-radius:30px;overflow:hidden;box-shadow:var(--sh);background:var(--wallp);margin-bottom:14px}
+.room>svg{display:block;width:100%;height:100%;user-select:none;-webkit-user-select:none}
+canvas.pets{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:1}
+.garden canvas.pets{z-index:1}
+.dogslot{display:block;width:100%;height:100%}
+.pethits{position:absolute;inset:0;pointer-events:none;z-index:2}
+.pethit{position:absolute;pointer-events:auto;padding:0;border-radius:40%}
+.pethit:focus-visible{outline:3px dashed var(--terra);outline-offset:2px}
+.room .dark{position:absolute;inset:0;background:#2A2147;mix-blend-mode:multiply;opacity:0;pointer-events:none;z-index:3;transition:opacity 1.4s}
+.no-luz .room .dark{opacity:.74}
+.ptxt{font:600 9px var(--disp);fill:#5E3219}.ptxt.w{fill:#fff}.ptxt.s{font-size:7.5px;fill:#A0745E}
+[data-act]{cursor:pointer}
+.room [role=button]:focus-visible{outline:3px dashed var(--terra)}
+
+/* estados de servicios dentro de la escena */
+.lampshade{fill:#FFD36B;transition:fill .8s}.no-luz .lampshade{fill:#C9BBA0}
+.lampglow{transition:opacity .8s;animation:glowp 4s ease-in-out infinite alternate}.no-luz .lampglow{opacity:0;animation:none}
+@keyframes glowp{from{opacity:.75}to{opacity:1}}
+.led{fill:#6FC46A;animation:ledb 1.6s steps(2) infinite}.led.l2{animation-delay:.4s}.led.l3{animation-delay:.8s}
+.no-net .led{fill:#E4574B;animation:ledb .7s steps(2) infinite}.no-net .led.l2,.no-net .led.l3{fill:#8B7B74;animation:none}
+.no-luz .led{fill:#8B7B74!important;animation:none!important}
+@keyframes ledb{50%{opacity:.35}}
+.wifi path{animation:wifi 1.8s ease-out infinite}.wifi path:first-child{animation-delay:.3s}
+@keyframes wifi{0%{opacity:.2}40%{opacity:1}100%{opacity:.2}}
+.no-net .wifi,.no-luz .wifi{display:none}
+.tvscreen{fill:#F7B3A9;transition:fill .6s}.tv-off{display:none}
+.tvh{animation:glowp 1.2s ease-in-out infinite alternate}.tvh.h2{animation-delay:.6s}
+.no-net .tvscreen{fill:#8B93A8}.no-net .tv-on{display:none}.no-net .tv-off{display:block}
+.no-luz .tvscreen{fill:#3A2A33}.no-luz .tv-on,.no-luz .tv-off{display:none}
+.tscreen{fill:#8BC98A}.t-off{display:none}
+.no-net .tscreen{fill:#E4877B}.no-net .t-on{display:none}.no-net .t-off{display:block}
+.warn{display:none;transform-box:fill-box;transform-origin:50% 60%}
+.no-luz .warn-luz,.no-net .warn-net,.no-agua .warn-agua{display:block;animation:warnb 1.1s ease-in-out infinite}
+@keyframes warnb{50%{transform:scale(1.18) rotate(-6deg)}}
+.wstream{display:none;stroke-dasharray:5 3}.run-tap .wstream,.fx-agua .wstream{display:block;animation:flow .25s linear infinite}
+@keyframes flow{to{stroke-dashoffset:-8}}
+.drip{transform-box:fill-box;animation:dripk 2.6s ease-in infinite}
+@keyframes dripk{0%,55%{opacity:0;transform:translateY(-2px) scale(.5)}70%{opacity:1;transform:none}100%{opacity:0;transform:translateY(12px)}}
+.no-agua .drip{display:none}
+.no-luz .stm{display:none}.no-luz .drum{animation:none}
+.r-bano.run .drum{animation-duration:.6s}.r-bano.run .mach{animation:jig .12s linear infinite alternate}
+.r-bano.run .bub{animation:bubup 1.3s ease-in infinite}.r-bano.run .bub.d2{animation-delay:.45s}.r-bano.run .bub.d3{animation-delay:.9s}
+
+/* mensajes sobre la escena */
+.svcmsg{position:absolute;z-index:4;left:10px;right:10px;top:10px;text-align:left;background:var(--paper);color:var(--ink);border:3px solid var(--out);border-radius:18px;padding:8px 12px;box-shadow:0 4px 0 rgba(0,0,0,.25);animation:up .4s ease-out}
+.svcmsg b{display:block;font-family:var(--disp);font-weight:600;font-size:15px;line-height:1.2}
+.svcmsg small{display:block;color:var(--muted);font-size:11.5px;line-height:1.25;margin-top:2px}
+.svcchips{position:absolute;z-index:4;left:10px;bottom:10px;display:flex;flex-wrap:wrap;gap:6px}
+.svcchip{background:var(--paper);color:var(--ink);border:2.5px solid var(--out);border-radius:999px;padding:3px 10px;font:600 12px var(--disp)}
+/* animación al recuperar un servicio */
+.sparks{position:absolute;inset:0;pointer-events:none;z-index:5}
+.sparks i{position:absolute;width:18px;height:18px;opacity:0;background:#FFE08A;clip-path:polygon(50% 0,62% 38%,100% 50%,62% 62%,50% 100%,38% 62%,0 50%,38% 38%)}
+.sparks i:nth-child(1){left:12%;top:20%}.sparks i:nth-child(2){left:30%;top:55%}.sparks i:nth-child(3){left:48%;top:14%}.sparks i:nth-child(4){left:66%;top:42%}.sparks i:nth-child(5){left:84%;top:22%}.sparks i:nth-child(6){left:20%;top:76%}.sparks i:nth-child(7){left:58%;top:70%}.sparks i:nth-child(8){left:78%;top:64%}.sparks i:nth-child(9){left:40%;top:36%}
+.room[class*="fx-"] .sparks i{animation:spark 1.5s ease-out both}
+.room[class*="fx-"] .sparks i:nth-child(3n){animation-delay:.25s}.room[class*="fx-"] .sparks i:nth-child(3n+1){animation-delay:.5s}
+.fx-agua .sparks i{background:#8FC3E8;clip-path:ellipse(34% 50% at 50% 50%)}.fx-net .sparks i{background:#9DC27A}
+@keyframes spark{0%{opacity:0;transform:scale(.2) rotate(0)}40%{opacity:1;transform:scale(1.25) rotate(40deg)}100%{opacity:0;transform:scale(.6) rotate(90deg) translateY(-14px)}}
+.room.fx-luz .dark{animation:relight 1.7s ease-out}
+@keyframes relight{0%{opacity:.74}18%{opacity:.25}30%{opacity:.66}46%{opacity:.12}58%{opacity:.4}100%{opacity:0}}
+.fx-net .wifi path{animation:wifi .5s ease-out 4}
+
+/* encabezado: estado de guardado */
+.syncb{width:30px;height:30px;border-radius:50%;border:2.5px solid var(--out);background:var(--mint);display:grid;place-items:center;flex:none;padding:0;font:700 14px var(--disp);color:#2d3d1c}
+.syncb::before{content:"✓"}
+.syncb.wait{background:var(--butter)}.syncb.wait::before{content:"↻";animation:spin 1.2s linear infinite}
+.syncb.off,.syncb.err{background:var(--rose)}.syncb.off::before,.syncb.err::before{content:"!"}
+.syncb.loc{background:var(--paper)}.syncb.loc::before{content:"•"}
+nav button span{position:relative}
+nav button span em{position:absolute;top:-6px;right:-4px;width:17px;height:17px;border-radius:50%;background:var(--terra);color:#fff;border:2px solid var(--out);font:700 11px/13px var(--disp);font-style:normal;text-align:center}
+.backbar{display:inline-block;margin:0 0 12px;background:var(--paper);border:2.5px solid var(--out);border-radius:999px;padding:5px 14px;font:600 14px var(--disp);box-shadow:0 3px 0 var(--shd)}
+
+/* filas de servicios */
+.svcrow{display:flex;gap:10px;align-items:center;width:100%;text-align:left;background:var(--card);border:3px solid var(--out);border-radius:20px;padding:10px 12px;margin-bottom:10px;box-shadow:0 3px 0 var(--shd)}
+.svcrow .em .ic{width:34px;height:34px;display:block;vertical-align:0}.svcrow .t{flex:1;min-width:0}.svcrow .t b{display:block;font-family:var(--disp);font-weight:600}.svcrow .t small{display:block;color:var(--muted);font-size:12px;line-height:1.25}
+.alert.b{background:var(--sky)}
+.sheet p{margin:6px 0}
+
+/* refri: tuppers y avisos */
+.frnote{background:color-mix(in srgb,var(--butter) 55%,var(--paper));border:3px solid var(--out);border-radius:18px;padding:8px 12px;margin-bottom:10px;font-size:13px;line-height:1.3}
+.frnote.r{background:var(--rose)}
+.fridge.off{filter:brightness(.78) saturate(.75)}
+.fridge .shelf.tupshelf{background:color-mix(in srgb,var(--sky) 45%,transparent);border-radius:8px;padding:20px 4px 6px}
+.item.tup{background:none;border:0;padding:0;cursor:pointer;touch-action:auto}
+.tupsvg{width:48px;height:46px;display:block;margin:0 auto;filter:drop-shadow(0 3px 0 rgba(107,58,30,.16))}
+.frz{position:absolute;left:0;top:14px;font-size:13px;color:#3F84B5;font-weight:800;z-index:2}
+.tupadd{width:54px;height:58px;border:2.5px dashed var(--out);border-radius:14px;font:600 20px/1 var(--disp);color:var(--muted);display:grid;place-items:center;align-content:center;gap:2px;align-self:center}
+.tupadd small{font-size:10px}
+.portions{text-align:center;margin:12px 0;font-size:15px}.portions b{font:700 26px var(--disp)}
+.pdots{display:flex;gap:6px;justify-content:center;flex-wrap:wrap;margin-top:6px}
+.pdots i{width:18px;height:18px;border-radius:50%;border:2.5px solid var(--out);background:var(--paper)}.pdots i.on{background:var(--terra)}
+.garden .dogcol .dog{cursor:pointer}
+
 </style>
 </head>
 <body>
@@ -419,7 +520,6 @@ nav button.on{color:var(--ink)}
 <script>
 (()=>{
 'use strict';
-const KEY='cocinita-v1';
 const $=(s,r=document)=>r.querySelector(s);
 const $$=(s,r=document)=>[...r.querySelectorAll(s)];
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -445,7 +545,7 @@ const LEVELS=[[0,'Pinche de cocina'],[20,'Cocinera aprendiz'],[60,'Chef del cott
 const LIDS=['#C9623A','#8DA06B','#EFC25A','#E3A09A','#8EB8D0','#B58BD0','#A8571F'];
 
 /* ---------- datos ---------- */
-function mk(name,emoji,place,shelf,qty,exp,min,extra){return Object.assign({id:uid(),name,emoji,place,shelf,qty,min:min||0,expiry:exp||'',level:100},extra||{})}
+function mk(name,emoji,place,shelf,qty,exp,min,extra){return Object.assign({id:uid(),name,emoji,place,shelf,qty,min:min||0,expiry:exp||'',level:100,unit:'unid.'},extra||{})}
 function seed(){
   const t=addDays;
   return{
@@ -481,10 +581,155 @@ function seed(){
     reminders:[],wasted:[]
   };
 }
-function load(){try{const r=localStorage.getItem(KEY);if(r){const s=JSON.parse(r);if(s&&s.items)return s}}catch(e){}return seed()}
-let S=load();
-function save(){try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
-let tab='cocina',furn='fridge',day=dayIdx(),doorAnim=true,ALERTS=[],pendingEmoji='';
+/* ---------- datos: base de datos del artefacto + copia local + cola sin conexión ---------- */
+const KEY='casa-fresita-v2',KEY_OLD='cocinita-v1';
+const COLS=['items','shop','prep','chores','reminders','bills','tuppers','moves','outages'];
+function emptyState(){
+  return{v:2,stars:0,welcome:false,items:[],shop:[],menu:{},prep:[],chores:[],reminders:[],wasted:[],bills:[],tuppers:[],moves:[],outages:[],
+    dogs:{rosco:{name:'Rosco',g:0,fed:{date:'',am:false,pm:false}},mali:{name:'Mali',g:0,fed:{date:'',am:false,pm:false}},bag:{left:0,total:0},treats:0,water:''}};
+}
+function normalize(s){const e=emptyState();Object.keys(e).forEach(k=>{if(s[k]==null)s[k]=e[k]});COLS.forEach(c=>{if(!Array.isArray(s[c]))s[c]=[]});
+  s.items.forEach(i=>{if(!i.unit)i.unit='unid.'});return s}
+/* S <-> documentos (ruta -> JSON) */
+function flatten(s){
+  const f={};
+  COLS.forEach(c=>s[c].forEach(x=>{if(x&&x.id)f[c+'/'+x.id]=JSON.stringify(x)}));
+  f['home/dogs']=JSON.stringify(s.dogs);
+  f['home/menu']=JSON.stringify({menu:s.menu});
+  f['home/misc']=JSON.stringify({stars:s.stars,welcome:s.welcome,wasted:s.wasted});
+  return f;
+}
+function applyDoc(path,json){
+  const [c,id]=path.split('/');const d=json==null?null:JSON.parse(json);
+  if(c==='home'){
+    if(!d)return;
+    if(id==='dogs')S.dogs=Object.assign(emptyState().dogs,d);
+    else if(id==='menu')S.menu=d.menu||{};
+    else if(id==='misc'){S.stars=d.stars||0;S.welcome=!!d.welcome;S.wasted=d.wasted||[]}
+    return;
+  }
+  if(!COLS.includes(c))return;
+  const i=S[c].findIndex(x=>x.id===id);
+  if(!d){if(i>=0)S[c].splice(i,1)}else if(i>=0)S[c][i]=d;else S[c].push(d);
+}
+const SYNC={db:null,state:'local',queue:[],flat:{},loaded:{},firstLoad:false,fromOld:false,flushing:false,timer:null,err:''};
+function loadLocal(){
+  try{const r=localStorage.getItem(KEY);if(r){const o=JSON.parse(r);if(o&&o.S){SYNC.queue=o.queue||[];SYNC.firstLoad=!!o.firstLoad;return normalize(o.S)}}}catch(e){}
+  try{const r=localStorage.getItem(KEY_OLD);if(r){const s=JSON.parse(r);if(s&&s.items){SYNC.fromOld=true;return normalize(s)}}}catch(e){}
+  return emptyState();
+}
+let S=loadLocal();
+SYNC.flat=flatten(S);
+/* todo lo que venía de la versión anterior (solo en este aparato) queda en cola para subir si la base está vacía */
+function persist(){try{localStorage.setItem(KEY,JSON.stringify({S,queue:SYNC.queue,firstLoad:SYNC.firstLoad}))}catch(e){}}
+function enqueue(path,json){
+  SYNC.queue=SYNC.queue.filter(q=>q.path!==path);
+  SYNC.queue.push({path,json,t:Date.now()});
+}
+/* consecuencias automáticas de un cambio local: historial y lista de compras */
+function localEffects(prev){
+  S.items.forEach(it=>{
+    const p=prev['items/'+it.id]?JSON.parse(prev['items/'+it.id]):null;
+    const clean=it.place==='clean';
+    const now=clean?it.level:it.qty,was=p?(clean?p.level:p.qty):null;
+    if(was===null){if(now>0)S.moves.push({id:uid(),item:it.id,name:it.name,d:now,q:now,u:clean?'%':it.unit,k:'alta',at:new Date().toISOString()})}
+    else if(now!==was){
+      S.moves.push({id:uid(),item:it.id,name:it.name,d:now-was,q:now,u:clean?'%':it.unit,k:now<was?'consumo':'reposición',at:new Date().toISOString()});
+      if(now<=0&&was>0&&!S.shop.some(x=>!x.checked&&x.name.toLowerCase()===it.name.toLowerCase()))
+        S.shop.push({id:uid(),name:it.name,emoji:it.emoji,qty:'1',place:it.place,ref:{type:'item',id:it.id},checked:false,auto:true});
+    }
+  });
+  if(S.moves.length>400)S.moves=S.moves.slice(-400);
+}
+function save(){
+  localEffects(SYNC.flat);
+  const f=flatten(S);
+  Object.keys(f).forEach(p=>{if(f[p]!==SYNC.flat[p])enqueue(p,f[p])});
+  Object.keys(SYNC.flat).forEach(p=>{if(!(p in f))enqueue(p,null)});
+  SYNC.flat=f;persist();flush();syncBadge();
+}
+async function flush(){
+  if(!SYNC.db||SYNC.flushing||!SYNC.firstLoad)return;
+  SYNC.flushing=true;
+  try{
+    while(SYNC.queue.length){
+      const q=SYNC.queue[0];
+      const ref=SYNC.db.doc(q.path);
+      if(q.json==null)await ref.delete();else await ref.set(JSON.parse(q.json));
+      if(SYNC.queue[0]===q)SYNC.queue.shift();else SYNC.queue=SYNC.queue.filter(x=>x!==q);
+      persist();SYNC.err='';
+    }
+  }catch(e){
+    SYNC.err=(e&&e.code)||'unavailable';
+    if(SYNC.err==='invalid_argument'||SYNC.err==='quota_exceeded'){SYNC.state='readonly'}
+    clearTimeout(SYNC.timer);SYNC.timer=setTimeout(flush,8000);
+  }
+  SYNC.flushing=false;syncBadge();
+}
+function onRemote(col,snap){
+  if(snap.metadata&&snap.metadata.hasPendingWrites)return;
+  const pend=new Set(SYNC.queue.map(q=>q.path));
+  const seen=new Set();let ch=false;
+  snap.docs.forEach(d=>{
+    const path=col+'/'+d.id;seen.add(path);
+    if(pend.has(path))return;
+    const j=JSON.stringify(d.data());
+    if(SYNC.flat[path]!==j){applyDoc(path,j);SYNC.flat[path]=j;ch=true}
+  });
+  const definitive=!(snap.metadata&&snap.metadata.fromCache);
+  if(definitive&&SYNC.firstLoad){
+    Object.keys(SYNC.flat).forEach(p=>{if(p.startsWith(col+'/')&&!seen.has(p)&&!pend.has(p)){applyDoc(p,null);delete SYNC.flat[p];ch=true}});
+  }
+  if(definitive&&!SYNC.loaded[col]){SYNC.loaded[col]={n:snap.docs.length};checkFirstLoad()}
+  if(ch){persist();remoteRender()}
+}
+/* primera vez que este aparato ve la base: si está vacía sube lo local; si ya tiene datos, manda la base */
+function checkFirstLoad(){
+  const all=COLS.concat(['home']);
+  if(!all.every(c=>SYNC.loaded[c]))return;
+  if(!SYNC.firstLoad){
+    const remoteN=all.reduce((n,c)=>n+SYNC.loaded[c].n,0);
+    const pend=new Set(SYNC.queue.map(q=>q.path));
+    if(remoteN===0){Object.keys(SYNC.flat).forEach(p=>{if(!pend.has(p))enqueue(p,SYNC.flat[p])})}
+    else{
+      const remote=SYNC.remoteSeen||{};
+      Object.keys(SYNC.flat).forEach(p=>{if(!pend.has(p)&&!(p in remote)&&!p.startsWith('home/')){applyDoc(p,null);delete SYNC.flat[p]}});
+    }
+    SYNC.firstLoad=true;persist();remoteRender();
+  }
+  SYNC.state='ok';flush();syncBadge();
+}
+let rrT=null;
+function remoteRender(){clearTimeout(rrT);rrT=setTimeout(()=>{if(typeof drag!=='undefined'&&drag)return remoteRender();if($('#sheet').classList.contains('on')){SYNC.dirty=true;return}render()},120)}
+function syncBadge(){
+  const el=$('#syncb');if(!el)return;
+  const off=typeof navigator!=='undefined'&&navigator.onLine===false,n=SYNC.queue.length;
+  let c='ok',t='Guardado y sincronizado';
+  if(SYNC.state==='local'){c='loc';t='Guardado en este aparato'}
+  else if(SYNC.state==='connecting'){c='wait';t='Conectando con tu base de datos…'}
+  else if(SYNC.state==='readonly'){c='err';t='No se pudo guardar en la nube'}
+  if(off){c='off';t=n?`Sin conexión · ${n} cambio${n>1?'s':''} por sincronizar`:'Sin conexión · usando datos guardados'}
+  else if(n&&SYNC.state==='ok'){c='wait';t=`Sincronizando ${n} cambio${n>1?'s':''}…`}
+  el.className='syncb '+c;el.title=t;el.setAttribute('aria-label',t);el.dataset.t=t;
+}
+async function initSync(){
+  if(!window.claude||!window.claude.use){SYNC.state='local';syncBadge();return}
+  SYNC.state='connecting';syncBadge();
+  let db=null;try{db=await window.claude.use('db')}catch(e){}
+  if(!db){SYNC.state='local';syncBadge();return}
+  SYNC.db=db;SYNC.remoteSeen={};
+  const fail=e=>{SYNC.err=(e&&e.code)||'unavailable';if(SYNC.state!=='ok')SYNC.state='local';syncBadge()};
+  const track=(col,snap)=>{snap.docs.forEach(d=>SYNC.remoteSeen[col+'/'+d.id]=1);onRemote(col,snap)};
+  try{
+    COLS.forEach(c=>db.collection(c).onSnapshot(s=>track(c,s),fail));
+    db.collection('home').onSnapshot(s=>track('home',s),fail);
+  }catch(e){fail(e)}
+  setTimeout(()=>{if(SYNC.state==='connecting'){SYNC.state='local';syncBadge()}},10000);
+}
+addEventListener('online',()=>{flush();syncBadge()});
+addEventListener('offline',syncBadge);
+
+let tab='sala',furn='fridge',day=dayIdx(),doorAnim=true,ALERTS=[],pendingEmoji='';
 
 function dailyReset(){['rosco','mali'].forEach(k=>{const f=S.dogs[k].fed;if(f.date!==today()){f.date=today();f.am=false;f.pm=false}})}
 
@@ -658,17 +903,17 @@ function kitchenSVG(sel){
   const glow=(x,y,w,h,r)=>`<rect class="glow" x="${x}" y="${y}" width="${w}" height="${h}" rx="${r}" fill="none" stroke="var(--terra)" stroke-width="3.5" stroke-dasharray="7 6"/>`;
   const door=(x)=>`<rect x="${x}" y="210" width="72" height="68" rx="7" fill="#FFF3D6" ${S3}/><rect x="${x+9}" y="219" width="54" height="50" rx="6" fill="none" stroke="${OUT}" stroke-width="2" opacity=".55"/>`;
   const spice=(x,w,h,f,lid)=>`<rect x="${x+2}" y="${121-h-5}" width="${w-4}" height="7" rx="2.5" fill="${lid}" ${S2}/><rect x="${x}" y="${121-h}" width="${w}" height="${h}" rx="4.5" fill="${f}" ${S2}/><rect x="${x+3}" y="${121-h+4}" width="2.6" height="${h-9}" rx="1.3" fill="#fff" opacity=".75"/>`;
-  return `<svg viewBox="0 0 360 304" class="kscene" role="img" aria-label="Tu cocina: toca el refri, el especiero o la alacena">
+  return `<svg viewBox="0 0 360 360" class="kscene" role="img" aria-label="Tu cocina: tocá la refri, el especiero o la alacena">
   <defs>
     <g id="sbk"><path d="M10 21C3 18 0 10 4 6C8 4 12 4 16 6C20 10 17 18 10 21Z" fill="#E4574B" stroke="#7A3A2A" stroke-width="1.7" stroke-linejoin="round"/><path d="M4 6L10 2L16 6L10 8.5Z" fill="#8DB05A" stroke="#4F6B2E" stroke-width="1.3" stroke-linejoin="round"/><circle cx="7" cy="12" r="1" fill="#FFE3C0"/><circle cx="12.5" cy="11" r="1" fill="#FFE3C0"/><circle cx="10" cy="16" r="1" fill="#FFE3C0"/><path d="M6 8.5Q8 7 9 8" stroke="#fff" stroke-width="1" fill="none" opacity=".7"/></g>
     <pattern id="tiles" width="22" height="22" patternUnits="userSpaceOnUse"><rect width="22" height="22" fill="var(--tile)"/><path d="M0 0H22M0 0V22" stroke="var(--tile-l)" stroke-width="2"/></pattern>
     <pattern id="wdots" width="26" height="26" patternUnits="userSpaceOnUse"><circle cx="6" cy="7" r="1.6" fill="#fff" opacity=".45"/><circle cx="19" cy="20" r="1.6" fill="#fff" opacity=".45"/></pattern>
   </defs>
-  <rect width="360" height="304" fill="var(--wallp)"/><rect width="360" height="304" fill="url(#wdots)"/>
+  <rect width="360" height="290" fill="var(--wallp)"/><rect width="360" height="290" fill="url(#wdots)"/>
   <rect x="84" y="118" width="276" height="76" fill="url(#tiles)"/><path d="M84 118H360" stroke="${OUT}" stroke-width="2.4"/>
   <path d="M0 24Q20 16 40 24T80 24T120 24T160 24T200 24T240 24T280 24T320 24T360 24" stroke="#8DB05A" stroke-width="2.4" fill="none"/>
   ${berries}
-  <rect y="284" width="360" height="20" fill="var(--wood)"/><path d="M0 284H360${planks}" stroke="${OUT}" stroke-width="2.6"/>
+  ${floorS(284,76)}<ellipse cx="200" cy="330" rx="118" ry="19" fill="#FFF6E2" ${S3}/><ellipse cx="200" cy="330" rx="100" ry="13" fill="none" stroke="#E4574B" stroke-width="2.6" stroke-dasharray="6 7"/>
 
   <!-- campana -->
   <rect x="120" y="30" width="38" height="26" fill="#F2A096" ${S3}/>
@@ -708,9 +953,9 @@ function kitchenSVG(sel){
   ${dots([162,170,175],172,180)}</g>
 
   <!-- fregadero y maceta -->
-  <rect x="226" y="188" width="50" height="9" rx="3" fill="#B9CDB0" ${S2}/>
+  <g class="tapobj" data-act="tap" data-svc="agua" role="button" aria-label="Grifo: recibo de agua"><rect x="236" y="150" width="48" height="48" fill="transparent"/><rect x="226" y="188" width="50" height="9" rx="3" fill="#B9CDB0" ${S2}/>
   <path d="M252 189V170Q252 160 262 160Q270 160 270 168" fill="none" stroke="${OUT}" stroke-width="7" stroke-linecap="round"/><path d="M252 189V170Q252 160 262 160Q270 160 270 168" fill="none" stroke="#C9CED6" stroke-width="3" stroke-linecap="round"/>
-  <rect x="244" y="182" width="16" height="6" rx="3" fill="#C9CED6" ${S2}/>
+  <rect x="244" y="182" width="16" height="6" rx="3" fill="#C9CED6" ${S2}/><path class="wstream" d="M270 172V189" stroke="#8FC3E8" stroke-width="4" stroke-linecap="round"/><path class="drip" d="M270 172c-2 3-3 5 0 7c3-2 2-4 0-7Z" fill="#8FC3E8" stroke="${OUT}" stroke-width="1.2"/>${warnS(286,160,"agua")}</g>
   <g><path d="M210 168Q206 150 214 144M214 168Q216 152 224 148M212 168Q208 158 202 156" stroke="#5E8A3A" stroke-width="2.4" fill="none" stroke-linecap="round"/>
   <ellipse cx="214" cy="144" rx="6" ry="4" fill="#8DB05A" ${S2}/><ellipse cx="225" cy="149" rx="5.5" ry="3.6" fill="#8DB05A" ${S2}/><ellipse cx="202" cy="156" rx="5" ry="3.4" fill="#8DB05A" ${S2}/>
   ${sb(214,152,.6)}${sb(200,160,.5)}
@@ -723,9 +968,10 @@ function kitchenSVG(sel){
     <path d="M6 130H82" stroke="${OUT}" stroke-width="3"/>
     <rect x="67" y="84" width="7" height="30" rx="3.5" fill="#C9CED6" ${S2}/><rect x="67" y="144" width="7" height="46" rx="3.5" fill="#C9CED6" ${S2}/>
     <rect x="13" y="76" width="5" height="42" rx="2.5" fill="#fff" opacity=".85"/><rect x="13" y="140" width="5" height="70" rx="2.5" fill="#fff" opacity=".85"/>
-    ${sb(18,172,2.6)}${sb(34,90,1)}
+    ${sb(18,172,2.6)}
     ${glow(2,62,84,224,19)}${tag(44,293,'Refri')}
   </g>
+  ${kitchenExtras()}
 
   <g class="piece${c('spice')}" data-act="furn" data-k="spice" role="button" aria-label="Especiero">
     <rect x="286" y="34" width="74" height="126" rx="10" fill="transparent"/>
@@ -747,7 +993,7 @@ function kitchenSVG(sel){
   </g>
   </svg>`;
 }
-const BANNERS={menu:['🍲','Menú y meal prep','Planea la semana sin estrés','--rose'],super:['🛒','Lista del súper','Todo lo que falta, en un solo lugar','--mint'],avisos:['🔔','Avisos y recordatorios','Que nada se te pase','--lilac']};
+const BANNERS={menu:['🍲','Menú y meal prep','Planeá la semana sin estrés','--rose'],super:['🛒','Lista del súper','Todo lo que falta, en un solo lugar','--mint'],avisos:['🔔','Avisos y recordatorios','Que nada se te pase','--lilac']};
 function banner(t){const b=BANNERS[t];if(!b)return '';return `<div class="banner" style="--bn:var(${b[3]})"><div class="b-ic">${ic(b[0])}</div><div><h2>${b[1]}</h2><small>${b[2]}</small></div>${bow(40)}</div>`}
 
 function flower(x,y,c){return `<g class="fl" style="animation-delay:${(x%7)*-.4}s"><path d="M${x} ${y}V${y+20}" stroke="#5E8040" stroke-width="2.6" fill="none"/><path d="M${x} ${y+13}q9-2 10-9" stroke="#5E8040" stroke-width="2.4" fill="none"/>${[0,72,144,216,288].map(a=>`<circle cx="${(x+Math.cos(a*Math.PI/180)*5.5).toFixed(1)}" cy="${(y+Math.sin(a*Math.PI/180)*5.5).toFixed(1)}" r="4.2" fill="${c}" stroke="${OUT}" stroke-width="1.6"/>`).join('')}<circle cx="${x}" cy="${y}" r="3" fill="#FFD36B" stroke="${OUT}" stroke-width="1.4"/></g>`}
@@ -788,12 +1034,12 @@ function laundrySVG(){
   const drum=(cx,cy,tone)=>`<circle cx="${cx}" cy="${cy}" r="34" fill="${tone}" stroke="${OUT}" stroke-width="3.5"/><circle cx="${cx}" cy="${cy}" r="25" fill="#BFE3EE" stroke="${OUT}" stroke-width="3"/>
     <g class="drum"><circle cx="${cx-8}" cy="${cy+6}" r="9" fill="#F58FA6"/><circle cx="${cx+9}" cy="${cy-3}" r="8" fill="#FFD36B"/><circle cx="${cx+1}" cy="${cy+13}" r="7" fill="#fff"/><circle cx="${cx-3}" cy="${cy-11}" r="6" fill="#C9B0E8"/></g>
     <path d="M${cx-18} ${cy-14}Q${cx-10} ${cy-22} ${cx} ${cy-23}" stroke="#fff" stroke-width="3.5" fill="none" stroke-linecap="round" opacity=".85"/>`;
-  return `<svg viewBox="0 0 360 280" role="img" aria-label="Lavandería: toca la lavadora o la secadora">
+  return `<svg viewBox="0 0 360 330" role="img" aria-label="Baño y lavandería: tocá la lavadora o la pila">
   <defs>
     <pattern id="sub" width="36" height="36" patternUnits="userSpaceOnUse"><rect width="36" height="36" fill="var(--sky)"/><path d="M0 0H36M0 18H36M0 0V18M18 18V36" stroke="#fff" stroke-width="2" opacity=".6"/></pattern>
     <pattern id="chk" width="40" height="40" patternUnits="userSpaceOnUse"><rect width="40" height="40" fill="#FFF6E2"/><rect width="20" height="20" fill="var(--rose)"/><rect x="20" y="20" width="20" height="20" fill="var(--rose)"/></pattern>
   </defs>
-  <rect width="360" height="236" fill="url(#sub)"/><rect y="236" width="360" height="44" fill="url(#chk)"/><path d="M0 236H360" stroke="${OUT}" stroke-width="3"/>
+  <rect width="360" height="236" fill="url(#sub)"/><rect y="236" width="360" height="94" fill="url(#chk)"/><path d="M0 236H360" stroke="${OUT}" stroke-width="3"/>
   <path d="M-4 30Q180 54 364 28" stroke="#8A5330" stroke-width="2.8" fill="none"/>
   <g transform="translate(54,36)"><g class="sw">${clip(0,0)}<path d="M-16 4L-8 4Q0 12 8 4L16 4L27 16L19 22L13 16V44H-13V16L-19 22L-27 16Z" fill="#F58FA6" stroke="${OUT}" stroke-width="2.6" stroke-linejoin="round"/><path d="M-3 24l3 3 3-3" stroke="#fff" stroke-width="2" fill="none"/></g></g>
   <g transform="translate(144,40)"><g class="sw s2">${clip(-8,0)}${clip(8,0)}<path d="M-14 4H-3V26Q-3 34 5 34V42H-7Q-14 42-14 34Z" fill="#FFD36B" stroke="${OUT}" stroke-width="2.4"/><path d="M2 4H13V26Q13 34 21 34V42H9Q2 42 2 34Z" fill="#C9B0E8" stroke="${OUT}" stroke-width="2.4"/><path d="M-14 12H-3M2 12H13M-14 20H-3M2 20H13" stroke="#fff" stroke-width="2"/></g></g>
@@ -821,11 +1067,7 @@ function laundrySVG(){
   <rect x="246" y="160" width="44" height="8" rx="2" fill="#FFD36B" stroke="${OUT}" stroke-width="2.4"/><rect x="248" y="152" width="40" height="8" rx="2" fill="#CBE9D6" stroke="${OUT}" stroke-width="2.4"/><rect x="250" y="144" width="36" height="8" rx="2" fill="#F58FA6" stroke="${OUT}" stroke-width="2.4"/><rect x="252" y="136" width="32" height="8" rx="2" fill="#C9B0E8" stroke="${OUT}" stroke-width="2.4"/>
   ${kjar(304,132,32,28,'#E4574B','#FFF8EC','🫧')}
 
-  <g class="sw s2"><ellipse cx="262" cy="206" rx="20" ry="12" fill="#8EB8D0" stroke="${OUT}" stroke-width="2.6"/><ellipse cx="296" cy="205" rx="17" ry="10" fill="#F58FA6" stroke="${OUT}" stroke-width="2.6"/></g>
-  <path d="M236 212H318L310 254H244Z" fill="#E0B07A" stroke="${OUT}" stroke-width="3" stroke-linejoin="round"/><path d="M240 226H314M242 240H312" stroke="${OUT}" stroke-width="2" opacity=".55"/>
-  <rect x="232" y="206" width="90" height="10" rx="5" fill="#C98B5B" stroke="${OUT}" stroke-width="3"/>
-  <path d="M338 128L342 244" stroke="${OUT}" stroke-width="8" stroke-linecap="round"/><path d="M338 128L342 244" stroke="#C98B5B" stroke-width="4" stroke-linecap="round"/>
-  <rect x="326" y="236" width="32" height="16" rx="8" fill="#FFF6E2" stroke="${OUT}" stroke-width="2.8"/><path d="M332 242V250M340 242V250M348 242V250" stroke="${OUT}" stroke-width="1.8" stroke-linecap="round"/>
+  ${banoExtras()}
   </svg>`;
 }
 
@@ -836,7 +1078,7 @@ function pop(txt,x,y){const e=document.createElement('div');e.className='pop';e.
 function award(n,x,y){S.stars+=n;save();pop('+'+n+' ⭐',x,y)}
 function level(){let l=0;LEVELS.forEach((v,i)=>{if(S.stars>=v[0])l=i});return{n:l+1,name:LEVELS[l][1]}}
 function openSheet(h){const s=$('#sheet');s.innerHTML='<div class="sheet-bg" data-act="closeSheet"></div><div class="sheet"><div class="grab"></div>'+h+'</div>';s.classList.add('on')}
-function closeSheet(){const s=$('#sheet');s.classList.remove('on');s.innerHTML=''}
+function closeSheet(){const s=$('#sheet');s.classList.remove('on');s.innerHTML='';if(SYNC.dirty){SYNC.dirty=false;setTimeout(render,0)}}
 function addToList(name,emoji,opt){
   opt=opt||{};const k=name.trim().toLowerCase();if(!k)return false;
   if(S.shop.some(x=>!x.checked&&x.name.toLowerCase()===k)){toast(name+' ya está en tu lista');return false}
@@ -848,7 +1090,7 @@ function expInfo(it){const d=daysUntil(it.expiry);return d}
 
 /* ---------- avisos ---------- */
 function computeAlerts(){
-  const a=[];
+  const a=extraAlerts();
   S.items.forEach(it=>{
     const add={name:it.name,emoji:it.emoji,place:it.place,ref:{type:'item',id:it.id}};
     if(it.place==='clean'){
@@ -862,7 +1104,7 @@ function computeAlerts(){
     }
     if(it.qty<=it.min)a.push({lv:it.qty===0?'r':'y',ic:it.emoji,t:it.qty===0?`${it.name} se acabó`:`Poco ${it.name.toLowerCase()}: queda ${it.qty}`,add});
   });
-  const D=S.dogs,per=D.rosco.g+D.mali.g,dl=Math.floor(D.bag.left/per);
+  const D=S.dogs,per=D.rosco.g+D.mali.g,dogSet=per>0&&D.bag.total>0,dl=dogSet?Math.floor(D.bag.left/per):99;
   if(dl<=7)a.push({lv:dl<=3?'r':'y',ic:'🥣',t:`Comida de perros para ${dl} día${dl===1?'':'s'}`,add:{name:'Comida de perros',emoji:'🥣',place:'pantry',ref:{type:'dog'}},go:'perros'});
   if(D.treats<=2)a.push({lv:'y',ic:'🦴',t:`Quedan ${D.treats} premios`,add:{name:'Premios para perros',emoji:'🦴',place:'pantry',ref:{type:'treat'}},go:'perros'});
   S.chores.forEach(c=>{const due=c.every+daysUntil(c.last);if(due<=0)a.push({lv:due<0?'y':'b',ic:c.area==='dogs'?'🐾':'🧹',t:`${c.text}: ${due===0?'toca hoy':'atrasado '+(-due)+' día'+(-due>1?'s':'')}`,go:c.area==='dogs'?'perros':'limpieza'})});
@@ -899,7 +1141,7 @@ function itemHTML(it){
 }
 function shelfHTML(place,i){
   const its=S.items.filter(x=>x.place===place&&x.shelf===i);
-  return `<div class="shelf sh${i}" data-drop="shelf" data-place="${place}" data-shelf="${i}"><span class="s-label">${PLACES[place].shelves[i]}</span>${its.map(itemHTML).join('')||'<span class="s-empty">Arrastra algo aquí</span>'}</div>`;
+  return `<div class="shelf sh${i}" data-drop="shelf" data-place="${place}" data-shelf="${i}"><span class="s-label">${PLACES[place].shelves[i]}</span>${its.map(itemHTML).join('')||'<span class="s-empty">Arrastrá algo aquí</span>'}</div>`;
 }
 function furnitureHTML(place){
   const sh=PLACES[place].shelves.map((_,i)=>shelfHTML(place,i)).join('');
@@ -925,7 +1167,7 @@ function vCocina(){
   ${furnitureHTML(furn)}
   ${binsHTML()}
   <button class="btn terra block" data-act="newItem" data-place="${furn}">＋ Agregar a ${PLACES[furn].label.toLowerCase()}</button>
-  <p class="hint">Toca la cocina para abrir un mueble. Arrastra los productos a otro estante o a las cestas.</p>
+  <p class="hint">Toca la cocina para abrir un mueble. Arrastrá los productos a otro estante o a las cestas.</p>
   <div class="strip">
     <button class="stat" data-act="tab" data-tab="menu"><b>${food.filter(i=>i.qty>0).length}</b><small>Productos</small></button>
     <button class="stat" data-act="tab" data-tab="menu"><b>${soon}</b><small>Por vencer</small></button>
@@ -946,7 +1188,7 @@ function vMenu(){
   const pills=DAYS.map((d,i)=>{const has=SLOTS.some(s=>S.menu[i+'-'+s[0]]);return `<button class="dpill ${di===i?'on':''}" data-act="menuDay" data-i="${i}">${d}<small>${i===dayIdx()?'hoy':' '}</small>${has?'<i></i>':''}</button>`}).join('');
   const meals=SLOTS.map(s=>{
     const m=S.menu[di+'-'+s[0]];
-    if(!m)return `<button class="meal empty" data-act="editMeal" data-k="${di}-${s[0]}"><span class="em">${ic(s[2])}</span><div class="t"><b>${s[1]}</b><small>Toca para planear</small></div>＋</button>`;
+    if(!m)return `<button class="meal empty" data-act="editMeal" data-k="${di}-${s[0]}"><span class="em">${ic(s[2])}</span><div class="t"><b>${s[1]}</b><small>Tocá para planear</small></div>＋</button>`;
     const miss=missingFor(m.ing).filter(x=>!x.has).length;
     return `<button class="meal" data-act="editMeal" data-k="${di}-${s[0]}"><span class="em">${ic(s[2])}</span><div class="t"><b>${esc(m.name)}</b><small>${s[1]}${miss?` · faltan ${miss}`:m.ing?' · todo listo ✓':''}</small></div></button>`;
   }).join('');
@@ -957,7 +1199,7 @@ function vMenu(){
     <button class="btn block" data-act="weekMissing">🛒 Agregar al súper lo que falta de la semana</button></div>
   <div class="card"><h2>⏳ Úsalo primero</h2>
     ${soon.length?`<div class="chips">${soon.map(i=>{const d=daysUntil(i.expiry);return `<span class="chip ${d<0?'no':''}">${ic(i.emoji)} ${esc(i.name)} · ${d<0?'vencido':d===0?'hoy':d+'d'}</span>`}).join('')}</div>
-    <p class="sub" style="margin-top:8px">Con esto puedes armar una sopa, un salteado o una ensalada antes de que se dañe.</p>`:'<p class="sub">Nada vence en los próximos 5 días. ¡Bien!</p>'}</div>
+    <p class="sub" style="margin-top:8px">Con esto podés armar una sopa, un salteado o una ensalada antes de que se dañe.</p>`:'<p class="sub">Nada vence en los próximos 5 días. ¡Bien!</p>'}</div>
   <div class="card"><h2>🥡 Meal prep</h2>${prep}
     <div class="row" style="margin-top:8px"><input id="prep-text" placeholder="Nueva tarea de prep"><button class="btn sm" style="flex:none" data-act="prepAdd">Agregar</button></div>
     <div class="chips" style="margin-top:8px">${quick}</div>
@@ -976,8 +1218,8 @@ function vSuper(){
   const nChecked=S.shop.filter(x=>x.checked).length;
   return `<div class="card"><h2>🛒 Lista del súper</h2>
     <div class="row"><input id="shop-name" placeholder="¿Qué falta?"><input id="shop-qty" placeholder="Cant." style="max-width:74px;flex:none"></div>
-    <div class="row" style="margin-top:6px"><select id="shop-place"><option value="fridge">🧊 Va al refri</option><option value="spice">🧂 Va al especiero</option><option value="pantry" selected>🫙 Va a la alacena</option></select><button class="btn sm" style="flex:none;padding:11px 16px" data-act="shopAdd">Agregar</button></div>
-    <div style="margin-top:10px">${list||'<p class="sub">Tu lista está vacía. Arrastra productos a la cesta 🛒 o agrégalos aquí.</p>'}</div>
+    <div class="row" style="margin-top:6px"><select id="shop-place"><option value="fridge">🧊 Va a la refri</option><option value="spice">🧂 Va al especiero</option><option value="pantry" selected>🫙 Va a la alacena</option></select><button class="btn sm" style="flex:none;padding:11px 16px" data-act="shopAdd">Agregar</button></div>
+    <div style="margin-top:10px">${list||'<p class="sub">Tu lista está vacía. Arrastrá productos a la cesta 🛒 o agregalos aquí.</p>'}</div>
     ${nChecked?`<button class="btn terra block" style="margin-top:8px" data-act="buyDone">✅ Ya compré ${nChecked}: guardar en mi cocina</button>`:''}</div>
   ${sug.length?`<div class="card"><h2>💡 Te sugiero</h2><p class="sub">Calculado con lo que hay (o falta) en tu cocina.</p>${sug.map((a,i)=>`<div class="li"><span class="em">${ic(a.ic)}</span><div class="t"><b>${esc(a.add.name)}</b><small>${esc(a.t)}</small></div><button class="btn sm" data-act="sugAdd" data-i="${ALERTS.indexOf(a)}">＋</button></div>`).join('')}
     <button class="btn ghost block" style="margin-top:8px" data-act="sugAll">Agregar todo</button></div>`:''}`;
@@ -998,24 +1240,24 @@ function dogCol(k){
   <div class="pills"><button class="pill ${d.fed.am?'on':''}" data-act="feed" data-dog="${k}" data-slot="am">☀️ Mañana</button><button class="pill ${d.fed.pm?'on':''}" data-act="feed" data-dog="${k}" data-slot="pm">🌙 Noche</button></div></div>`;
 }
 function vPerros(){
-  const D=S.dogs,per=D.rosco.g+D.mali.g,dl=Math.floor(D.bag.left/per),pct=Math.round(D.bag.left/D.bag.total*100);
+  const D=S.dogs,per=D.rosco.g+D.mali.g,dogSet=per>0&&D.bag.total>0,dl=dogSet?Math.floor(D.bag.left/per):99,pct=dogSet?Math.round(D.bag.left/D.bag.total*100):0;
   const water=D.water===today();
   const col=(k,side)=>{const d=D[k];return `<div class="dogcol ${side}" data-drop="dog" data-dog="${k}"><div class="dog" id="dog-${k}" data-act="bark" data-dog="${k}">${dogSVG(k)}</div><span class="gname">${d.name}</span>
     <div class="pills"><button class="pill ${d.fed.am?'on':''}" data-act="feed" data-dog="${k}" data-slot="am">☀️ Mañana</button><button class="pill ${d.fed.pm?'on':''}" data-act="feed" data-dog="${k}" data-slot="pm">🌙 Noche</button></div></div>`};
   return `<div class="garden">${gardenSVG()}<div class="stitle" style="top:10px;left:50%;translate:-50% 0">🌼 Jardín de Rosco y Mali</div>${col('rosco','gl')}${col('mali','gr')}
     <div class="gbowl" data-drop="bowl" data-act="water">${bowlSVG(water)}<small>${water?'Agua ✓':'Falta agua'}</small></div></div>
   <div class="tools"><div class="tool" data-drag="tool" data-tool="scoop"><span>${ic("🥣")}</span><small>Croquetas</small></div><div class="tool" data-drag="tool" data-tool="treat"><span>${ic("🦴")}</span><small>Premio (${D.treats})</small></div><div class="tool" data-drag="tool" data-tool="water"><span>${ic("💧")}</span><small>Agua</small></div></div>
-  <p class="hint">Arrastra las croquetas o un premio hasta tu perrito, y el agua hasta el plato. También puedes tocar a los perros.</p>
+  <p class="hint">Arrastrá las croquetas o un premio hasta tu perrito, y el agua hasta el plato. También podés tocar a los perros.</p>
   <div class="card"><h2>🥣 Comida de perros</h2>
     <div class="bar ${dl<=7?'low':''}"><i style="width:${pct}%"></i></div>
-    <p style="margin:0 0 8px"><b>${(D.bag.left/1000).toFixed(1)} kg</b> de ${(D.bag.total/1000).toFixed(0)} kg · alcanza para <b>${dl} días</b></p>
+    <p style="margin:0 0 8px">${dogSet?`<b>${(D.bag.left/1000).toFixed(1)} kg</b> de ${(D.bag.total/1000).toFixed(0)} kg · alcanza para <b>${dl} días</b>`:'Todavía no anotaste cuánto comen ni el tamaño de la bolsa. Tocá Ajustar para registrarlo.'}</p>
     <div class="row"><button class="btn ghost" data-act="dogsEdit">⚙️ Ajustar</button><button class="btn terra" data-act="dogAdd">🛒 Al súper</button></div></div>
   <div class="card"><h2>🛁 Cuidados</h2>${choreHTML('dogs')}</div>`;
 }
 function vLimpieza(){
   return `<div class="laundry">${laundrySVG()}<div class="stitle" style="bottom:9px;left:10px">🫧 Lavandería</div></div>
   <div class="panel-title"><h3>Estantes de limpieza</h3><i></i></div>
-  <p class="sub" style="margin:-4px 4px 10px">El nivel muestra cuánto queda. Toca un producto para ajustarlo.</p>
+  <p class="sub" style="margin:-4px 4px 10px">El nivel muestra cuánto queda. Tocá un producto para ajustarlo.</p>
   ${furnitureHTML('clean')}${binsHTML()}
   <button class="btn terra block" data-act="newItem" data-place="clean">＋ Agregar producto</button>
   <div class="card" style="margin-top:18px"><h2>🧹 Rutina de limpieza</h2>${choreHTML('clean')}</div>`;
@@ -1026,14 +1268,15 @@ function vAvisos(){
     ${a.add?`<button class="btn sm" data-act="alertAdd" data-i="${i}">＋ Súper</button>`:''}
     ${a.dmg?`<button class="btn sm berry" data-act="alertDmg" data-id="${a.dmg}">🗑️ Dañado</button>`:''}
     ${a.rem?`<button class="btn sm" data-act="remDone" data-id="${a.rem}">Listo</button>`:''}
+    ${a.svc||a.tup?`<button class="btn sm ghost" data-act="alertGo" data-svc="${a.svc||''}" data-tup="${a.tup||''}">Ver</button>`:''}
     ${a.go&&!a.add&&!a.rem?`<button class="btn sm ghost" data-act="tab" data-tab="${a.go}">Ver</button>`:''}</div></div>`).join('');
-  const rem=S.reminders.slice().sort((a,b)=>a.at.localeCompare(b.at)).map(r=>`<div class="li ${r.done?'done':''}"><span class="em">⏰</span><div class="t"><b>${esc(r.text)}</b><small>${fmtAt(r.at)}</small></div>${r.done?'':`<button class="btn sm" data-act="remDone" data-id="${r.id}">✔</button>`}<button class="x" data-act="remDel" data-id="${r.id}">✕</button></div>`).join('')||'<p class="sub">No tienes recordatorios propios.</p>';
+  const rem=S.reminders.slice().sort((a,b)=>a.at.localeCompare(b.at)).map(r=>`<div class="li ${r.done?'done':''}"><span class="em">⏰</span><div class="t"><b>${esc(r.text)}</b><small>${fmtAt(r.at)}</small></div>${r.done?'':`<button class="btn sm" data-act="remDone" data-id="${r.id}">✔</button>`}<button class="x" data-act="remDel" data-id="${r.id}">✕</button></div>`).join('')||'<p class="sub">No tenés recordatorios propios.</p>';
   const month=new Date().toISOString().slice(0,7);
   const w=S.wasted.filter(x=>x.d.startsWith(month));
   const notifOK='Notification' in window&&Notification.permission==='granted';
   return `<div class="card"><h2>🔔 Ahora mismo</h2>${al||'<p class="sub">Todo en orden. Tu cocina está al día ✨</p>'}</div>
   <div class="card"><h2>⏰ Mis recordatorios</h2>${rem}
-    <label>Qué quieres recordar</label><input id="rem-text" placeholder="Ej. Sacar el pollo del congelador">
+    <label>Qué querés recordar</label><input id="rem-text" placeholder="Ej. Sacar el pollo del congelador">
     <label>Cuándo</label><input id="rem-at" type="datetime-local">
     <div class="chips" style="margin:8px 0"><button class="chip" data-act="remQuick" data-k="tonight">Hoy 6 pm</button><button class="chip" data-act="remQuick" data-k="tomorrow">Mañana 8 am</button><button class="chip" data-act="remQuick" data-k="sunday">Domingo 4 pm</button></div>
     <button class="btn block" data-act="remAdd">Agregar recordatorio</button>
@@ -1041,7 +1284,7 @@ function vAvisos(){
     <p class="sub" style="margin-top:8px">Los avisos suenan mientras la app esté abierta. Al abrirla siempre te muestro lo pendiente.</p></div>
   <div class="card"><h2>🗑️ Comida dañada</h2><p class="sub">Este mes: <b>${w.length}</b> producto${w.length===1?'':'s'}</p>
     <div class="chips">${S.wasted.slice(-10).reverse().map(x=>`<span class="chip">${x.e} ${esc(x.n)}</span>`).join('')||'<span class="sub">Ninguno todavía.</span>'}</div></div>
-  <div class="card"><h2>⚙️ Datos</h2><div class="row"><button class="btn ghost" data-act="resetDemo">Datos de ejemplo</button><button class="btn berry" data-act="clearAll">Empezar vacía</button></div></div>`;
+  <div class="card"><h2>⚙️ Datos</h2><p class="sub">Todo se guarda en la base de datos de tu casita.</p><div class="row"><button class="btn ghost" data-act="syncInfo">Estado de sincronización</button><button class="btn berry" data-act="askClear">Vaciar inventario</button></div></div>`;
 }
 function fmtAt(s){const d=new Date(s);return DAYS[(d.getDay()+6)%7]+' '+d.getDate()+' · '+pad(d.getHours())+':'+pad(d.getMinutes())}
 
@@ -1058,7 +1301,7 @@ function shelfOpts(place,sel){return PLACES[place].shelves.map((s,i)=>`<option v
 function sheetItem(id){
   const it=itemById(id);if(!it)return;const clean=it.place==='clean';
   pendingEmoji=it.emoji;
-  openSheet(`<h3>${ic(it.emoji)} ${esc(it.name)}</h3>
+  openSheet(`<h3>${ic(it.emoji)} ${esc(it.name)}${clean?'':` · ${it.qty} ${esc(it.unit||'unid.')}`}</h3>
   <label>Nombre</label><input id="f-name" value="${esc(it.name)}">
   <div class="row"><div><label>Emoji</label><button class="emoji-btn" id="f-eb" data-act="togglePicker">${ic(it.emoji)}</button></div>
   <div><label>Dónde está</label><select id="f-place" data-act="placeChange">${Object.keys(PLACES).map(k=>`<option value="${k}" ${k===it.place?'selected':''}>${PLACES[k].ic} ${PLACES[k].label}</option>`).join('')}</select></div></div>
@@ -1067,10 +1310,10 @@ function sheetItem(id){
   ${clean?`<label>Cuánto queda: <span id="lv-v">${it.level}</span>%</label><input id="f-level" type="range" min="0" max="100" step="5" value="${it.level}">`
   :`<div class="row"><div><label>Cantidad</label><div class="step"><button data-act="step" data-t="f-qty" data-d="-1">−</button><input id="f-qty" type="number" min="0" value="${it.qty}"><button data-act="step" data-t="f-qty" data-d="1">＋</button></div></div>
     <div><label>Avisar si quedan</label><div class="step"><button data-act="step" data-t="f-min" data-d="-1">−</button><input id="f-min" type="number" min="0" value="${it.min}"><button data-act="step" data-t="f-min" data-d="1">＋</button></div></div></div>
-    <label>Fecha de vencimiento</label><input id="f-exp" type="date" value="${it.expiry||''}">`}
+    <label>Fecha de vencimiento (si aplica)</label><input id="f-exp" type="date" value="${it.expiry||''}">${unitSel(it.unit)}`}
   <div class="acts-row"><button class="btn" data-act="saveItem" data-id="${id}">Guardar</button>
-  ${clean?'':`<button class="btn terra" data-act="useOne" data-id="${id}">Usé 1</button>`}
-  <button class="btn berry" data-act="delItem" data-id="${id}">Eliminar</button></div>`);
+  ${clean?'':`<button class="btn terra" data-act="useOne" data-id="${id}">Usé 1</button><button class="btn ghost" data-act="addOne" data-id="${id}">Repuse 1</button>`}
+  <button class="btn berry" data-act="delItem" data-id="${id}">Eliminar</button></div>${histHTML(id)}`);
 }
 function sheetNew(place){
   pendingEmoji=place==='clean'?'🧴':'🍎';
@@ -1080,10 +1323,10 @@ function sheetNew(place){
   <div class="row"><div><label>Emoji</label><button class="emoji-btn" id="f-eb" data-act="togglePicker">${ic(pendingEmoji)}</button></div>
   <div><label>Dónde va</label><select id="f-place" data-act="placeChange">${Object.keys(PLACES).map(k=>`<option value="${k}" ${k===place?'selected':''}>${PLACES[k].ic} ${PLACES[k].label}</option>`).join('')}</select></div></div>
   ${pickerHTML(clean?CLEAN_EM:FOOD_EM)}
-  <label>Estante</label><select id="f-shelf">${shelfOpts(place,0)}</select>
+  <label>Estante</label><select id="f-shelf">${shelfOpts(place,place==='fridge'?1:0)}</select>
   ${clean?'':`<div class="row"><div><label>Cantidad</label><div class="step"><button data-act="step" data-t="f-qty" data-d="-1">−</button><input id="f-qty" type="number" min="0" value="1"><button data-act="step" data-t="f-qty" data-d="1">＋</button></div></div>
     <div><label>Avisar si quedan</label><div class="step"><button data-act="step" data-t="f-min" data-d="-1">−</button><input id="f-min" type="number" min="0" value="0"><button data-act="step" data-t="f-min" data-d="1">＋</button></div></div></div>
-    <label>Fecha de vencimiento</label><input id="f-exp" type="date">`}
+    <label>Fecha de vencimiento (si aplica)</label><input id="f-exp" type="date">${unitSel()}`}
   <div class="acts-row"><button class="btn" data-act="saveNew">Guardar</button></div>`);
   setTimeout(()=>$('#f-name')&&$('#f-name').focus(),50);
 }
@@ -1093,7 +1336,7 @@ function sheetMeal(k){
   openSheet(`<h3>${sl[2]} ${sl[1]} · ${DAYSL[+d]}</h3>
   <label>¿Qué vas a cocinar?</label><input id="m-name" value="${esc(m.name)}" placeholder="Ej. Tacos de pollo">
   <label>Ingredientes (separados por coma)</label><input id="m-ing" value="${esc(m.ing)}" placeholder="pollo, tortillas, lechuga">
-  ${miss.length?`<div class="chips" style="margin-top:8px">${miss.map(x=>`<span class="chip ${x.has?'ok':'no'}">${x.has?'✓':'✗'} ${esc(x.t)}</span>`).join('')}</div><p class="sub" style="margin-top:6px">Verde: ya lo tienes. Rojo: te falta.</p>`:''}
+  ${miss.length?`<div class="chips" style="margin-top:8px">${miss.map(x=>`<span class="chip ${x.has?'ok':'no'}">${x.has?'✓':'✗'} ${esc(x.t)}</span>`).join('')}</div><p class="sub" style="margin-top:6px">Verde: ya lo tenés. Rojo: te falta.</p>`:''}
   <div class="acts-row"><button class="btn" data-act="saveMeal" data-k="${k}">Guardar</button>
   ${miss.some(x=>!x.has)?`<button class="btn terra" data-act="mealMissing" data-k="${k}">🛒 Pedir lo que falta</button>`:''}
   ${S.menu[k]?`<button class="btn berry" data-act="delMeal" data-k="${k}">Quitar</button>`:''}</div>`);
@@ -1101,7 +1344,7 @@ function sheetMeal(k){
 function sheetDogs(){
   const D=S.dogs;
   openSheet(`<h3>⚙️ Comida de los perros</h3>
-  <div class="row"><div><label>Bolsa completa (kg)</label><input id="d-total" type="number" step="0.5" min="1" value="${D.bag.total/1000}"></div><div><label>Queda (kg)</label><input id="d-left" type="number" step="0.1" min="0" value="${(D.bag.left/1000).toFixed(1)}"></div></div>
+  <div class="row"><div><label>Bolsa completa (kg)</label><input id="d-total" type="number" step="0.5" min="0" value="${D.bag.total/1000||''}"></div><div><label>Queda (kg)</label><input id="d-left" type="number" step="0.1" min="0" value="${(D.bag.left/1000).toFixed(1)}"></div></div>
   <div class="row"><div><label>Rosco come (g al día)</label><input id="d-g1" type="number" min="10" value="${D.rosco.g}"></div><div><label>Mali come (g al día)</label><input id="d-g2" type="number" min="10" value="${D.mali.g}"></div></div>
   <label>Premios que quedan</label><input id="d-treats" type="number" min="0" value="${D.treats}">
   <div class="acts-row"><button class="btn" data-act="saveDogs">Guardar</button></div>`);
@@ -1120,13 +1363,13 @@ function feed(k,slot,x,y){
   if(!slot||f[slot]){render();animDog(k,'nope');toast(`${d.name} ya comió ${slot==='am'?'en la mañana':slot==='pm'?'en la noche':'hoy'} 🐾`);return}
   f[slot]=true;S.dogs.bag.left=Math.max(0,S.dogs.bag.left-d.g/2);
   award(2,x,y);save();render();animDog(k,'eating',900,()=>animDog(k,'happy',1500));
-  if(S.dogs.bag.left===0)toast('Se acabó la comida de perros. Agrégala al súper 🛒');
+  if(S.dogs.bag.left===0)toast('Se acabó la comida de perros. Agregala al súper 🛒');
 }
-function animDog(k,cls,ms,cb){const e=$('#dog-'+k);if(!e)return;e.classList.add(cls);setTimeout(()=>{e.classList.remove(cls);cb&&cb()},ms||600)}
+function animDog(k,cls,ms,cb){PETS.react(k,cls,ms);const e=$('#dog-'+k);if(!e)return;e.classList.add(cls);setTimeout(()=>{e.classList.remove(cls);cb&&cb()},ms||600)}
 function bark(el){
   const k=el.dataset.dog,say=['¡Guau!','¡Guau guau!','🐾','¿Hay premio?','¡Quiero paseo!'][Math.floor(Math.random()*5)];
   el.insertAdjacentHTML('beforeend',`<div class="bubble">${say}</div>`);setTimeout(()=>{const b=$('.bubble',el);b&&b.remove()},1300);
-  if(el.classList.contains('dog')){el.classList.add('happy');setTimeout(()=>el.classList.remove('happy'),1500)}
+  if(el.classList.contains('dog')){PETS.react(k,'happy',1500);el.classList.add('happy');setTimeout(()=>el.classList.remove('happy'),1500)}
 }
 function applyBuy(entry){
   const r=entry.ref;
@@ -1204,8 +1447,9 @@ document.addEventListener('click',e=>{
   const el=e.target.closest('[data-act]');if(!el)return;
   const a=el.dataset.act,d=el.dataset,v=id=>$('#'+id);
   const px=e.clientX,py=e.clientY;
+  if(casaAct(a,d,el,px,py))return;
   switch(a){
-    case 'tab':tab=d.tab;scrollTo(0,0);render();break;
+    case 'tab':closeSheet();tab=d.tab;scrollTo(0,0);render();break;
     case 'furn':furn=d.k;doorAnim=true;render();break;
     case 'closeSheet':closeSheet();break;
     case 'openItem':sheetItem(d.id);break;
@@ -1214,14 +1458,14 @@ document.addEventListener('click',e=>{
     case 'pickEmoji':pendingEmoji=d.e;v('f-eb').innerHTML=ic(d.e);v('picker').classList.remove('on');break;
     case 'step':{const i=v(d.t);i.value=Math.max(0,(+i.value||0)+(+d.d))}break;
     case 'saveItem':case 'saveNew':{
-      const name=v('f-name').value.trim();if(!name){toast('Ponle un nombre');return}
+      const name=v('f-name').value.trim();if(!name){toast('Ponele un nombre');return}
       const place=v('f-place').value,clean=place==='clean';
       let it=a==='saveItem'?itemById(d.id):null;
       if(!it){it=mk(name,pendingEmoji,place,0,1);S.items.push(it)}
       it.name=name;it.emoji=pendingEmoji;it.place=place;it.shelf=Math.min(+v('f-shelf').value,PLACES[place].shelves.length-1);
       if(clean){it.level=v('f-level')?+v('f-level').value:100}
-      else{it.qty=Math.max(0,+v('f-qty').value||0);it.min=Math.max(0,+v('f-min').value||0);it.expiry=v('f-exp').value||''}
-      save();closeSheet();if(!clean)furn=place;if(clean)tab='limpieza';else if(tab!=='cocina'&&a==='saveNew'){}render();toast(a==='saveNew'?'Producto guardado ✨':'Cambios guardados');
+      else{it.qty=Math.max(0,+v('f-qty').value||0);it.min=Math.max(0,+v('f-min').value||0);it.expiry=v('f-exp').value||'';it.unit=v('f-unit')?v('f-unit').value:(it.unit||'unid.')}
+      save();closeSheet();if(!clean){furn=place;tab='cocina'}if(clean)tab='limpieza';else if(tab!=='cocina'&&a==='saveNew'){}render();toast(a==='saveNew'?'Producto guardado ✨':'Cambios guardados');
     }break;
     case 'placeChange':break;
     case 'useOne':{const it=itemById(d.id);if(it&&it.qty>0){it.qty--;award(1,px,py);save();closeSheet();render();toast(it.qty===0?`${it.name} se acabó`:`Usaste 1 ${it.name.toLowerCase()}`)}else toast('Ya no queda')}break;
@@ -1233,10 +1477,10 @@ document.addEventListener('click',e=>{
     case 'shopAdd':{const n=v('shop-name').value;if(!n.trim())return;addToList(n,'🛒',{qty:v('shop-qty').value||'1',place:v('shop-place').value});render();const i=v('shop-name');i&&i.focus()}break;
     case 'shopCheck':{const x=S.shop.find(s=>s.id===d.id);x.checked=!x.checked;save();render()}break;
     case 'shopDel':S.shop=S.shop.filter(s=>s.id!==d.id);save();render();break;
-    case 'buyDone':{const done=S.shop.filter(x=>x.checked);done.forEach(applyBuy);S.shop=S.shop.filter(x=>!x.checked);award(5,px,py);save();render();toast(`Guardé ${done.length} compra${done.length>1?'s':''}. Pon la nueva fecha de vencimiento 📅`)}break;
+    case 'buyDone':{const done=S.shop.filter(x=>x.checked);done.forEach(applyBuy);S.shop=S.shop.filter(x=>!x.checked);award(5,px,py);save();render();toast(`Guardé ${done.length} compra${done.length>1?'s':''}. Poné la nueva fecha de vencimiento 📅`)}break;
     case 'menuDay':day=+d.i;render();break;
     case 'editMeal':sheetMeal(d.k);break;
-    case 'saveMeal':{const n=v('m-name').value.trim();if(!n){toast('Escribe qué vas a cocinar');return}S.menu[d.k]={name:n,ing:v('m-ing').value.trim()};save();closeSheet();render();toast('Menú actualizado 🍲')}break;
+    case 'saveMeal':{const n=v('m-name').value.trim();if(!n){toast('Escribí qué vas a cocinar');return}S.menu[d.k]={name:n,ing:v('m-ing').value.trim()};save();closeSheet();render();toast('Menú actualizado 🍲')}break;
     case 'delMeal':delete S.menu[d.k];save();closeSheet();render();break;
     case 'mealMissing':{const m=S.menu[d.k]||{ing:v('m-ing').value};let c=0;missingFor(v('m-ing').value).filter(x=>!x.has).forEach(x=>{if(addToList(x.t[0].toUpperCase()+x.t.slice(1),'🛒'))c++});closeSheet();render();toast(c?`${c} ingrediente${c>1?'s':''} al súper 🛒`:'Nada nuevo que agregar')}break;
     case 'weekMissing':{let c=0;Object.values(S.menu).forEach(m=>missingFor(m.ing).filter(x=>!x.has).forEach(x=>{if(addToList(x.t[0].toUpperCase()+x.t.slice(1),'🛒'))c++}));render();toast(c?`${c} ingrediente${c>1?'s':''} al súper 🛒`:'No te falta nada de lo planeado ✨')}break;
@@ -1249,17 +1493,17 @@ document.addEventListener('click',e=>{
     case 'bark':bark(el);break;
     case 'water':fillWater();break;
     case 'dogsEdit':sheetDogs();break;
-    case 'saveDogs':{const D=S.dogs;D.bag.total=Math.max(1,+v('d-total').value||15)*1000;D.bag.left=Math.min(D.bag.total,Math.max(0,(+v('d-left').value||0)*1000));D.rosco.g=+v('d-g1').value||260;D.mali.g=+v('d-g2').value||180;D.treats=Math.max(0,+v('d-treats').value||0);save();closeSheet();render()}break;
+    case 'saveDogs':{const D=S.dogs;D.bag.total=Math.max(0,+v('d-total').value||0)*1000;D.bag.left=Math.min(D.bag.total,Math.max(0,(+v('d-left').value||0)*1000));D.rosco.g=Math.max(0,+v('d-g1').value||0);D.mali.g=Math.max(0,+v('d-g2').value||0);D.treats=Math.max(0,+v('d-treats').value||0);save();closeSheet();render()}break;
     case 'dogAdd':{if(addToList('Comida de perros','🥣',{place:'pantry',ref:{type:'dog'}}))toast('Comida de perros al súper 🛒');render()}break;
     case 'choreDone':{const c=S.chores.find(x=>x.id===d.id);c.last=today();award(3,px,py);save();render()}break;
     case 'choreDel':S.chores=S.chores.filter(x=>x.id!==d.id);save();render();break;
     case 'choreAdd':{const t=v('chore-text-'+d.area).value.trim(),n=+v('chore-days-'+d.area).value||7;if(!t)return;S.chores.push({id:uid(),area:d.area,text:t,every:n,last:today()});save();render()}break;
-    case 'remAdd':{const t=v('rem-text').value.trim(),at=v('rem-at').value;if(!t||!at){toast('Escribe qué y cuándo');return}addRem(t,at);toast('Recordatorio creado ⏰')}break;
+    case 'remAdd':{const t=v('rem-text').value.trim(),at=v('rem-at').value;if(!t||!at){toast('Escribí qué y cuándo');return}addRem(t,at);toast('Recordatorio creado ⏰')}break;
     case 'remQuick':{const t=new Date();if(d.k==='tonight')t.setHours(18,0,0,0);else if(d.k==='tomorrow'){t.setDate(t.getDate()+1);t.setHours(8,0,0,0)}else{t.setDate(t.getDate()+((7-t.getDay())%7||7));t.setHours(16,0,0,0)}v('rem-at').value=toLocal(t)}break;
     case 'remDone':{const r=S.reminders.find(x=>x.id===d.id);if(r){r.done=true;save();render()}}break;
     case 'remDel':S.reminders=S.reminders.filter(x=>x.id!==d.id);save();render();break;
-    case 'notif':{try{if(!('Notification' in window)){toast('Este navegador no permite avisos. Verás los recordatorios dentro de la app');return}Notification.requestPermission().then(()=>{render();toast(Notification.permission==='granted'?'Avisos activados 🔔':'No se activaron los avisos')})}catch(err){toast('No se pudieron activar los avisos')}}break;
-    case 'laundry':{const L=$('.laundry');if(L){L.classList.add('run');clearTimeout(L._t);L._t=setTimeout(()=>L.classList.remove('run'),3200)}toast(['¡A lavar! 🫧','Ciclo rápido de burbujas 🫧','Ropa limpia en camino 🧺'][Math.floor(Math.random()*3)])}break;
+    case 'notif':{try{if(!('Notification' in window)){toast('Este navegador no permite avisos. Vas a ver los recordatorios dentro de la app');return}Notification.requestPermission().then(()=>{render();toast(Notification.permission==='granted'?'Avisos activados 🔔':'No se activaron los avisos')})}catch(err){toast('No se pudieron activar los avisos')}}break;
+    case 'laundry':{const L=$('.r-bano');if(L){L.classList.add('run');clearTimeout(L._t);L._t=setTimeout(()=>L.classList.remove('run'),3200)}toast(['¡A lavar! 🫧','Ciclo rápido de burbujas 🫧','Ropa limpia en camino 🧺'][Math.floor(Math.random()*3)])}break;
     case 'resetDemo':S=seed();save();render();toast('Datos de ejemplo cargados');break;
     case 'clearAll':{if(confirm('¿Borrar todo y empezar con la cocina vacía?')){const s=seed();s.items=[];s.menu={};s.prep=[];s.chores=s.chores.map(c=>({...c,last:today()}));s.dogs.bag.left=s.dogs.bag.total;S=s;save();render();toast('Cocina vacía. ¡A llenarla!')}}break;
   }
@@ -1292,12 +1536,591 @@ function checkReminders(){
 setInterval(checkReminders,15000);
 document.addEventListener('visibilitychange',()=>{if(!document.hidden){render();checkReminders()}});
 
+/* ---------- casa ---------- */
+/* =====================================================================
+   CASA: habitaciones, servicios (recibos), tuppers e historial
+   ===================================================================== */
+ICONS['🛋']='<path d="M6 22C6 14 12 12 16 12H32C36 12 42 14 42 22V30H6Z" fill="#F7B3A9"/><rect x="3" y="22" width="9" height="16" rx="4" fill="#F29C92"/><rect x="36" y="22" width="9" height="16" rx="4" fill="#F29C92"/><rect x="10" y="27" width="28" height="10" rx="3" fill="#FFF6E2"/><path d="M10 38V42M38 38V42"/>';
+ICONS['🚿']='<path d="M10 22H38V30C38 38 32 42 24 42C16 42 10 38 10 30Z" fill="#DDF1FA"/><rect x="6" y="18" width="36" height="6" rx="3" fill="#FFF6E2"/><path d="M30 18V10C30 6 36 6 36 10" fill="none"/><circle cx="18" cy="11" r="3" fill="#DDF1FA"/><circle cx="24" cy="7" r="2" fill="#DDF1FA"/>';
+ICONS['🌼2']='';
+ICONS['⚡']='<path d="M27 4L10 27H22L19 44L38 19H26Z" fill="#FFD36B"/>';
+ICONS['📶']='<path d="M6 20C16 10 32 10 42 20" fill="none" stroke-width="4"/><path d="M13 28C19 22 29 22 35 28" fill="none" stroke-width="4"/><circle cx="24" cy="37" r="4" fill="#9DC27A"/>';
+ICONS['🧾']='<path d="M11 5H37V43L32 39L28 43L24 39L20 43L16 39L11 43Z" fill="#FFFDF6"/><path d="M17 14H31M17 21H31M17 28H26" fill="none" stroke-width="2"/>';
+ICONS['🥡']='<path d="M8 20H40L37 40C37 42 35 43 33 43H15C13 43 11 42 11 40Z" fill="#DDF1FA"/><rect x="5" y="13" width="38" height="8" rx="3" fill="#F29C92"/><rect x="18" y="9" width="12" height="5" rx="2" fill="#F29C92"/><path d="M15 28Q24 24 33 28" fill="none" stroke="#fff" stroke-width="2.2"/>';
+
+const SVC={luz:{n:'Electricidad',art:'la luz',ic:'⚡',c:'#FFD36B'},net:{n:'Internet',art:'el internet',ic:'📶',c:'#9DC27A'},agua:{n:'Agua',art:'el agua',ic:'💧',c:'#8FC3E8'}};
+const ROOMS={sala:{n:'Sala',ic:'🛋',h:360,f:[308,346]},cocina:{n:'Cocina',ic:'🍲',h:360,f:[306,346]},bano:{n:'Baño',ic:'🚿',h:330,f:[262,318]},jardin:{n:'Jardín',ic:'🐶'}};
+const UNITS=['unid.','g','kg','ml','L','paq.','latas','botellas','cajas','bolsas','docenas'];
+let FX=null;
+const money=n=>'₡'+Number(n||0).toLocaleString('es-CR');
+const dLong=iso=>{if(!iso)return '';const [y,m,d]=iso.split('-').map(Number);return d+' '+['ene','feb','mar','abr','may','jun','jul','ago','set','oct','nov','dic'][m-1]+(y!==new Date().getFullYear()?' '+y:'')};
+const inDays=d=>d===0?'hoy':d===1?'mañana':d>1?`en ${d} días`:d===-1?'ayer':`hace ${-d} días`;
+
+/* ---------- estado de cada servicio ---------- */
+function svcState(svc){
+  const un=S.bills.filter(b=>b.svc===svc&&!b.paid).sort((a,b)=>a.due.localeCompare(b.due));
+  const over=un.filter(b=>daysUntil(b.due)<0);
+  const out=S.outages.find(o=>o.svc===svc&&!o.end)||null;
+  const next=un[0]||null;
+  return{svc,un,over,out,next,has:S.bills.some(b=>b.svc===svc),cut:over.length>0,on:!over.length&&!out,d:next?daysUntil(next.due):null};
+}
+function svcAll(){return{luz:svcState('luz'),net:svcState('net'),agua:svcState('agua')}}
+function extraAlerts(){
+  const a=[];
+  Object.keys(SVC).forEach(k=>{
+    const s=svcState(k),m=SVC[k];
+    s.un.forEach(b=>{
+      const d=daysUntil(b.due);
+      if(d<0)a.push({lv:'r',ic:m.ic,t:`Recibo de ${m.n.toLowerCase()} vencido (${money(b.amount)}, vencía el ${dLong(b.due)}). En tu casita virtual se cortó ${m.art}.`,svc:k});
+      else if(d<=5)a.push({lv:d<=1?'r':'y',ic:m.ic,t:`Recibo de ${m.n.toLowerCase()} vence ${inDays(d)} (${money(b.amount)}).`,svc:k});
+    });
+    if(s.out)a.push({lv:'r',ic:m.ic,t:`Corte real de ${m.n.toLowerCase()} registrado desde el ${dLong(s.out.start)}.`+(k==='luz'?' Mantené la refri cerrada y revisá los alimentos antes de consumirlos.':''),svc:k});
+    if(!s.has)a.push({lv:'b',ic:m.ic,t:`Todavía no registraste ningún recibo de ${m.n.toLowerCase()}.`,svc:k});
+  });
+  S.tuppers.filter(t=>t.status==='activo').forEach(t=>{
+    const d=daysUntil(t.safe);
+    if(d<0)a.push({lv:'r',ic:'🥡',t:`Tupper de ${t.name}: pasó la fecha que anotaste para consumirlo (${dLong(t.safe)}). Revisalo antes de comer.`,tup:t.id});
+    else if(d<=1)a.push({lv:'y',ic:'🥡',t:`Tupper de ${t.name}: consumilo ${inDays(d)}.`,tup:t.id});
+  });
+  return a;
+}
+
+/* ---------- encabezado y navegación entre habitaciones ---------- */
+function renderHeader(){
+  const l=level();const n=ALERTS.filter(a=>a.lv!=='b').length;
+  $('#hdr').innerHTML=`<div class="brand"><h1>${ic("🍓","logo")}Mi Casita</h1><small>${DAYSL[dayIdx()]} ${new Date().getDate()} · ${esc(l.name)}</small></div>
+  <button class="syncb" id="syncb" data-act="syncInfo"><i></i></button>
+  <div class="pill-xp">${ic("⭐")} ${S.stars}</div>
+  <button class="bell" data-act="tab" data-tab="avisos" aria-label="Avisos">${ic("🔔")}${n?`<b>${n}</b>`:''}</button>`;
+  syncBadge();
+}
+function renderNav(){
+  const sv=svcAll();
+  const warn={sala:!sv.luz.on||!sv.net.on,cocina:false,bano:!sv.agua.on,jardin:false};
+  const col={sala:'--peach',cocina:'--rose',bano:'--sky',jardin:'--mint'};
+  $('#nav').innerHTML=Object.keys(ROOMS).map(k=>`<button class="${tab===k?'on':''}" data-act="tab" data-tab="${k}"><span style="--c:var(${col[k]})">${ic(ROOMS[k].ic)}${warn[k]?'<em>!</em>':''}</span>${ROOMS[k].n}</button>`).join('');
+}
+function backBar(){return `<button class="backbar" data-act="tab" data-tab="${lastRoom}">‹ Volver a la ${ROOMS[lastRoom].n.toLowerCase()==='jardín'?'casa':'casa'}</button>`}
+let lastRoom='cocina';
+
+/* ---------- escena: contenedor común con perros, oscuridad y mensajes ---------- */
+function svcNotes(room,sv){
+  let h='';
+  if(!sv.luz.on)h+=`<button class="svcmsg" data-act="svc" data-svc="luz"><b>${sv.luz.cut?'¡Tenés que pagar la luz para devolverle la energía a tu casita!':'Registraste un corte real de luz: tu casita también está a oscuras.'}</b><small>${sv.luz.cut?'Simulación de tu casita · no indica el estado del servicio real. Tocá para registrar el pago.':'Tocá cuando vuelva la luz.'}</small></button>`;
+  let chips='';
+  if(!sv.net.on)chips+=`<button class="svcchip" data-act="svc" data-svc="net">📡 Internet virtual desconectado</button>`;
+  if(!sv.agua.on)chips+=`<button class="svcchip" data-act="svc" data-svc="agua">🚰 Sin agua en la casita</button>`;
+  return h+(chips?`<div class="svcchips">${chips}</div>`:'');
+}
+function sceneWrap(room,svg,extra){
+  const sv=svcAll();const fx=FX&&Date.now()-FX.t<2600?' fx-'+FX.svc:'';
+  return `<div class="room r-${room}${fx}" data-room="${room}" style="aspect-ratio:360/${ROOMS[room].h}">${svg}<canvas class="pets"></canvas><div class="pethits"></div><div class="dark"></div><div class="sparks">${'<i></i>'.repeat(9)}</div>${svcNotes(room,sv)}${extra||''}</div>`;
+}
+const tagS=(cx,cy,t,w)=>`<g class="ktag"><rect x="${cx-(w||30)}" y="${cy-9}" width="${(w||30)*2}" height="18" rx="9" stroke="${OUT}" stroke-width="2.2"/><text x="${cx}" y="${cy+4}" text-anchor="middle">${t}</text></g>`;
+const warnS=(x,y,svc)=>`<g class="warn warn-${svc}" transform="translate(${x},${y})"><path d="M0 -13L13 10H-13Z" fill="#FFD36B" stroke="${OUT}" stroke-width="2.6" stroke-linejoin="round"/><path d="M0 -5V3" stroke="${OUT}" stroke-width="3" stroke-linecap="round"/><circle cy="7" r="1.6" fill="${OUT}"/></g>`;
+function floorS(y,h){let p='';for(let r=0;r*26<h;r++){p+=`M0 ${y+r*26}H360`;for(let i=0;i<5;i++)p+=`M${i*80+(r%2?40:0)+10} ${y+r*26}V${Math.min(y+h,y+r*26+26)}`}
+  return `<rect y="${y}" width="360" height="${h}" fill="var(--wood)"/><path d="${p}" stroke="${OUT}" stroke-width="2.2" opacity=".55"/><path d="M0 ${y}H360" stroke="${OUT}" stroke-width="3"/>`}
+
+/* ---------- SALA ---------- */
+function salaSVG(){
+  const S3=`stroke="${OUT}" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"`,S2=`stroke="${OUT}" stroke-width="2.4" stroke-linejoin="round" stroke-linecap="round"`;
+  const sv=svcAll();
+  const paper=(x,k,rot)=>{const s=sv[k];const st=!s.has?'none':s.cut?'over':s.d!==null&&s.d<=5?'soon':s.un.length?'pend':'ok';
+    const col={none:'#EFE6D6',over:'#F29C92',soon:'#FFD36B',pend:'#FFF6E2',ok:'#CBE9D6'}[st];
+    const mark={none:'＋',over:'!',soon:s.d===0?'hoy':s.d+'d',pend:s.d+'d',ok:'✓'}[st];
+    const glyph=k==='luz'?`<path d="M2 -9L-5 2H0L-2 9L6 -2H1Z" fill="#F2A93B" ${S2} stroke-width="1.6"/>`:k==='net'?`<path d="M-7 -2Q0 -9 7 -2M-4 2Q0 -2 4 2" fill="none" ${S2} stroke-width="2"/><circle cy="6" r="1.8" fill="${OUT}"/>`:`<path d="M0 -9C-4 -3 -6 0 -6 3A6 6 0 0 0 6 3C6 0 4 -3 0 -9Z" fill="#8FC3E8" ${S2} stroke-width="1.6"/>`;
+    return `<g transform="translate(${x},70) rotate(${rot})" data-act="svc" data-svc="${k}" role="button" aria-label="Recibo de ${SVC[k].n}"><rect x="-15" y="-21" width="30" height="42" rx="3" fill="${col}" ${S2}/><circle cy="-21" r="3" fill="#E4574B" ${S2} stroke-width="1.6"/><g transform="translate(0,-5)">${glyph}</g><text y="16" text-anchor="middle" class="ptxt">${mark}</text></g>`};
+  return `<svg viewBox="0 0 360 360" class="kscene" role="img" aria-label="Sala: tocá la lámpara, el router o los recibos">
+  <defs><pattern id="wstr" width="28" height="28" patternUnits="userSpaceOnUse"><rect width="28" height="28" fill="var(--wall2)"/><rect width="14" height="28" fill="#fff" opacity=".22"/></pattern>
+  <radialGradient id="glow"><stop offset="0" stop-color="#FFE9A8" stop-opacity=".95"/><stop offset="1" stop-color="#FFE9A8" stop-opacity="0"/></radialGradient>
+  <g id="sb2"><path d="M10 21C3 18 0 10 4 6C8 4 12 4 16 6C20 10 17 18 10 21Z" fill="#E4574B" stroke="#7A3A2A" stroke-width="1.7" stroke-linejoin="round"/><path d="M4 6L10 2L16 6L10 8.5Z" fill="#8DB05A" stroke="#4F6B2E" stroke-width="1.3" stroke-linejoin="round"/><circle cx="7" cy="12" r="1" fill="#FFE3C0"/><circle cx="12.5" cy="11" r="1" fill="#FFE3C0"/><circle cx="10" cy="16" r="1" fill="#FFE3C0"/></g></defs>
+  <rect width="360" height="286" fill="url(#wstr)"/>
+  ${floorS(284,76)}
+  <ellipse cx="170" cy="330" rx="128" ry="21" fill="#F7B3A9" ${S3}/><ellipse cx="170" cy="330" rx="108" ry="15" fill="none" stroke="#FFF6E2" stroke-width="3" stroke-dasharray="7 7"/>
+
+  <!-- ventana -->
+  <rect x="18" y="52" width="80" height="88" rx="5" fill="#CFEAF2" ${S3}/><path d="M21 136C28 112 44 110 52 124C62 104 84 110 95 136Z" fill="#A9CF86"/><circle cx="76" cy="72" r="9" fill="#FFE08A" class="sun"/>
+  <path d="M58 52V140M18 96H98" stroke="${OUT}" stroke-width="3"/>
+  <g class="curt"><path d="M12 44H104V58${scal(12,92,58,9,9)}Z" fill="#FFF6E2" ${S3}/><path d="M12 52H104" stroke="#F29C92" stroke-width="2"/></g>
+  <rect x="12" y="138" width="92" height="8" rx="3.5" fill="#FFF6E2" ${S3}/>
+
+  <!-- tablero de recibos -->
+  <g data-act="bills" role="button" aria-label="Tablero de recibos">
+    <rect x="118" y="30" width="124" height="80" rx="7" fill="#C98A54" ${S3}/><rect x="125" y="37" width="110" height="66" rx="4" fill="#E8BE8E" ${S2}/>
+    ${tagS(180,118,'Recibos',32)}
+  </g>
+  ${paper(146,'luz',-4)}${paper(180,'net',3)}${paper(214,'agua',-2)}
+
+  <!-- sofá -->
+  <rect x="26" y="196" width="170" height="60" rx="18" fill="#F7B3A9" ${S3}/>
+  <rect x="16" y="222" width="30" height="56" rx="13" fill="#F29C92" ${S3}/><rect x="176" y="222" width="30" height="56" rx="13" fill="#F29C92" ${S3}/>
+  <rect x="42" y="240" width="138" height="34" rx="10" fill="#FBC9C1" ${S3}/><path d="M111 242V272" stroke="${OUT}" stroke-width="2.4"/>
+  <rect x="56" y="210" width="38" height="32" rx="9" fill="#FFF6E2" ${S3}/><use href="#sb2" transform="translate(65,215) scale(1.05)"/>
+  <rect x="128" y="212" width="36" height="30" rx="9" fill="#CBE9D6" ${S3}/>
+  <g class="tablet"><rect x="96" y="228" width="30" height="20" rx="4" fill="#5E3219" ${S2}/><rect x="99" y="231" width="24" height="14" rx="2" class="tscreen"/><path class="t-on" d="M105 241Q111 234 117 241" stroke="#fff" stroke-width="2" fill="none" stroke-linecap="round"/><path class="t-off" d="M106 234L116 243M116 234L106 243" stroke="#fff" stroke-width="2" stroke-linecap="round"/></g>
+  <path d="M34 278V286M188 278V286" stroke="${OUT}" stroke-width="5" stroke-linecap="round"/>
+
+  <!-- lámpara = electricidad -->
+  <g class="piece" data-act="svc" data-svc="luz" role="button" aria-label="Lámpara: recibo de electricidad">
+    <circle class="lampglow" cx="226" cy="150" r="62" fill="url(#glow)"/>
+    <path d="M226 164V280" stroke="${OUT}" stroke-width="7" stroke-linecap="round"/><path d="M226 164V280" stroke="#E9B98F" stroke-width="3" stroke-linecap="round"/>
+    <ellipse cx="226" cy="283" rx="17" ry="5" fill="#E9B98F" ${S3}/>
+    <path class="lampshade" d="M210 126H242L252 166H200Z" ${S3}/><path d="M200 166${scal(200,52,166,6,6).replace(/^ /,'')}" fill="none"/>
+    <path d="M238 172V186" stroke="${OUT}" stroke-width="2"/><circle cx="238" cy="188" r="2.6" fill="#E4574B" ${S2} stroke-width="1.6"/>
+    ${warnS(226,106,'luz')}${tagS(226,200,'Luz',20)}
+  </g>
+
+  <!-- mueble, tele y router = internet -->
+  <rect x="256" y="238" width="96" height="46" rx="7" fill="#FBE3B8" ${S3}/><rect x="263" y="246" width="38" height="30" rx="5" fill="#FFF3D6" ${S2}/><rect x="307" y="246" width="38" height="30" rx="5" fill="#FFF3D6" ${S2}/><circle cx="296" cy="261" r="2.6" fill="#E4574B"/><circle cx="312" cy="261" r="2.6" fill="#E4574B"/>
+  <g class="tv"><rect x="262" y="182" width="84" height="52" rx="8" fill="#5E3219" ${S3}/><rect x="268" y="188" width="72" height="40" rx="4" class="tvscreen"/>
+    <g class="tv-on"><use href="#sb2" transform="translate(292,195) scale(1.2)"/><path class="tvh" d="M322 200c-2-3-7 0-3 4l3 3 3-3c4-4-1-7-3-4Z" fill="#fff"/><path class="tvh h2" d="M280 212c-2-3-6 0-3 3l3 3 3-3c3-3-1-6-3-3Z" fill="#fff"/></g>
+    <g class="tv-off"><path d="M290 214Q304 198 318 214M296 219Q304 210 312 219" stroke="#fff" stroke-width="2.6" fill="none" stroke-linecap="round"/><path d="M290 198L318 224" stroke="#F29C92" stroke-width="3.4" stroke-linecap="round"/></g>
+    <path d="M296 234V238M312 234V238" stroke="${OUT}" stroke-width="4"/></g>
+  <g class="piece" data-act="svc" data-svc="net" role="button" aria-label="Router: recibo de internet">
+    <rect x="266" y="146" width="80" height="7" rx="3" fill="var(--wood)" ${S3}/>
+    <g class="wifi"><path d="M292 112Q306 98 320 112" stroke="#9DC27A" stroke-width="3" fill="none" stroke-linecap="round"/><path d="M298 119Q306 111 314 119" stroke="#9DC27A" stroke-width="3" fill="none" stroke-linecap="round"/></g>
+    <path d="M290 132L284 114M322 132L328 114" stroke="${OUT}" stroke-width="3.4" stroke-linecap="round"/>
+    <rect x="282" y="130" width="48" height="16" rx="6" fill="#FFF6E2" ${S3}/>
+    <circle class="led" cx="294" cy="138" r="2.8"/><circle class="led l2" cx="304" cy="138" r="2.8"/><circle class="led l3" cx="314" cy="138" r="2.8"/>
+    ${warnS(338,120,'net')}${tagS(306,166,'Internet',30)}
+  </g>
+  <!-- camita -->
+  <ellipse cx="62" cy="300" rx="44" ry="13" fill="#C9B0E8" ${S3}/><ellipse cx="62" cy="298" rx="32" ry="8" fill="#E8DCF4" ${S2}/>
+  </svg>`;
+}
+function vSala(){
+  const sv=svcAll();
+  const row=k=>{const s=sv[k],m=SVC[k];
+    const st=!s.has?['Sin recibo registrado','b']:s.out?['Corte real registrado','r']:s.cut?['Cortado en la casita','r']:s.next?[`Vence ${inDays(s.d)}`,s.d<=5?'y':'g']:['Al día','g'];
+    return `<button class="svcrow" data-act="svc" data-svc="${k}"><span class="em">${ic(m.ic)}</span><div class="t"><b>${m.n}</b><small>${s.next?money(s.next.amount)+' · vence el '+dLong(s.next.due):s.has?'Sin recibos pendientes':'Tocá para registrar el recibo y su vencimiento'}</small></div><span class="tag ${st[1]}">${st[0]}</span></button>`};
+  return sceneWrap('sala',salaSVG())+`<p class="hint">Tocá la lámpara, el router o los recibos del tablero. Rosco y Mali andan por la casa: tocalos para saludarlos.</p>
+  <div class="panel-title"><h3>Servicios de la casa</h3><i></i></div>${row('luz')}${row('net')}${row('agua')}
+  <p class="sub" style="text-align:center;margin-top:10px">Los cortes son parte de la simulación de tu casita: no indican que el servicio real esté suspendido.</p>`;
+}
+
+/* ---------- COCINA ---------- */
+function kitchenExtras(){
+  const S2=`stroke="${OUT}" stroke-width="2.4" stroke-linejoin="round" stroke-linecap="round"`;
+  const n=S.shop.filter(x=>!x.checked).length;
+  const today_=Object.keys(S.menu).filter(k=>k.startsWith(dayIdx()+'-')).length;
+  return `<g data-act="tab" data-tab="super" role="button" aria-label="Lista de compras">
+    <rect x="22" y="78" width="36" height="44" rx="3" fill="#FFFDF6" ${S2}/><circle cx="40" cy="78" r="3.2" fill="#E4574B" ${S2} stroke-width="1.6"/>
+    <path d="M28 90H52M28 98H52M28 106H44" stroke="#C9A58A" stroke-width="2" stroke-linecap="round"/>
+    ${n?`<circle cx="56" cy="80" r="8.5" fill="#E4574B" ${S2}/><text x="56" y="83.5" text-anchor="middle" class="ptxt w">${n}</text>`:''}
+    <text x="40" y="118" text-anchor="middle" class="ptxt s">Lista</text></g>
+  <g data-act="tab" data-tab="menu" role="button" aria-label="Menú de la semana">
+    <path d="M30 30L44 40L58 30" fill="none" stroke="${OUT}" stroke-width="2"/><rect x="16" y="38" width="56" height="24" rx="4" fill="#5E7F52" ${S2}/><rect x="16" y="38" width="56" height="24" rx="4" fill="none" stroke="#C98A54" stroke-width="4"/><rect x="14" y="36" width="60" height="28" rx="5" fill="none" ${S2}/>
+    <text x="44" y="54.5" text-anchor="middle" class="ptxt w">Menú${today_?' ·'+today_:''}</text></g>
+  ${warnS(44,150,'luz')}`;
+}
+function tupperSVG(t){
+  const cols=['#F29C92','#8FC3E8','#9DC27A','#FFD36B','#C9B0E8'];let h=0;for(const ch of t.id)h=(h*31+ch.charCodeAt(0))%97;const c=cols[h%cols.length];
+  const food=['#E9B46A','#D98A4A','#A6D46E','#F5C24F','#E8574B'][h%5];
+  let dots='';const n=Math.min(t.left,6);for(let i=0;i<n;i++)dots+=`<circle cx="${24-(n-1)*3.2+i*6.4}" cy="33" r="2.3" fill="${INK}"/>`;
+  return `<svg viewBox="0 0 48 48" class="tupsvg" aria-hidden="true"><g stroke="${INK}" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round">
+  <path d="M7 18H41L38 40C38 42 36 43 34 43H14C12 43 10 42 10 40Z" fill="#EAF6FB"/><path d="M10.5 26H37.5L36.3 39.5C36.2 41 35 41.6 34 41.6H14C13 41.6 11.8 41 11.7 39.5Z" fill="${food}" stroke="none" opacity=".85"/>
+  <rect x="4" y="11" width="40" height="8" rx="3" fill="${c}"/><rect x="18" y="7" width="12" height="5" rx="2" fill="${c}"/>
+  <path d="M13 22V30" stroke="#fff" stroke-width="2.4" opacity=".8"/></g>${dots}</svg>`;
+}
+function tupperHTML(t){
+  const d=daysUntil(t.safe);const fl=d<0?'<span class="exb r">Revisar</span>':d<=1?`<span class="exb y">${d===0?'Hoy':'1d'}</span>`:'';
+  return `<button class="item tup" data-act="tupOpen" data-id="${t.id}">${tupperSVG(t)}<div class="nm">${esc(t.name)}</div><span class="badge">${t.left}</span>${fl}${t.place==='freezer'?'<span class="frz">❄</span>':''}</button>`;
+}
+function tupShelf(){
+  const ts=S.tuppers.filter(t=>t.status==='activo');
+  return `<div class="shelf tupshelf"><span class="s-label">Tuppers y sobras</span>${ts.map(tupperHTML).join('')}<button class="tupadd" data-act="tupNew" aria-label="Guardar un tupper">＋<small>Tupper</small></button></div>`;
+}
+function furnitureHTML(place){
+  const sh=PLACES[place].shelves.map((_,i)=>shelfHTML(place,i)).join('');
+  const door=doorAnim?`<div class="door ${place==='pantry'?'pd':place==='spice'?'sd':''}"></div>`:'';
+  if(place==='fridge'){
+    const S_=i=>shelfHTML(place,i),sv=svcState('luz');
+    const note=sv.out?`<div class="frnote r">⚠️ Corte real de luz desde el ${dLong(sv.out.start)}. Mantené la refri cerrada el mayor tiempo posible y revisá cada alimento antes de consumirlo; no des por hecho que se dañó ni que sigue bien.</div>`
+      :sv.cut?`<div class="frnote">⚠️ La refri de tu casita está sin energía (simulación). Tus alimentos reales no se ven afectados por esto.</div>`:'';
+    return `${note}<div class="scene"><div class="fridge${sv.on?'':' off'}"><div class="fr-in">${S_(0)}${S_(1)}${tupShelf()}${S_(2)}${S_(3)}</div><div class="fr-door">${S_(4)}</div></div>${door}</div>`;
+  }
+  if(place==='spice')return `<div class="scene"><div class="rack">${sh}</div>${door}</div>`;
+  if(place==='pantry')return `<div class="scene"><div class="pantry"><div class="valance"></div>${sh}</div>${door}</div>`;
+  return `<div class="scene"><div class="cabinet">${sh}</div>${door}</div>`;
+}
+function vCocina(){
+  const food=S.items.filter(i=>i.place!=='clean');
+  const T={fridge:'la refri',spice:'el especiero',pantry:'la alacena'};
+  const empty=!S.items.some(i=>i.place===furn)&&!(furn==='fridge'&&S.tuppers.some(t=>t.status==='activo'));
+  return sceneWrap('cocina',kitchenSVG(furn))+`
+  <div class="panel-title"><h3>Dentro de ${T[furn]}</h3><i></i></div>
+  ${furnitureHTML(furn)}
+  ${empty?`<p class="hint">${furn==='fridge'?'La refri está vacía':'Aquí no hay nada todavía'}. Agregá lo que tenés de verdad en tu casa.</p>`:''}
+  ${binsHTML()}
+  <button class="btn terra block" data-act="newItem" data-place="${furn}">＋ Agregar a ${PLACES[furn].label.toLowerCase()}</button>
+  <p class="hint">Tocá la refri, el especiero o la alacena para abrirlos; la lista de compras está pegada en la refri y el menú en la pizarra. Arrastrá productos entre estantes o a las cestas.</p>`;
+}
+
+/* ---------- BAÑO Y LAVANDERÍA ---------- */
+function banoExtras(){
+  const S3=`stroke="${OUT}" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"`,S2=`stroke="${OUT}" stroke-width="2.4" stroke-linejoin="round" stroke-linecap="round"`;
+  return `<g class="piece tapobj" data-act="tap" data-svc="agua" role="button" aria-label="Pila: recibo de agua">
+    <rect x="262" y="218" width="66" height="20" rx="4" fill="#FBE3B8" ${S3}/>
+    <path d="M244 200H346V210Q346 222 334 222H256Q244 222 244 210Z" fill="#FFFDF6" ${S3}/>
+    <path d="M276 201V190Q276 181 286 181Q295 181 295 189" fill="none" stroke="${OUT}" stroke-width="7.5" stroke-linecap="round"/><path d="M276 201V190Q276 181 286 181Q295 181 295 189" fill="none" stroke="#C9CED6" stroke-width="3.2" stroke-linecap="round"/>
+    <rect x="266" y="195" width="20" height="6" rx="3" fill="#C9CED6" ${S2}/>
+    <path class="wstream" d="M295 192V206" stroke="#8FC3E8" stroke-width="4" stroke-linecap="round"/>
+    <path class="drip" d="M295 193c-2 3-3 5 0 7c3-2 2-4 0-7Z" fill="#8FC3E8" stroke="${OUT}" stroke-width="1.2"/>
+    ${warnS(318,186,'agua')}${tagS(296,246,'Agua',22)}
+  </g>`;
+}
+function vBano(){
+  return sceneWrap('bano',laundrySVG())+`
+  <p class="hint">Tocá la pila para ver el recibo del agua, o la lavadora para ponerla a lavar.</p>
+  <div class="panel-title"><h3>Gabinete de limpieza</h3><i></i></div>
+  ${furnitureHTML('clean')}${binsHTML()}
+  <button class="btn terra block" data-act="newItem" data-place="clean">＋ Agregar producto</button>
+  <div class="card" style="margin-top:18px"><h2>🧹 Rutina de limpieza</h2>${choreHTML('clean')}</div>`;
+}
+function vJardin(){return vPerros()}
+function dogSVG(k){return `<span class="dogslot" data-k="${k}"></span>`}
+
+/* ---------- render principal ---------- */
+function render(){
+  dailyReset();ALERTS=computeAlerts();
+  if(tab==='perros')tab='jardin';if(tab==='limpieza')tab='bano';
+  if(ROOMS[tab])lastRoom=tab;
+  const sv=svcAll();
+  const V={sala:vSala,cocina:vCocina,bano:vBano,jardin:vJardin,menu:vMenu,super:vSuper,avisos:vAvisos};
+  const y=scrollY,app=$('#app');
+  app.className=(sv.luz.on?'':'no-luz ')+(sv.net.on?'':'no-net ')+(sv.agua.on?'':'no-agua ')+'t-'+tab;
+  document.body.classList.toggle('dark-house',!sv.luz.on&&!!ROOMS[tab]);
+  app.innerHTML=(ROOMS[tab]?'':backBar()+banner(tab))+V[tab]();
+  renderHeader();renderNav();doorAnim=false;scrollTo(0,y);
+  PETS.mount();
+}
+
+/* ---------- hojas: servicios ---------- */
+function billRow(b){
+  const d=daysUntil(b.due);
+  return `<div class="li"><span class="em">${ic('🧾')}</span><div class="t"><b>${money(b.amount)}</b><small>Vence el ${dLong(b.due)} · ${d<0?'venció '+inDays(d):inDays(d)}${b.note?' · '+esc(b.note):''}</small></div>
+  <button class="btn sm" data-act="payAsk" data-id="${b.id}">Registrar pago</button><button class="x" data-act="billDel" data-id="${b.id}" aria-label="Eliminar recibo">✕</button></div>`;
+}
+function sheetSvc(k){
+  const s=svcState(k),m=SVC[k];
+  const paid=S.bills.filter(b=>b.svc===k&&b.paid).sort((a,b)=>b.paid.at.localeCompare(a.paid.at));
+  const status=s.out?`<div class="alert r"><span class="em">${ic(m.ic)}</span><div class="t">Registraste un <b>corte real</b> desde el ${dLong(s.out.start)}.</div><div class="acts"><button class="btn sm" data-act="outEnd" data-id="${s.out.id}">Ya volvió</button></div></div>`
+    :s.cut?`<div class="alert r"><span class="em">${ic(m.ic)}</span><div class="t"><b>${k==='luz'?'¡Tenés que pagar la luz para devolverle la energía a tu casita!':k==='net'?'El internet de tu casita está desconectado hasta que registrés el pago.':'Los grifos de tu casita no tienen agua hasta que registrés el pago.'}</b><br><small>Es parte de la simulación: no significa que el servicio real esté suspendido.</small></div></div>`
+    :!s.has?`<div class="alert b"><span class="em">${ic(m.ic)}</span><div class="t">Aún no hay recibos de ${m.n.toLowerCase()}. Registrá el monto y la fecha de vencimiento del tuyo.</div></div>`
+    :s.next?`<div class="alert ${s.d<=5?'y':''}"><span class="em">${ic(m.ic)}</span><div class="t">Próximo recibo: <b>${money(s.next.amount)}</b>, vence ${inDays(s.d)} (${dLong(s.next.due)}).</div></div>`
+    :`<div class="alert"><span class="em">${ic(m.ic)}</span><div class="t">Al día. No hay recibos pendientes.</div></div>`;
+  openSheet(`<h3>${ic(m.ic)} ${m.n}</h3>${status}
+  ${s.un.length?`<h4>Pendientes</h4>${s.un.map(billRow).join('')}`:''}
+  <h4>Nuevo recibo</h4>
+  <div class="row"><div><label for="b-amount">Monto (₡)</label><input id="b-amount" type="number" inputmode="decimal" min="0" step="any" placeholder="Monto del recibo"></div>
+  <div><label for="b-due">Fecha de vencimiento</label><input id="b-due" type="date"></div></div>
+  <label for="b-note">Nota (opcional)</label><input id="b-note" placeholder="Ej. periodo de marzo">
+  <div class="acts-row"><button class="btn" data-act="billAdd" data-svc="${k}">Guardar recibo</button></div>
+  <h4>Historial de pagos</h4>${paid.length?paid.slice(0,12).map(b=>`<div class="li"><span class="em">✅</span><div class="t"><b>${money(b.paid.amount)}</b><small>Pagado el ${dLong(b.paid.at)} · vencía el ${dLong(b.due)}${b.note?' · '+esc(b.note):''}</small></div><button class="x" data-act="payUndo" data-id="${b.id}" title="Deshacer pago" aria-label="Deshacer pago">↺</button></div>`).join(''):'<p class="sub">Todavía no hay pagos registrados.</p>'}
+  <h4>Corte real del servicio</h4>
+  <p class="sub">Si de verdad se fue ${m.art} en tu casa (avería, mantenimiento u otra causa), anotalo aquí. Es independiente de los recibos.</p>
+  ${s.out?'':`<div class="row"><div><label for="o-start">¿Desde cuándo?</label><input id="o-start" type="date" value="${today()}"></div><button class="btn ghost" style="flex:none" data-act="outStart" data-svc="${k}">Registrar corte real</button></div>`}
+  ${S.outages.filter(o=>o.svc===k&&o.end).slice(-4).reverse().map(o=>`<div class="li"><span class="em">${ic(m.ic)}</span><div class="t"><b>Corte real</b><small>Del ${dLong(o.start)} al ${dLong(o.end)}</small></div></div>`).join('')}`);
+}
+function sheetBills(){
+  const sv=svcAll();
+  openSheet(`<h3>${ic('🧾')} Recibos de la casa</h3><p class="sub">Tocá un servicio para registrar su recibo, el vencimiento o el pago.</p>
+  ${Object.keys(SVC).map(k=>{const s=sv[k],m=SVC[k];return `<button class="svcrow" data-act="svc" data-svc="${k}"><span class="em">${ic(m.ic)}</span><div class="t"><b>${m.n}</b><small>${s.next?money(s.next.amount)+' · vence el '+dLong(s.next.due):s.has?'Sin recibos pendientes':'Sin recibo registrado'}</small></div><span class="tag ${s.cut||s.out?'r':s.next&&s.d<=5?'y':s.has?'g':'b'}">${s.out?'Corte real':s.cut?'Cortado':s.next?inDays(s.d):s.has?'Al día':'Registrar'}</span></button>`}).join('')}
+  <p class="sub" style="margin-top:10px">Si un recibo llega a su fecha límite sin pago registrado, al día siguiente la casita virtual pierde ese servicio. Es solo la simulación.</p>`);
+}
+function sheetPay(id){
+  const b=S.bills.find(x=>x.id===id);if(!b)return;const m=SVC[b.svc];
+  openSheet(`<h3>${ic(m.ic)} Registrar pago de ${m.n.toLowerCase()}</h3>
+  <p class="sub">Recibo de ${money(b.amount)} que vence el ${dLong(b.due)}. Confirmá solo si ya lo pagaste de verdad.</p>
+  <div class="row"><div><label for="p-at">Fecha en que pagaste</label><input id="p-at" type="date" value="${today()}" max="${today()}"></div>
+  <div><label for="p-amount">Monto pagado (₡)</label><input id="p-amount" type="number" inputmode="decimal" min="0" step="any" value="${b.amount}"></div></div>
+  <div class="acts-row"><button class="btn" data-act="payOk" data-id="${id}">Sí, ya lo pagué</button><button class="btn ghost" data-act="svc" data-svc="${b.svc}">Volver</button></div>`);
+}
+
+/* ---------- hojas: tuppers ---------- */
+function sheetTupper(id){
+  const t=id?S.tuppers.find(x=>x.id===id):null;
+  if(t){
+    const d=daysUntil(t.safe);
+    const cut=S.outages.some(o=>o.svc==='luz'&&(o.end||'9999')>=t.prep&&o.start<=today()&&(o.end||today())>=t.prep);
+    openSheet(`<h3>${ic('🥡')} ${esc(t.name)}</h3>
+    <div class="chips" style="margin:6px 0 4px"><span class="chip">Preparado el ${dLong(t.prep)}</span><span class="chip ${d<0?'no':d<=1?'':'ok'}">Consumir antes del ${dLong(t.safe)}</span><span class="chip">${t.place==='freezer'?'❄ Congelador':'Refri'}</span></div>
+    ${d<0?'<div class="alert r"><div class="t">Ya pasó la fecha que anotaste para consumirlo. Revisalo bien (olor, aspecto) antes de comer y, ante la duda, desechalo.</div></div>':d<=1?`<div class="alert y"><div class="t">Consumilo ${inDays(d)}.</div></div>`:''}
+    ${cut?'<div class="alert y"><div class="t">Hubo un corte real de luz mientras estaba guardado. Revisá su conservación antes de consumirlo; no significa que esté dañado.</div></div>':''}
+    <div class="portions"><b>${t.left}</b> de ${t.total} porci${t.total===1?'ón':'ones'}<div class="pdots">${Array.from({length:t.total},(_,i)=>`<i class="${i<t.left?'on':''}"></i>`).join('')}</div></div>
+    <div class="acts-row"><button class="btn" data-act="tupEat" data-id="${t.id}">Comí 1 porción</button><button class="btn ghost" data-act="tupEdit" data-id="${t.id}">Editar</button></div>
+    <div class="acts-row"><button class="btn ghost" data-act="tupEnd" data-id="${t.id}" data-st="terminado">Se terminó</button><button class="btn berry" data-act="tupEnd" data-id="${t.id}" data-st="desechado">Lo deseché</button></div>
+    <h4>Historial</h4>${(t.log||[]).slice().reverse().map(l=>`<div class="li"><div class="t"><b>${esc(l.a)}</b><small>${fmtAt(l.at)}</small></div></div>`).join('')}`);
+  }else sheetTupperForm(null);
+}
+function sheetTupperForm(id){
+  const t=id?S.tuppers.find(x=>x.id===id):null;
+  openSheet(`<h3>${ic('🥡')} ${t?'Editar tupper':'Guardar un tupper'}</h3>
+  <label for="t-name">¿Qué comida tiene?</label><input id="t-name" value="${t?esc(t.name):''}" placeholder="Ej. Arroz con pollo">
+  <div class="row"><div><label for="t-prep">Fecha de preparación</label><input id="t-prep" type="date" value="${t?t.prep:''}" max="${today()}"></div>
+  <div><label for="t-safe">Consumir antes de</label><input id="t-safe" type="date" value="${t?t.safe:''}"></div></div>
+  <div class="chips" style="margin:8px 0"><button class="chip" data-act="tupDate" data-k="hoy">Lo preparé hoy</button><button class="chip" data-act="tupDate" data-k="ayer">Ayer</button><button class="chip" data-act="tupDate" data-k="3d">Sugerir +3 días</button></div>
+  <p class="sub">La sugerencia de 3 días es una orientación general para comida cocinada en refri; ajustala según el alimento. No es una garantía.</p>
+  <div class="row"><div><label>Porciones</label><div class="step"><button data-act="step" data-t="t-total" data-d="-1">−</button><input id="t-total" type="number" min="1" value="${t?t.total:1}"><button data-act="step" data-t="t-total" data-d="1">＋</button></div></div>
+  <div><label for="t-place">¿Dónde lo guardás?</label><select id="t-place"><option value="fridge" ${!t||t.place==='fridge'?'selected':''}>Refri</option><option value="freezer" ${t&&t.place==='freezer'?'selected':''}>Congelador</option></select></div></div>
+  <div class="acts-row"><button class="btn" data-act="tupSave" data-id="${id||''}">Guardar tupper</button></div>`);
+  if(!t)setTimeout(()=>$('#t-name')&&$('#t-name').focus(),50);
+}
+function unitSel(u){return `<label for="f-unit">Unidad de medida</label><select id="f-unit">${UNITS.map(x=>`<option ${x===(u||'unid.')?'selected':''}>${x}</option>`).join('')}</select>`}
+function histHTML(id){
+  const mv=S.moves.filter(m=>m.item===id).slice(-8).reverse();
+  return `<h4>Historial de consumo y reposición</h4>${mv.length?mv.map(m=>`<div class="li"><span class="tag ${m.d<0?'r':'g'}">${m.d>0?'+':''}${m.d} ${esc(m.u||'')}</span><div class="t"><b>${m.k==='alta'?'Agregado':m.k==='consumo'?'Consumo':'Reposición'}</b><small>${fmtAt(m.at)} · quedó en ${m.q}</small></div></div>`).join(''):'<p class="sub">Aún no hay movimientos.</p>'}`;
+}
+function sheetSync(){
+  const n=SYNC.queue.length,off=navigator.onLine===false;
+  const txt=SYNC.state==='ok'?'Tus datos se guardan en la base de datos de esta casita y se sincronizan entre tus dispositivos.':SYNC.state==='connecting'?'Conectando con la base de datos…':'En este momento los datos solo se están guardando en este aparato. Cuando la base de datos esté disponible se suben solos.';
+  openSheet(`<h3>☁️ Guardado y sincronización</h3><p>${txt}</p>
+  <div class="chips"><span class="chip ${off?'no':'ok'}">${off?'Sin conexión':'Con conexión'}</span><span class="chip">${n?n+' cambio'+(n>1?'s':'')+' por sincronizar':'Nada pendiente'}</span></div>
+  <p class="sub" style="margin-top:10px">El internet de la casita virtual es solo un dibujo: aunque esté "cortado", la aplicación sigue guardando y sincronizando normalmente.</p>
+  <div class="acts-row"><button class="btn ghost" data-act="syncNow">Sincronizar ahora</button></div>`);
+}
+
+/* ---------- acciones nuevas ---------- */
+function restoreFx(k,was){
+  const now=svcState(k).on;
+  if(!was&&now){FX={svc:k,t:Date.now()};setTimeout(()=>{const r=$('.room');r&&r.classList.remove('fx-'+k)},2700);
+    toast(k==='luz'?'¡Volvió la luz a tu casita! ✨':k==='net'?'¡Internet reconectado en tu casita! 📶':'¡Volvió el agua a tu casita! 💧');PETS.cheer()}
+}
+function casaAct(a,d,el,px,py){
+  const v=id=>$('#'+id);
+  switch(a){
+    case 'bills':sheetBills();return true;
+    case 'svc':sheetSvc(d.svc);return true;
+    case 'tap':{const s=svcState('agua');if(!s.on){toast('No sale agua en la casita: hay un recibo de agua vencido 🚰');sheetSvc('agua')}else{const r=el.closest('.room');r.classList.add('run-tap');clearTimeout(r._tp);r._tp=setTimeout(()=>r.classList.remove('run-tap'),2400);if(!s.has)setTimeout(()=>sheetSvc('agua'),700);else if(s.next)toast(`Agua al día · próximo recibo vence ${inDays(s.d)}`);else toast('El agua corre bien 💧')}}return true;
+    case 'billAdd':{
+      const amt=parseFloat(v('b-amount').value),due=v('b-due').value;
+      if(!(amt>0)){toast('Escribí el monto del recibo');v('b-amount').focus();return true}
+      if(!due){toast('Falta la fecha de vencimiento: registrala para poder avisarte');v('b-due').focus();return true}
+      const was=svcState(d.svc).on;
+      S.bills.push({id:uid(),svc:d.svc,amount:amt,due,note:v('b-note').value.trim(),paid:null,created:today()});save();render();sheetSvc(d.svc);
+      toast(was&&!svcState(d.svc).on?'Recibo guardado. Ya estaba vencido: se cortó en la casita':'Recibo guardado 🧾');
+    }return true;
+    case 'billDel':{const b=S.bills.find(x=>x.id===d.id);if(!b)return true;const was=svcState(b.svc).on;S.bills=S.bills.filter(x=>x.id!==d.id);save();restoreFx(b.svc,was);render();sheetSvc(b.svc)}return true;
+    case 'payAsk':sheetPay(d.id);return true;
+    case 'payOk':{
+      const b=S.bills.find(x=>x.id===d.id);if(!b)return true;
+      const at=v('p-at').value,amt=parseFloat(v('p-amount').value);
+      if(!at){toast('Poné la fecha en que pagaste');return true}
+      if(!(amt>=0)){toast('Poné el monto pagado');return true}
+      const was=svcState(b.svc).on;
+      b.paid={at,amount:amt};award(5,px,py);save();closeSheet();if(b.svc==='agua')tab='bano';else if(b.svc==='net'||!ROOMS[tab]||tab==='jardin')tab='sala';
+      restoreFx(b.svc,was);render();if(was)toast('Pago registrado ✅');
+    }return true;
+    case 'payUndo':{const b=S.bills.find(x=>x.id===d.id);if(b){b.paid=null;save();render();sheetSvc(b.svc);toast('Pago deshecho')}}return true;
+    case 'outStart':{const st=v('o-start').value;if(!st){toast('Poné desde cuándo');return true}S.outages.push({id:uid(),svc:d.svc,start:st,end:null});save();render();sheetSvc(d.svc);toast(d.svc==='luz'?'Corte real anotado. Mantené la refri cerrada':'Corte real anotado')}return true;
+    case 'outEnd':{const o=S.outages.find(x=>x.id===d.id);if(o){const was=svcState(o.svc).on;o.end=today();save();closeSheet();restoreFx(o.svc,was);render();if(o.svc==='luz')toast('Anotado. Revisá los alimentos de la refri antes de consumirlos')}}return true;
+    case 'tupNew':sheetTupperForm(null);return true;
+    case 'tupOpen':sheetTupper(d.id);return true;
+    case 'tupEdit':sheetTupperForm(d.id);return true;
+    case 'tupDate':{const p=v('t-prep'),s=v('t-safe');if(d.k==='hoy')p.value=today();else if(d.k==='ayer')p.value=addDays(-1);else{if(!p.value){toast('Primero poné la fecha de preparación');return true}const [y,m,dd]=p.value.split('-').map(Number);const t=new Date(y,m-1,dd+3);s.value=fmt(t)}}return true;
+    case 'tupSave':{
+      const name=v('t-name').value.trim(),prep=v('t-prep').value,safe=v('t-safe').value,total=Math.max(1,Math.round(+v('t-total').value||1));
+      if(!name){toast('Escribí qué comida tiene');return true}
+      if(!prep){toast('Falta la fecha de preparación');v('t-prep').focus();return true}
+      if(!safe){toast('Falta la fecha para consumirlo');v('t-safe').focus();return true}
+      if(safe<prep){toast('La fecha para consumirlo no puede ser antes de prepararlo');return true}
+      let t=d.id?S.tuppers.find(x=>x.id===d.id):null;const at=new Date().toISOString();
+      if(t){const used=t.total-t.left;t.name=name;t.prep=prep;t.safe=safe;t.total=Math.max(total,1);t.left=Math.max(0,t.total-used);t.place=v('t-place').value;t.log.push({a:'Editado',at})}
+      else S.tuppers.push({id:uid(),name,prep,safe,total,left:total,place:v('t-place').value,status:'activo',log:[{a:`Guardado con ${total} porci${total===1?'ón':'ones'}`,at}]});
+      save();closeSheet();tab='cocina';furn='fridge';render();toast('Tupper guardado en la refri 🥡');
+    }return true;
+    case 'tupEat':{const t=S.tuppers.find(x=>x.id===d.id);if(!t||t.left<=0)return true;t.left--;t.log.push({a:'Se comió 1 porción',at:new Date().toISOString()});
+      if(t.left===0){t.status='terminado';t.log.push({a:'Se terminó',at:new Date().toISOString()})}award(1,px,py);save();render();if(t.left===0){closeSheet();toast(`Se terminó el tupper de ${t.name}`)}else sheetTupper(t.id)}return true;
+    case 'tupEnd':{const t=S.tuppers.find(x=>x.id===d.id);if(!t)return true;t.status=d.st;t.log.push({a:d.st==='terminado'?'Se terminó':'Se desechó',at:new Date().toISOString()});save();closeSheet();render();toast(d.st==='terminado'?'Tupper terminado':'Tupper desechado')}return true;
+    case 'addOne':{const it=itemById(d.id);if(it){it.qty=(+it.qty||0)+1;save();closeSheet();render();toast(`Repusiste 1 ${it.name.toLowerCase()}`)}}return true;
+    case 'petTap':PETS.tap(d.dog,el);return true;
+    case 'syncInfo':sheetSync();return true;
+    case 'syncNow':flush();syncBadge();closeSheet();toast(SYNC.db?'Sincronizando…':'La base de datos no está disponible en este momento');return true;
+    case 'askClear':openSheet(`<h3>¿Vaciar el inventario?</h3><p class="sub">Se borran todos los productos, los tuppers y la lista de compras de todos tus dispositivos. Los recibos y pagos se conservan. No se puede deshacer.</p><div class="acts-row"><button class="btn berry" data-act="clearOk">Sí, vaciar</button><button class="btn ghost" data-act="closeSheet">Cancelar</button></div>`);return true;
+    case 'clearOk':S.items=[];S.shop=[];S.tuppers=[];save();closeSheet();render();toast('Inventario vacío');return true;
+    case 'laundry':{const sv=svcAll();if(!sv.luz.on){toast('Sin luz la lavadora no arranca ⚡');return true}if(!sv.agua.on){toast('Sin agua la lavadora no puede lavar 🚰');return true}return false}
+    case 'alertGo':if(d.svc)sheetSvc(d.svc);else if(d.tup){sheetTupper(d.tup)}return true;
+  }
+  return false;
+}
+
+/* =====================================================================
+   ROSCO Y MALI: sprites recortados de las ilustraciones originales.
+   No se redibuja ningún rasgo: cada pose es el dibujo original, y el
+   movimiento (patas, cola, respiración, parpadeo) se logra deformando
+   suavemente zonas de esa misma imagen, sin cortes visibles.
+   ===================================================================== */
+const PETS=(()=>{
+  const SC=.27;                       // unidades de escena por pixel del sprite
+  const POSES=['hero','move','lie','sleep','beg','bow'];
+  const RIG={
+    mali:{speed:30,cycle:.52,lane:.82,
+      hero:{tail:{x0:0,x1:46,base:246,top:158,amp:7},eyes:[[119,57,12.5,12.5],[176,46,9.5,10.5]],lid:'#E79F49'},
+      move:{legs:[{x0:0,x1:62,top:112,bot:183,ph:0},{x0:62,x1:112,top:126,bot:183,ph:.5},{x0:118,x1:170,top:122,bot:183,ph:.75},{x0:170,x1:212,top:106,bot:170,ph:.25}],tail:{x0:0,x1:60,base:100,top:18,amp:5},amp:7,lift:5,bob:2.2},
+      bow:{tail:{x0:0,x1:74,base:80,top:0,amp:9}},lie:{},sleep:{},beg:{}},
+    rosco:{speed:64,cycle:.44,lane:.3,
+      hero:{tail:{x0:0,x1:42,base:306,top:212,amp:7},eyes:[[141,84,9.5,10],[177,78,7.5,9]],lid:'#EDB25E'},
+      move:{gallop:{hind:{x0:0,x1:100,top:112,bot:180,amp:9},front:{x0:150,x1:239,top:104,bot:164,amp:6}},tail:{x0:0,x1:62,base:106,top:52,amp:4},bob:5},
+      bow:{tail:{x0:0,x1:78,base:72,top:0,amp:9}},lie:{},sleep:{},beg:{}}
+  };
+  const IMG={};let loaded=0,total=0;
+  ['mali','rosco'].forEach(k=>POSES.forEach(p=>{total++;const im=new Image();im.onload=()=>{loaded++};im.src=`img/${k}-${p}.png`;IMG[k+'-'+p]=im}));
+  const reduce=typeof matchMedia!=='undefined'&&matchMedia('(prefers-reduced-motion:reduce)').matches;
+  const rnd=(a,b)=>a+Math.random()*(b-a);
+  const ORDER=['sala','cocina','bano'];
+  const D={
+    rosco:{k:'rosco',room:'sala',x:120,dir:1,st:'sit',t:0,dur:rnd(3,6),tx:0,ph:0,blink:rnd(2,5),bl:0,pop:1,goRoom:null,wag:1,fx:[]},
+    mali:{k:'mali',room:'cocina',x:230,dir:-1,st:'sit',t:0,dur:rnd(4,8),tx:0,ph:0,blink:rnd(2,5),bl:0,pop:1,goRoom:null,wag:1,fx:[]}
+  };
+  let cv=null,ctx=null,host=null,mode=null,room=null,hits=null,last=0,raf=0,dark=false;
+
+  function setState(d,st,dur){d.st=st;d.t=0;d.dur=dur;d.pop=0}
+  function next(d){
+    const r=Math.random(),sleepy=dark?.5:.0;
+    if(d.st==='sit'){
+      if(r<.14+sleepy*.4)setState(d,'lie',rnd(4,8));
+      else if(r<.24)setState(d,'bow',2.6);
+      else if(r<.42){const i=ORDER.indexOf(d.room),opts=[i-1,i+1].filter(j=>j>=0&&j<ORDER.length),j=opts[Math.floor(Math.random()*opts.length)];
+        d.goRoom=ORDER[j];d.tx=j>i?400:-40;d.dir=j>i?1:-1;setState(d,'walk',99)}
+      else{d.tx=rnd(40,320);if(Math.abs(d.tx-d.x)<40)d.tx=d.x<180?d.x+90:d.x-90;d.dir=d.tx>d.x?1:-1;d.goRoom=null;setState(d,'walk',99)}
+    }else if(d.st==='lie'){if(r<.55+sleepy)setState(d,'sleep',rnd(12,28));else setState(d,'sit',rnd(3,7))}
+    else if(d.st==='bow'){d.tx=rnd(40,320);d.dir=d.tx>d.x?1:-1;d.goRoom=null;setState(d,'walk',99)}
+    else setState(d,'sit',rnd(3,8));
+  }
+  function step(d,dt){
+    const R=RIG[d.k];d.t+=dt;d.pop=Math.min(1,d.pop+dt/.18);
+    d.blink-=dt;if(d.blink<=0){d.bl=.13;d.blink=rnd(2.2,6)}if(d.bl>0)d.bl-=dt;
+    d.fx=d.fx.filter(f=>(f.t+=dt)<f.life);
+    if(d.st==='walk'){
+      d.ph+=dt/R.cycle;d.x+=d.dir*R.speed*dt;
+      if((d.dir>0&&d.x>=d.tx)||(d.dir<0&&d.x<=d.tx)){
+        if(d.goRoom){d.room=d.goRoom;d.x=d.dir>0?-40:400;d.tx=d.dir>0?rnd(60,200):rnd(160,300);d.goRoom=null}
+        else setState(d,'sit',rnd(3,8));
+      }
+    }else if(d.t>=d.dur)next(d);
+  }
+  /* ---- dibujo con deformación por franjas (continuo: desplazamiento 0 en la raíz) ---- */
+  function rows(im,x0,x1,y0,y1,fx,fy){           // franjas horizontales: fx(u)->dx, fy(u)->y destino, u=0 raíz..1 punta
+    const h=y1-y0,stp=2;
+    for(let y=y0;y<y1;y+=stp){const u=(y-y0-(fy?2:0))/h,sh=Math.min(stp+1,im.height-y);if(sh<=0)break;
+      ctx.drawImage(im,x0,y,x1-x0,sh,x0+fx(u),fy?fy(y,u):y,x1-x0,sh)}
+  }
+  function drawTail(im,T,ang){                   // la cola sube desde su base; se mece más cuanto más lejos de la base
+    const h=T.base-T.top,w=T.x1-T.x0,bands=3,bw=w/bands;
+    for(let b=0;b<bands;b++){const k=1-b/bands*.75;
+      for(let y=T.top;y<T.base;y+=2){const u=(T.base-y)/h;ctx.drawImage(im,T.x0+b*bw,y,bw+.6,3,T.x0+b*bw+ang*T.amp*k*Math.pow(u,1.4),y,bw+.6,3)}}
+  }
+  function clipOut(im,rects){ctx.beginPath();ctx.rect(0,0,im.width,im.height);rects.forEach(r=>ctx.rect(r[0],r[1],r[2],r[3]));ctx.clip('evenodd')}
+  function drawPose(d,pose,time){
+    const im=IMG[d.k+'-'+pose];if(!im||!im.complete||!im.naturalWidth)return null;
+    const R=RIG[d.k],P=R[pose]||{},w=im.width,h=im.height;
+    const wag=Math.sin(time*(pose==='bow'?13:d.st==='beg'?15:5.2)+(d.k==='mali'?1:0))*(d.wagBoost>time?1.6:1);
+    ctx.save();
+    const pop=reduce?1:.9+.1*d.pop;
+    ctx.scale((pose==='hero'?1:d.dir)*SC,SC*pop);ctx.translate(-w/2,-h);
+    if(reduce){ctx.drawImage(im,0,0);ctx.restore();return{w,h}}
+    if(pose==='move'&&P.legs){
+      const bob=Math.sin(d.ph*Math.PI*4)*P.bob;
+      const ex=P.legs.map(l=>[l.x0,l.top+1,l.x1-l.x0,h-l.top]);if(P.tail)ex.push([P.tail.x0,-4,P.tail.x1-P.tail.x0,P.tail.base+3]);
+      ctx.save();ctx.translate(0,bob);clipOut(im,ex);ctx.drawImage(im,0,0);ctx.restore();
+      P.legs.forEach(l=>{const th=(d.ph+l.ph)*Math.PI*2,sw=Math.sin(th)*P.amp,lift=Math.max(0,Math.cos(th))*P.lift,H=l.bot-l.top;
+        ctx.save();ctx.beginPath();ctx.rect(l.x0-12,l.top+bob-2,l.x1-l.x0+24,h-l.top+6);ctx.clip();
+        rows(im,l.x0,l.x1,l.top-2,Math.min(h,l.bot),u=>sw*Math.pow(Math.max(0,u),1.5),(y,u)=>l.top+bob+(y-l.top)*(u<0?1:(H-bob-lift)/H));ctx.restore()});
+      if(P.tail){ctx.save();ctx.translate(0,bob);drawTail(im,P.tail,wag);ctx.restore()}
+    }else if(pose==='move'&&P.gallop){
+      const g=P.gallop,th=d.ph*Math.PI*2,s=Math.sin(th);
+      ctx.translate(w/2,h*.6);ctx.rotate(s*.07);ctx.translate(-w/2,-h*.6-Math.abs(Math.cos(th))*P.bob);
+      const ex=[[g.hind.x0,g.hind.top+1,g.hind.x1-g.hind.x0,h-g.hind.top],[g.front.x0+1,g.front.top,w-g.front.x0,h-g.front.top],[P.tail.x0,-4,P.tail.x1-P.tail.x0,P.tail.base+3]];
+      ctx.save();clipOut(im,ex);ctx.drawImage(im,0,0);ctx.restore();
+      rows(im,g.hind.x0,g.hind.x1,g.hind.top-2,h,u=>s*g.hind.amp*Math.pow(Math.max(0,u),1.4));
+      const fw=w-g.front.x0;                                    // patas delanteras: franjas verticales que suben y bajan
+      for(let x=g.front.x0-2;x<w;x+=2){const u=Math.max(0,(x-g.front.x0)/fw);ctx.drawImage(im,x,g.front.top,3,h-g.front.top,x,g.front.top-s*g.front.amp*Math.pow(u,1.4),3,h-g.front.top)}
+      drawTail(im,P.tail,wag);
+    }else{
+      const br=Math.sin(time*(pose==='sleep'?1.5:2.4))*(pose==='sleep'?1.6:1);   // respiración: el lomo sube, las patas quedan plantadas
+      if(P.tail){ctx.save();clipOut(im,[[P.tail.x0,P.tail.top-4,P.tail.x1-P.tail.x0-1,P.tail.base-P.tail.top+3]]);breath(im,br);ctx.restore();drawTail(im,P.tail,wag*d.wag)}
+      else breath(im,br);
+      if(P.eyes&&d.bl>0){P.eyes.forEach(e=>{ctx.fillStyle=P.lid;ctx.beginPath();ctx.ellipse(e[0],e[1]-.5,e[2],e[3],0,0,7);ctx.fill();
+        ctx.strokeStyle='#4A260F';ctx.lineWidth=3;ctx.lineCap='round';ctx.beginPath();ctx.moveTo(e[0]-e[2]*.8,e[1]+1);ctx.quadraticCurveTo(e[0],e[1]+e[3]*.75,e[0]+e[2]*.8,e[1]+1);ctx.stroke()})}
+    }
+    ctx.restore();return{w,h};
+  }
+  function breath(im,br){const h=im.height,top=Math.round(h*.18),mid=Math.round(h*.62);
+    ctx.drawImage(im,0,0,im.width,top,0,-br,im.width,top);
+    for(let y=top;y<mid;y+=2){const u=1-(y-top)/(mid-top);ctx.drawImage(im,0,y,im.width,3,0,y-br*u,im.width,3)}
+    ctx.drawImage(im,0,mid,im.width,h-mid,0,mid,im.width,h-mid)}
+  function heart(x,y,s,c){ctx.save();ctx.translate(x,y);ctx.scale(s,s);ctx.fillStyle=c;ctx.strokeStyle='#6B3A1E';ctx.lineWidth=1.6;ctx.beginPath();ctx.moveTo(0,4);ctx.bezierCurveTo(-9,-3,-4,-10,0,-4);ctx.bezierCurveTo(4,-10,9,-3,0,4);ctx.fill();ctx.stroke();ctx.restore()}
+  function poseOf(d){return d.st==='walk'?'move':d.st==='sit'?'hero':d.st}
+  function draw(time){
+    const W=cv.width,H=cv.height,u=W/360;
+    ctx.setTransform(1,0,0,1,0,0);ctx.clearRect(0,0,W,H);
+    const list=[];
+    if(mode==='room'){const f=ROOMS[room].f;Object.values(D).forEach(d=>{if(d.room===room)list.push({d,x:d.x,y:f[0]+(f[1]-f[0])*RIG[d.k].lane,pose:poseOf(d)})})}
+    else{const hr=host.getBoundingClientRect();Object.values(D).forEach(d=>{const el=host.querySelector('#dog-'+d.k);if(!el)return;const r=el.getBoundingClientRect();
+      list.push({d,x:(r.left+r.width/2-hr.left)/hr.width*360,y:(r.bottom-hr.top)/hr.width*360-4,pose:d.gp&&d.gpT>time?d.gp:'hero',pin:true})})}
+    list.sort((a,b)=>a.y-b.y);
+    list.forEach(o=>{const d=o.d;
+      if(o.pin){d._dir=d.dir;d.dir=1}
+      ctx.setTransform(u,0,0,u,o.x*u,o.y*u);
+      const im=IMG[d.k+'-'+o.pose];
+      if(im&&im.naturalWidth){ctx.save();ctx.fillStyle='rgba(120,60,40,.18)';ctx.beginPath();ctx.ellipse(0,-1,im.width*SC*.42,5,0,0,7);ctx.fill();ctx.restore()}
+      const sz=drawPose(d,o.pose,time)||{w:200,h:200};
+      const top=-sz.h*SC;
+      if(o.pose==='sleep'&&!reduce){ctx.fillStyle='#6B3A1E';ctx.font='700 13px Fredoka,Nunito,sans-serif';for(let i=0;i<3;i++){const p=((time*.5+i*.33)%1);ctx.globalAlpha=1-p;ctx.fillText('z',d.dir*(10+p*16)+i*3,top-4-p*22)}ctx.globalAlpha=1}
+      d.fx.forEach(f=>{const p=f.t/f.life;ctx.globalAlpha=1-p*p;heart(f.x+Math.sin(p*6+f.x)*4,top+6-p*34,.9+p*.3,f.c)});ctx.globalAlpha=1;
+      if(o.pin)d.dir=d._dir;
+      const hb=hits&&hits.querySelector(`[data-dog="${d.k}"]`);
+      if(hb&&mode==='room'){const hw=sz.w*SC,hh=sz.h*SC;hb.style.cssText=`left:${(o.x-hw/2)/3.6}%;top:${(o.y-hh)/ROOMS[room].h*100}%;width:${hw/3.6}%;height:${hh/ROOMS[room].h*100}%`}
+    });
+  }
+  function frame(ts){
+    raf=requestAnimationFrame(frame);
+    const dt=Math.min(.05,(ts-last)/1000||0);last=ts;
+    if(document.hidden)return;
+    if(!reduce)Object.values(D).forEach(d=>step(d,dt));else Object.values(D).forEach(d=>{d.fx=d.fx.filter(f=>(f.t+=dt)<f.life)});
+    if(!cv||!cv.isConnected)return;
+    const r=cv.getBoundingClientRect(),dpr=Math.min(3,window.devicePixelRatio||1),W=Math.round(r.width*dpr),H=Math.round(r.height*dpr);
+    if(!W)return;if(cv.width!==W||cv.height!==H){cv.width=W;cv.height=H}
+    draw(ts/1000);
+  }
+  function mount(){
+    const app=document.getElementById('app');
+    host=app.querySelector('.room')||app.querySelector('.garden');cv=null;hits=null;
+    dark=app.classList.contains('no-luz');
+    if(!host)return;
+    if(host.classList.contains('garden')){mode='garden';cv=document.createElement('canvas');cv.className='pets';host.appendChild(cv)}
+    else{mode='room';room=host.dataset.room;cv=host.querySelector('canvas.pets');hits=host.querySelector('.pethits');
+      hits.innerHTML=Object.keys(D).map(k=>`<button class="pethit" data-act="petTap" data-dog="${k}" aria-label="${k==='rosco'?'Rosco':'Mali'}"></button>`).join('');
+      Object.values(D).forEach(d=>{const b=hits.querySelector(`[data-dog="${d.k}"]`);b.style.display=d.room===room?'':'none'})}
+    ctx=cv.getContext('2d');
+    if(!raf)raf=requestAnimationFrame(frame);
+  }
+  function hearts(d,n){for(let i=0;i<(n||3);i++)d.fx.push({t:-i*.18,life:1.3,x:rnd(-16,16),c:i%2?'#FFD36B':'#F0606A'})}
+  function tap(k,el){
+    const d=D[k];
+    if(d.st==='sleep'){setState(d,'lie',2.5);say(el,'Zzz… ¿eh?');return}
+    if(d.st==='beg'&&d.t<.5)return;
+    setState(d,'beg',2.1);hearts(d,3);d.goRoom=null;
+    say(el,['¡Guau!','¡Guau guau!','¿Hay premio?','¡Quiero paseo!','¡Mimos!'][Math.floor(Math.random()*5)]);
+  }
+  function say(el,t){if(!el)return;const o=el.querySelector('.bubble');o&&o.remove();el.insertAdjacentHTML('beforeend',`<div class="bubble">${t}</div>`);setTimeout(()=>{const b=el.querySelector('.bubble');b&&b.remove()},1300)}
+  function react(k,kind,ms){const d=D[k];const now=performance.now()/1000;
+    if(kind==='happy'){d.gp='beg';d.gpT=now+(ms||1500)/1000;hearts(d,4)}
+    else if(kind==='eating'){d.gp='bow';d.gpT=now+(ms||900)/1000}
+    else if(kind==='nope'){d.gp='lie';d.gpT=now+.9}
+    d.wagBoost=now+2}
+  function cheer(){Object.values(D).forEach(d=>{if(d.st!=='walk')setState(d,'beg',2.2);hearts(d,4)})}
+  addEventListener('visibilitychange',()=>{last=performance.now()});
+  return{mount,tap,react,cheer,D,RIG,IMG,ready:()=>loaded===total,_step:step,_setState:setState};
+})();
+
 /* ---------- inicio ---------- */
-render();
+render();initSync();window.PETS_TEST=PETS;
+setInterval(()=>{if(!document.hidden&&!$("#sheet").classList.contains("on")&&!drag)render()},60000);
 setTimeout(()=>{
   const n=ALERTS.filter(a=>a.lv!=='b').length;
-  if(!S.welcome){S.welcome=true;save();toast('¡Bienvenida! Arrastra los productos y toca a los perritos 🐾')}
-  else if(n)toast(`Tienes ${n} aviso${n>1?'s':''} pendiente${n>1?'s':''} 🔔`);
+  if(!S.welcome){S.welcome=true;save();toast('¡Bienvenida a tu casita! Tocá los objetos para usarlos 🐾')}
+  else if(n)toast(`Tenés ${n} aviso${n>1?'s':''} pendiente${n>1?'s':''} 🔔`);
   checkReminders();
 },700);
 })();

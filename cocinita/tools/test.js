@@ -1,0 +1,143 @@
+// Pruebas funcionales por fase, contra la página real y una base de datos simulada compartida entre dos "dispositivos".
+const {chromium}=require('playwright');const {start,store,MOCK}=require('./testlib');
+let pass=0,fail=0;const ok=(c,n)=>{c?pass++:fail++;console.log((c?'PASS ':'FAIL ')+n)};
+const iso=n=>{const d=new Date();d.setDate(d.getDate()+n);return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')};
+(async()=>{
+  const srv=await start(8770);const b=await chromium.launch();
+  const dev=async()=>{const c=await b.newContext({viewport:{width:390,height:800},isMobile:true,hasTouch:true});await c.addInitScript(MOCK);const p=await c.newPage();p.errs=[];p.on('pageerror',e=>{p.errs.push(e.message);console.log('ERR',e.message)});await p.goto('http://localhost:8770/');await p.waitForTimeout(900);return p};
+  const act=(p,sel)=>p.evaluate(s=>{const e=document.querySelector(s);if(!e)throw new Error('no '+s);e.dispatchEvent(new MouseEvent('click',{bubbles:true,clientX:100,clientY:100}))},sel);
+  const txt=(p,sel)=>p.evaluate(s=>{const e=document.querySelector(s);return e?e.textContent:''},sel);
+  const has=(p,sel)=>p.evaluate(s=>!!document.querySelector(s),sel);
+  const wait=(p,ms)=>p.waitForTimeout(ms);
+  const tab=async(p,t)=>{await act(p,`nav [data-tab=${t}]`);await wait(p,150)};
+  const addItem=async(p,name,qty,min)=>{await tab(p,'cocina');await act(p,'[data-act=newItem]');await p.fill('#f-name',name);await p.fill('#f-qty',String(qty));await p.fill('#f-min',String(min||0));await p.selectOption('#f-unit','kg');await act(p,'[data-act=saveNew]');await wait(p,200)};
+
+  console.log('\n— Fase 1: persistencia y sincronización —');
+  const A=await dev();
+  ok(await p0(A)===0,'inventario inicial vacío (sin datos inventados)');
+  async function p0(p){return p.evaluate(()=>document.querySelectorAll('.item:not(.tup)').length)}
+  await addItem(A,'Arroz',2,1);
+  ok((await txt(A,'.fridge'))?.includes('Arroz'),'producto nuevo aparece en la refri');
+  await wait(A,700);
+  ok(Object.keys(store.docs).some(k=>k.startsWith('items/')),'producto escrito en la base de datos');
+  ok(Object.values(store.docs).some(d=>d.name==='Arroz'&&d.unit==='kg'&&d.qty===2&&d.min===1&&d.place==='fridge'),'guarda nombre, cantidad, unidad, mínimo y ubicación');
+  await A.reload();await wait(A,900);await tab(A,'cocina');
+  ok((await txt(A,'.fridge')).includes('Arroz'),'sigue ahí después de cerrar y abrir');
+  const B=await dev();await tab(B,'cocina');
+  ok((await txt(B,'.fridge')).includes('Arroz'),'otro dispositivo ve el producto');
+  store.down=true;                                    // sin conexión con la base
+  await act(A,'.item[data-act=openItem]');await act(A,'[data-act=useOne]');await wait(A,600);
+  const q1=await A.evaluate(()=>JSON.parse(localStorage.getItem('casa-fresita-v2')).queue.length);
+  ok(q1>0,'sin conexión: el cambio queda en cola local ('+q1+')');
+  await A.reload().catch(()=>{});await wait(A,900);await tab(A,'cocina');
+  ok((await txt(A,'.fridge')).includes('Arroz'),'sin conexión: los datos ya cargados siguen disponibles');
+  store.down=false;await wait(A,9500);
+  const q2=await A.evaluate(()=>JSON.parse(localStorage.getItem('casa-fresita-v2')).queue.length);
+  ok(q2===0,'al volver la conexión la cola se vacía');
+  ok(Object.values(store.docs).some(d=>d.name==='Arroz'&&d.qty===1),'el cambio pendiente llegó a la base');
+  await wait(B,700);await tab(B,'cocina');await act(B,'.item[data-act=openItem]');
+  ok((await txt(B,'.sheet h3')).includes('1 kg'),'el otro dispositivo recibe el cambio (1 kg)');
+  await act(B,'[data-act=closeSheet]');
+
+  console.log('\n— Fase 2: recibos y consecuencias —');
+  await tab(A,'sala');
+  ok(!(await has(A,'#app.no-luz')),'sin recibos registrados no hay cortes');
+  const bill=async(p,svc,amount,due)=>{await act(p,`.svcrow[data-svc=${svc}]`);if(amount!==null)await p.fill('#b-amount',String(amount));if(due)await p.fill('#b-due',due);await act(p,'[data-act=billAdd]');await wait(p,250)};
+  await bill(A,'luz',15000,null);
+  ok(!Object.values(store.docs).some(d=>d.svc==='luz'),'recibo sin fecha de vencimiento no se guarda (la pide)');
+  await A.fill('#b-due',iso(3));await act(A,'[data-act=billAdd]');await wait(A,300);await act(A,'[data-act=closeSheet]');
+  ok(!(await has(A,'#app.no-luz')),'recibo que vence en 3 días: todavía hay luz');
+  await act(A,'.bell');await wait(A,150);
+  ok((await txt(A,'#app')).includes('vence en 3 días'),'recordatorio antes del vencimiento');
+  await tab(A,'sala');
+  await bill(A,'luz',9000,iso(0));await act(A,'[data-act=closeSheet]');
+  ok(!(await has(A,'#app.no-luz')),'el día del vencimiento aún no se corta');
+  await bill(A,'luz',22000,iso(-1));await act(A,'[data-act=closeSheet]');await wait(A,200);
+  ok(await has(A,'#app.no-luz'),'recibo vencido sin pagar: se corta la luz de la casita');
+  ok((await txt(A,'.svcmsg')).includes('¡Tenés que pagar la luz para devolverle la energía a tu casita!'),'mensaje pedido visible');
+  const darkOp=await A.evaluate(()=>getComputedStyle(document.querySelector('.room .dark')).opacity);
+  ok(+darkOp>0,'la habitación se oscurece (capa oscura '+darkOp+')');
+  ok(await A.evaluate(()=>getComputedStyle(document.querySelector('.lampglow')).opacity==='0'),'la lámpara se apaga');
+  await tab(A,'cocina');
+  ok(await has(A,'#app.no-luz .room.r-cocina'),'la cocina también queda a oscuras');
+  ok(await A.evaluate(()=>getComputedStyle(document.querySelector('.warn-luz')).display!=='none')&&(await txt(A,'.frnote')).includes('sin energía'),'la refri muestra advertencia');
+  ok(await A.evaluate(()=>getComputedStyle(document.querySelector('.stm')).display==='none'),'electrodomésticos detenidos (sin vapor)');
+  await wait(B,700);await tab(B,'sala');
+  ok(await has(B,'#app.no-luz'),'el otro dispositivo también ve la casa sin luz');
+  await tab(A,'sala');await act(A,'.svcmsg');await wait(A,150);
+  const nPend=await A.evaluate(()=>document.querySelectorAll('[data-act=payAsk]').length);
+  await A.evaluate(()=>{const rows=[...document.querySelectorAll('.sheet .li')].filter(r=>r.textContent.includes('22'));rows[0].querySelector('[data-act=payAsk]').click()});await wait(A,150);
+  await act(A,'[data-act=payOk]');await wait(A,400);
+  ok(!(await has(A,'#app.no-luz')),'al registrar el pago vuelve la luz');
+  ok(await has(A,'.room.fx-luz'),'animación de regreso de la luz');
+  ok(Object.values(store.docs).some(d=>d.svc==='luz'&&d.paid&&d.paid.amount===22000&&d.paid.at===iso(0)),'el pago queda en el historial de la base');
+  await act(A,'.svcrow[data-svc=luz]');ok((await txt(A,'.sheet')).includes('Pagado el')&&nPend===3,'historial de pagos visible; 3 recibos estaban pendientes');await act(A,'[data-act=closeSheet]');
+  // internet
+  await bill(A,'net',30000,iso(-2));await act(A,'[data-act=closeSheet]');await wait(A,200);
+  ok(await has(A,'#app.no-net'),'internet vencido: router desconectado');
+  ok(await A.evaluate(()=>{const l=getComputedStyle(document.querySelector('.led'));return l.fill.replace(/\s/g,'')==='rgb(228,87,75)'}),'luz roja en el router');
+  ok(await A.evaluate(()=>getComputedStyle(document.querySelector('.tv-off')).display!=='none'&&getComputedStyle(document.querySelector('.t-off')).display!=='none'),'tele y tablet sin conexión');
+  await addItem(A,'Leche',1,0);await wait(A,700);
+  ok(Object.values(store.docs).some(d=>d.name==='Leche'),'con el internet virtual cortado la app sigue sincronizando');
+  await tab(A,'sala');await act(A,'.svcrow[data-svc=net]');await act(A,'[data-act=payAsk]');await act(A,'[data-act=payOk]');await wait(A,300);
+  ok(!(await has(A,'#app.no-net')),'pago de internet: conexión virtual restaurada');
+  // agua
+  await bill(A,'agua',8000,iso(-1));await act(A,'[data-act=closeSheet]');await tab(A,'bano');
+  ok(await has(A,'#app.no-agua'),'agua vencida: sin agua en la casita');
+  ok(await A.evaluate(()=>getComputedStyle(document.querySelector('.r-bano .drip')).display==='none'&&getComputedStyle(document.querySelector('.r-bano .warn-agua')).display!=='none'),'el grifo no gotea y muestra advertencia');
+  await act(A,'.r-bano .tapobj');await wait(A,150);
+  ok(!(await has(A,'.room.run-tap'))&&(await txt(A,'.sheet h3')).includes('Agua'),'tocar el grifo no da agua y abre el recibo');
+  await act(A,'[data-act=payAsk]');await act(A,'[data-act=payOk]');await wait(A,300);
+  ok(!(await has(A,'#app.no-agua')),'pago de agua: vuelve el agua');
+  await act(A,'.r-bano .tapobj');await wait(A,100);ok(await has(A,'.room.run-tap'),'con agua, el grifo corre al tocarlo');
+
+  console.log('\n— Fase 3: inventario y tuppers —');
+  await tab(A,'cocina');
+  await A.evaluate(()=>[...document.querySelectorAll('.item[data-act=openItem]')].find(e=>e.textContent.includes('Arroz')).click());await wait(A,100);
+  await act(A,'[data-act=useOne]');await wait(A,300);
+  await tab(A,'cocina');await act(A,'[data-act=tab][data-tab=super]');await wait(A,150);
+  ok((await txt(A,'#app')).includes('Arroz'),'producto agotado aparece solo en la lista de compras');
+  await tab(A,'cocina');
+  await A.evaluate(()=>[...document.querySelectorAll('.item[data-act=openItem]')].find(e=>e.textContent.includes('Arroz')).click());await wait(A,100);
+  const hist=await txt(A,'.sheet');ok(hist.includes('Consumo')&&hist.includes('Agregado'),'historial de consumo y reposición por producto');
+  await act(A,'[data-act=addOne]');await wait(A,200);
+  ok(Object.values(store.docs).filter(d=>d.k==='reposición').length>=0&&(await A.evaluate(()=>JSON.parse(localStorage.getItem('casa-fresita-v2')).S.moves.some(m=>m.k==='reposición'))),'la reposición queda registrada');
+  await act(A,'[data-act=tupNew]');await p_fill(A,'#t-name','Arroz con pollo');
+  async function p_fill(p,s,v){await p.fill(s,v)}
+  await act(A,'[data-act=tupSave]');await wait(A,150);
+  ok(!(await has(A,'.item.tup')),'tupper sin fechas no se guarda (no inventa fechas)');
+  await act(A,'[data-act=tupDate][data-k=ayer]');await act(A,'[data-act=tupDate][data-k="3d"]');await A.fill('#t-total','3');await act(A,'[data-act=tupSave]');await wait(A,300);
+  ok(await has(A,'.fridge .item.tup'),'el tupper aparece dentro de la refri');
+  ok((await txt(A,'.item.tup .badge'))==='3','muestra 3 porciones');
+  await act(A,'.item.tup');await act(A,'[data-act=tupEat]');await wait(A,200);
+  ok((await txt(A,'.portions b'))==='2','comer una porción descuenta (quedan 2)');
+  await act(A,'[data-act=closeSheet]');await wait(A,700);
+  ok(Object.values(store.docs).some(d=>d.name==='Arroz con pollo'&&d.left===2&&d.total===3&&d.prep===iso(-1)&&d.safe===iso(2)),'tupper guardado en la base con fechas y porciones');
+  await act(A,'.item.tup');await act(A,'[data-act=tupEnd][data-st=desechado]');await wait(A,200);
+  ok(!(await has(A,'.item.tup')),'marcar como desechado lo saca de la refri');
+  // tupper por vencer + corte real
+  await act(A,'[data-act=tupNew]');await A.fill('#t-name','Sopa');await A.fill('#t-prep',iso(-3));await A.fill('#t-safe',iso(0));await act(A,'[data-act=tupSave]');await wait(A,200);
+  ok((await txt(A,'.item.tup')).includes('Hoy'),'tupper próximo a vencer muestra aviso');
+  await tab(A,'sala');await act(A,'.svcrow[data-svc=luz]');await act(A,'[data-act=outStart]');await wait(A,200);await act(A,'[data-act=closeSheet]');
+  await tab(A,'cocina');
+  ok((await txt(A,'.frnote')).includes('revisá cada alimento')&&(await txt(A,'.frnote')).includes('no des por hecho'),'corte real: advierte conservación sin asumir daño');
+  await tab(A,'sala');await act(A,'.svcmsg');await act(A,'[data-act=outEnd]');await wait(A,200);
+
+  console.log('\n— Fase 4: Rosco y Mali —');
+  ok(await A.evaluate(()=>PETS_TEST.ready()),'las 12 ilustraciones originales cargan');
+  const sim=await A.evaluate(()=>{const D=PETS_TEST.D,seen={rosco:{rooms:new Set(),st:new Set()},mali:{rooms:new Set(),st:new Set()}};
+    for(let i=0;i<60*600;i++){['rosco','mali'].forEach(k=>{PETS_TEST._step(D[k],1/60);seen[k].rooms.add(D[k].room);seen[k].st.add(D[k].st)})}
+    return{r:[...seen.rosco.rooms],rs:[...seen.rosco.st],m:[...seen.mali.rooms],ms:[...seen.mali.st]}});
+  ok(sim.r.length>=2&&sim.m.length>=2,'cambian de habitación solos (Rosco: '+sim.r+' · Mali: '+sim.m+')');
+  ok(['walk','sit','lie','sleep'].every(s=>sim.rs.includes(s)&&sim.ms.includes(s)),'caminan, se sientan, descansan y duermen ('+sim.ms+')');
+  await A.evaluate(()=>{const D=PETS_TEST.D;D.mali.room='sala';D.mali.x=180;D.mali.st='sit';D.mali.t=0;D.mali.dur=50});await tab(A,'cocina');await tab(A,'sala');await wait(A,300);
+  await A.evaluate(()=>document.querySelector('.pethit[data-dog=mali]').click());await wait(A,100);
+  ok(await A.evaluate(()=>PETS_TEST.D.mali.st==='beg'&&PETS_TEST.D.mali.fx.length>0)&&await has(A,'.pethit .bubble'),'reaccionan al tocarlos');
+  const px=await A.evaluate(()=>{const c=document.querySelector('canvas.pets');const d=c.getContext('2d').getImageData(0,0,c.width,c.height).data;let n=0;for(let i=3;i<d.length;i+=4)if(d[i]>200)n++;return n});
+  ok(px>800,'el perro se dibuja en la escena ('+px+' px)');
+  const mv=await A.evaluate(async()=>{const D=PETS_TEST.D;D.rosco.room='sala';D.rosco.st='walk';D.rosco.tx=330;D.rosco.x=60;D.rosco.dir=1;D.rosco.goRoom=null;const c=document.querySelector('canvas.pets');const snap=()=>c.toDataURL().length;const a=snap();await new Promise(r=>setTimeout(r,300));return[a,snap(),D.rosco.x]});
+  ok(mv[0]!==mv[1]&&mv[2]>62,'se mueven cuadro a cuadro (Rosco avanzó a x='+Math.round(mv[2])+')');
+  ok(A.errs.length===0&&B.errs.length===0,'sin errores de JavaScript en ninguna de las dos sesiones');
+  console.log(`\n${pass} pasaron, ${fail} fallaron`);
+  await b.close();srv.close();process.exit(fail?1:0);
+})().catch(e=>{console.log('TEST CRASH',e.message);process.exit(2)});

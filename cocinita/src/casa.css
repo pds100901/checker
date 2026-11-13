@@ -1,0 +1,100 @@
+
+/* ===== casa interactiva ===== */
+:root{--wall2:#FBDCCB}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--wall2:#5A4038}}
+:root[data-theme="dark"]{--wall2:#5A4038}
+body{transition:background-color 1.2s}
+body.dark-house{background-color:color-mix(in srgb,var(--bg) 62%,#2A2140)}
+h4{font-family:var(--disp);font-weight:600;font-size:16px;margin:18px 0 6px}
+
+.room{position:relative;border:3px solid var(--out);border-radius:30px;overflow:hidden;box-shadow:var(--sh);background:var(--wallp);margin-bottom:14px}
+.room>svg{display:block;width:100%;height:100%;user-select:none;-webkit-user-select:none}
+canvas.pets{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:1}
+.garden canvas.pets{z-index:1}
+.dogslot{display:block;width:100%;height:100%}
+.pethits{position:absolute;inset:0;pointer-events:none;z-index:2}
+.pethit{position:absolute;pointer-events:auto;padding:0;border-radius:40%}
+.pethit:focus-visible{outline:3px dashed var(--terra);outline-offset:2px}
+.room .dark{position:absolute;inset:0;background:#2A2147;mix-blend-mode:multiply;opacity:0;pointer-events:none;z-index:3;transition:opacity 1.4s}
+.no-luz .room .dark{opacity:.74}
+.ptxt{font:600 9px var(--disp);fill:#5E3219}.ptxt.w{fill:#fff}.ptxt.s{font-size:7.5px;fill:#A0745E}
+[data-act]{cursor:pointer}
+.room [role=button]:focus-visible{outline:3px dashed var(--terra)}
+
+/* estados de servicios dentro de la escena */
+.lampshade{fill:#FFD36B;transition:fill .8s}.no-luz .lampshade{fill:#C9BBA0}
+.lampglow{transition:opacity .8s;animation:glowp 4s ease-in-out infinite alternate}.no-luz .lampglow{opacity:0;animation:none}
+@keyframes glowp{from{opacity:.75}to{opacity:1}}
+.led{fill:#6FC46A;animation:ledb 1.6s steps(2) infinite}.led.l2{animation-delay:.4s}.led.l3{animation-delay:.8s}
+.no-net .led{fill:#E4574B;animation:ledb .7s steps(2) infinite}.no-net .led.l2,.no-net .led.l3{fill:#8B7B74;animation:none}
+.no-luz .led{fill:#8B7B74!important;animation:none!important}
+@keyframes ledb{50%{opacity:.35}}
+.wifi path{animation:wifi 1.8s ease-out infinite}.wifi path:first-child{animation-delay:.3s}
+@keyframes wifi{0%{opacity:.2}40%{opacity:1}100%{opacity:.2}}
+.no-net .wifi,.no-luz .wifi{display:none}
+.tvscreen{fill:#F7B3A9;transition:fill .6s}.tv-off{display:none}
+.tvh{animation:glowp 1.2s ease-in-out infinite alternate}.tvh.h2{animation-delay:.6s}
+.no-net .tvscreen{fill:#8B93A8}.no-net .tv-on{display:none}.no-net .tv-off{display:block}
+.no-luz .tvscreen{fill:#3A2A33}.no-luz .tv-on,.no-luz .tv-off{display:none}
+.tscreen{fill:#8BC98A}.t-off{display:none}
+.no-net .tscreen{fill:#E4877B}.no-net .t-on{display:none}.no-net .t-off{display:block}
+.warn{display:none;transform-box:fill-box;transform-origin:50% 60%}
+.no-luz .warn-luz,.no-net .warn-net,.no-agua .warn-agua{display:block;animation:warnb 1.1s ease-in-out infinite}
+@keyframes warnb{50%{transform:scale(1.18) rotate(-6deg)}}
+.wstream{display:none;stroke-dasharray:5 3}.run-tap .wstream,.fx-agua .wstream{display:block;animation:flow .25s linear infinite}
+@keyframes flow{to{stroke-dashoffset:-8}}
+.drip{transform-box:fill-box;animation:dripk 2.6s ease-in infinite}
+@keyframes dripk{0%,55%{opacity:0;transform:translateY(-2px) scale(.5)}70%{opacity:1;transform:none}100%{opacity:0;transform:translateY(12px)}}
+.no-agua .drip{display:none}
+.no-luz .stm{display:none}.no-luz .drum{animation:none}
+.r-bano.run .drum{animation-duration:.6s}.r-bano.run .mach{animation:jig .12s linear infinite alternate}
+.r-bano.run .bub{animation:bubup 1.3s ease-in infinite}.r-bano.run .bub.d2{animation-delay:.45s}.r-bano.run .bub.d3{animation-delay:.9s}
+
+/* mensajes sobre la escena */
+.svcmsg{position:absolute;z-index:4;left:10px;right:10px;top:10px;text-align:left;background:var(--paper);color:var(--ink);border:3px solid var(--out);border-radius:18px;padding:8px 12px;box-shadow:0 4px 0 rgba(0,0,0,.25);animation:up .4s ease-out}
+.svcmsg b{display:block;font-family:var(--disp);font-weight:600;font-size:15px;line-height:1.2}
+.svcmsg small{display:block;color:var(--muted);font-size:11.5px;line-height:1.25;margin-top:2px}
+.svcchips{position:absolute;z-index:4;left:10px;bottom:10px;display:flex;flex-wrap:wrap;gap:6px}
+.svcchip{background:var(--paper);color:var(--ink);border:2.5px solid var(--out);border-radius:999px;padding:3px 10px;font:600 12px var(--disp)}
+/* animación al recuperar un servicio */
+.sparks{position:absolute;inset:0;pointer-events:none;z-index:5}
+.sparks i{position:absolute;width:18px;height:18px;opacity:0;background:#FFE08A;clip-path:polygon(50% 0,62% 38%,100% 50%,62% 62%,50% 100%,38% 62%,0 50%,38% 38%)}
+.sparks i:nth-child(1){left:12%;top:20%}.sparks i:nth-child(2){left:30%;top:55%}.sparks i:nth-child(3){left:48%;top:14%}.sparks i:nth-child(4){left:66%;top:42%}.sparks i:nth-child(5){left:84%;top:22%}.sparks i:nth-child(6){left:20%;top:76%}.sparks i:nth-child(7){left:58%;top:70%}.sparks i:nth-child(8){left:78%;top:64%}.sparks i:nth-child(9){left:40%;top:36%}
+.room[class*="fx-"] .sparks i{animation:spark 1.5s ease-out both}
+.room[class*="fx-"] .sparks i:nth-child(3n){animation-delay:.25s}.room[class*="fx-"] .sparks i:nth-child(3n+1){animation-delay:.5s}
+.fx-agua .sparks i{background:#8FC3E8;clip-path:ellipse(34% 50% at 50% 50%)}.fx-net .sparks i{background:#9DC27A}
+@keyframes spark{0%{opacity:0;transform:scale(.2) rotate(0)}40%{opacity:1;transform:scale(1.25) rotate(40deg)}100%{opacity:0;transform:scale(.6) rotate(90deg) translateY(-14px)}}
+.room.fx-luz .dark{animation:relight 1.7s ease-out}
+@keyframes relight{0%{opacity:.74}18%{opacity:.25}30%{opacity:.66}46%{opacity:.12}58%{opacity:.4}100%{opacity:0}}
+.fx-net .wifi path{animation:wifi .5s ease-out 4}
+
+/* encabezado: estado de guardado */
+.syncb{width:30px;height:30px;border-radius:50%;border:2.5px solid var(--out);background:var(--mint);display:grid;place-items:center;flex:none;padding:0;font:700 14px var(--disp);color:#2d3d1c}
+.syncb::before{content:"✓"}
+.syncb.wait{background:var(--butter)}.syncb.wait::before{content:"↻";animation:spin 1.2s linear infinite}
+.syncb.off,.syncb.err{background:var(--rose)}.syncb.off::before,.syncb.err::before{content:"!"}
+.syncb.loc{background:var(--paper)}.syncb.loc::before{content:"•"}
+nav button span{position:relative}
+nav button span em{position:absolute;top:-6px;right:-4px;width:17px;height:17px;border-radius:50%;background:var(--terra);color:#fff;border:2px solid var(--out);font:700 11px/13px var(--disp);font-style:normal;text-align:center}
+.backbar{display:inline-block;margin:0 0 12px;background:var(--paper);border:2.5px solid var(--out);border-radius:999px;padding:5px 14px;font:600 14px var(--disp);box-shadow:0 3px 0 var(--shd)}
+
+/* filas de servicios */
+.svcrow{display:flex;gap:10px;align-items:center;width:100%;text-align:left;background:var(--card);border:3px solid var(--out);border-radius:20px;padding:10px 12px;margin-bottom:10px;box-shadow:0 3px 0 var(--shd)}
+.svcrow .em .ic{width:34px;height:34px;display:block;vertical-align:0}.svcrow .t{flex:1;min-width:0}.svcrow .t b{display:block;font-family:var(--disp);font-weight:600}.svcrow .t small{display:block;color:var(--muted);font-size:12px;line-height:1.25}
+.alert.b{background:var(--sky)}
+.sheet p{margin:6px 0}
+
+/* refri: tuppers y avisos */
+.frnote{background:color-mix(in srgb,var(--butter) 55%,var(--paper));border:3px solid var(--out);border-radius:18px;padding:8px 12px;margin-bottom:10px;font-size:13px;line-height:1.3}
+.frnote.r{background:var(--rose)}
+.fridge.off{filter:brightness(.78) saturate(.75)}
+.fridge .shelf.tupshelf{background:color-mix(in srgb,var(--sky) 45%,transparent);border-radius:8px;padding:20px 4px 6px}
+.item.tup{background:none;border:0;padding:0;cursor:pointer;touch-action:auto}
+.tupsvg{width:48px;height:46px;display:block;margin:0 auto;filter:drop-shadow(0 3px 0 rgba(107,58,30,.16))}
+.frz{position:absolute;left:0;top:14px;font-size:13px;color:#3F84B5;font-weight:800;z-index:2}
+.tupadd{width:54px;height:58px;border:2.5px dashed var(--out);border-radius:14px;font:600 20px/1 var(--disp);color:var(--muted);display:grid;place-items:center;align-content:center;gap:2px;align-self:center}
+.tupadd small{font-size:10px}
+.portions{text-align:center;margin:12px 0;font-size:15px}.portions b{font:700 26px var(--disp)}
+.pdots{display:flex;gap:6px;justify-content:center;flex-wrap:wrap;margin-top:6px}
+.pdots i{width:18px;height:18px;border-radius:50%;border:2.5px solid var(--out);background:var(--paper)}.pdots i.on{background:var(--terra)}
+.garden .dogcol .dog{cursor:pointer}
