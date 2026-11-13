@@ -1,0 +1,11 @@
+const {chromium}=require('playwright');const {start,MOCK}=require('./testlib');const OUT=process.argv[2];
+const iso=n=>{const d=new Date();d.setDate(d.getDate()+n);return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')};
+(async()=>{const srv=await start(8799);const b=await chromium.launch({args:['--use-gl=swiftshader','--enable-unsafe-swiftshader','--ignore-gpu-blocklist']});const c=await b.newContext({viewport:{width:390,height:800},deviceScaleFactor:2});await c.addInitScript(MOCK);const p=await c.newPage();p.on('pageerror',e=>console.log('ERR',e.message));
+await p.goto('http://localhost:8799/');await p.waitForTimeout(700);
+const act=s=>p.evaluate(s=>document.querySelector(s).dispatchEvent(new MouseEvent('click',{bubbles:true})),s);
+await act('nav [data-tab=casa]');await p.waitForTimeout(4500);await p.evaluate(()=>{document.querySelector('#toast').style.display='none'});
+await p.screenshot({path:OUT+'/c-ok.png'});
+await act('.isoState');await act('[data-act=hTrash][data-l="2"]');await act('[data-act=closeSheet]');
+await act('nav [data-tab=sala]');await act('.svcrow[data-svc=carro]');await p.fill('#b-amount','85000');await p.fill('#b-due',iso(-1));await act('[data-act=billAdd]');await act('[data-act=closeSheet]');
+await act('nav [data-tab=casa]');await p.waitForTimeout(1500);await p.evaluate(()=>{document.querySelector('#toast').style.display='none'});await p.screenshot({path:OUT+'/c-bad.png'});
+await b.close();srv.close()})();

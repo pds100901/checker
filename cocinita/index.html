@@ -606,6 +606,8 @@ nav button span em{position:absolute;top:-6px;right:-4px;width:17px;height:17px;
 .botv.h{width:156px;height:109px;cursor:ew-resize}
 .meterbig.wide{flex-direction:column;align-items:stretch;text-align:center}.meterbig.wide .botv{margin:0 auto}
 
+.seg.s3{grid-template-columns:repeat(3,1fr)}
+
 </style>
 </head>
 <body>
@@ -684,11 +686,11 @@ function seed(){
 const KEY='casa-fresita-v2',KEY_OLD='cocinita-v1';
 const COLS=['items','shop','prep','chores','reminders','bills','tuppers','moves','outages'];
 function emptyState(){
-  return{v:2,stars:0,welcome:false,items:[],shop:[],menu:{},prep:[],chores:[],reminders:[],wasted:[],bills:[],tuppers:[],moves:[],outages:[],house:{laundry:0,mess:{},poop:0,pee:0},
+  return{v:2,stars:0,welcome:false,items:[],shop:[],menu:{},prep:[],chores:[],reminders:[],wasted:[],bills:[],tuppers:[],moves:[],outages:[],house:{laundry:0,mess:{},poop:0,pee:0,trash:0,trashDays:[]},
     dogs:{rosco:{name:'Rosco',g:0,fed:{date:'',am:false,pm:false}},mali:{name:'Mali',g:0,fed:{date:'',am:false,pm:false}},bag:{left:0,total:0},treats:0,water:''}};
 }
 function normalize(s){const e=emptyState();Object.keys(e).forEach(k=>{if(s[k]==null)s[k]=e[k]});COLS.forEach(c=>{if(!Array.isArray(s[c]))s[c]=[]});
-  s.items.forEach(i=>{if(!i.unit)i.unit='unid.'});if(!s.house.mess)s.house.mess={};return s}
+  s.items.forEach(i=>{if(!i.unit)i.unit='unid.'});if(!s.house.mess)s.house.mess={};if(!Array.isArray(s.house.trashDays))s.house.trashDays=[];return s}
 const isCount=it=>it.place==='clean'&&String(it.emoji||'').replace(/\uFE0F/g,'')==='🧻';
 /* S <-> documentos (ruta -> JSON) */
 function flatten(s){
@@ -706,7 +708,7 @@ function applyDoc(path,json){
     if(!d)return;
     if(id==='dogs')S.dogs=Object.assign(emptyState().dogs,d);
     else if(id==='menu')S.menu=d.menu||{};
-    else if(id==='house')S.house=Object.assign({laundry:0,mess:{},poop:0,pee:0},d);
+    else if(id==='house')S.house=Object.assign({laundry:0,mess:{},poop:0,pee:0,trash:0,trashDays:[]},d);
     else if(id==='misc'){S.stars=d.stars||0;S.welcome=!!d.welcome;S.wasted=d.wasted||[]}
     return;
   }
@@ -1657,7 +1659,8 @@ ICONS['📶']='<path d="M6 20C16 10 32 10 42 20" fill="none" stroke-width="4"/><
 ICONS['🧾']='<path d="M11 5H37V43L32 39L28 43L24 39L20 43L16 39L11 43Z" fill="#FFFDF6"/><path d="M17 14H31M17 21H31M17 28H26" fill="none" stroke-width="2"/>';
 ICONS['🥡']='<path d="M8 20H40L37 40C37 42 35 43 33 43H15C13 43 11 42 11 40Z" fill="#DDF1FA"/><rect x="5" y="13" width="38" height="8" rx="3" fill="#F29C92"/><rect x="18" y="9" width="12" height="5" rx="2" fill="#F29C92"/><path d="M15 28Q24 24 33 28" fill="none" stroke="#fff" stroke-width="2.2"/>';
 
-const SVC={luz:{n:'Electricidad',art:'la luz',ic:'⚡',c:'#FFD36B'},net:{n:'Internet',art:'el internet',ic:'📶',c:'#9DC27A'},agua:{n:'Agua',art:'el agua',ic:'💧',c:'#8FC3E8'}};
+const SVC={luz:{n:'Electricidad',art:'la luz',ic:'⚡',c:'#FFD36B'},net:{n:'Internet',art:'el internet',ic:'📶',c:'#9DC27A'},agua:{n:'Agua',art:'el agua',ic:'💧',c:'#8FC3E8'},carro:{n:'Carro',art:'el carro',ic:'🚗',c:'#F7B3A9',over:'En tu casita virtual el carro se dañó.'}};
+ICONS['🚗']='<path d="M4 30C4 25 7 23 11 23L15 13C16 11 18 10 20 10H31C33 10 35 11 36 13L40 23C43 23 45 26 45 30V36H4Z" fill="#F7B3A9"/><path d="M16 22L19 14H31L34 22Z" fill="#CFEAF2"/><circle cx="14" cy="37" r="5" fill="#6B4A3A"/><circle cx="35" cy="37" r="5" fill="#6B4A3A"/><circle cx="9" cy="29" r="2" fill="#FFD36B"/>';
 const ROOMS={sala:{n:'Sala',ic:'🛋',h:360,f:[308,346]},cocina:{n:'Cocina',ic:'🍲',h:360,f:[306,346]},bano:{n:'Baño',ic:'🚿',h:330,f:[262,318]},jardin:{n:'Jardín',ic:'🐶'}};
 const UNITS=['unid.','g','kg','ml','L','paq.','latas','botellas','cajas','bolsas','docenas'];
 let FX=null;
@@ -1673,20 +1676,22 @@ function svcState(svc){
   const next=un[0]||null;
   return{svc,un,over,out,next,has:S.bills.some(b=>b.svc===svc),cut:over.length>0,on:!over.length&&!out,d:next?daysUntil(next.due):null};
 }
-function svcAll(){return{luz:svcState('luz'),net:svcState('net'),agua:svcState('agua')}}
+function svcAll(){return{luz:svcState('luz'),net:svcState('net'),agua:svcState('agua'),carro:svcState('carro')}}
 function extraAlerts(){
   const a=[];
   Object.keys(SVC).forEach(k=>{
     const s=svcState(k),m=SVC[k];
     s.un.forEach(b=>{
       const d=daysUntil(b.due);
-      if(d<0)a.push({lv:'r',ic:m.ic,t:`Recibo de ${m.n.toLowerCase()} vencido (${money(b.amount)}, vencía el ${dLong(b.due)}). En tu casita virtual se cortó ${m.art}.`,svc:k});
+      if(d<0)a.push({lv:'r',ic:m.ic,t:`Recibo de ${m.n.toLowerCase()} vencido (${money(b.amount)}, vencía el ${dLong(b.due)}). ${m.over||'En tu casita virtual se cortó '+m.art+'.'}`,svc:k});
       else if(d<=5)a.push({lv:d<=1?'r':'y',ic:m.ic,t:`Recibo de ${m.n.toLowerCase()} vence ${inDays(d)} (${money(b.amount)}).`,svc:k});
     });
     if(s.out)a.push({lv:'r',ic:m.ic,t:`Corte real de ${m.n.toLowerCase()} registrado desde el ${dLong(s.out.start)}.`+(k==='luz'?' Mantené la refri cerrada y revisá los alimentos antes de consumirlos.':''),svc:k});
-    if(!s.has)a.push({lv:'b',ic:m.ic,t:`Todavía no registraste ningún recibo de ${m.n.toLowerCase()}.`,svc:k});
+    if(!s.has&&k!=='carro')a.push({lv:'b',ic:m.ic,t:`Todavía no registraste ningún recibo de ${m.n.toLowerCase()}.`,svc:k});
   });
   S.items.filter(i=>i.place!=='clean'&&i.meter&&i.qty===1&&i.level<=20).forEach(i=>a.push({lv:'y',ic:i.emoji,t:`${i.name}: al envase le queda poco (${i.level}%) y no tenés otro.`,add:{name:i.name,emoji:i.emoji,place:i.place,ref:{type:'item',id:i.id}}}));
+  if((S.house.trash||0)>0&&(S.house.trashDays||[]).includes(dayIdx()))a.push({lv:'r',ic:'🗑️',t:'Hoy pasa el camión de la basura: acordate de sacarla.',go:'casa'});
+  else if((S.house.trash||0)>=2)a.push({lv:'y',ic:'🗑️',t:'El basurero está lleno: hay que sacar la basura.',go:'casa'});
   if((S.house.poop||0)+(S.house.pee||0))a.push({lv:'y',ic:'🐶',t:`En el jardín hay ${[S.house.poop?S.house.poop+' caca'+(S.house.poop>1?'s':''):'',S.house.pee?S.house.pee+' orín'+(S.house.pee>1?'es':''):''].filter(Boolean).join(' y ')} por limpiar.`,go:'casa'});
   S.tuppers.filter(t=>t.status==='activo').forEach(t=>{
     const d=daysUntil(t.safe);
@@ -1802,10 +1807,10 @@ function salaSVG(){
 function vSala(){
   const sv=svcAll();
   const row=k=>{const s=sv[k],m=SVC[k];
-    const st=!s.has?['Sin recibo registrado','b']:s.out?['Corte real registrado','r']:s.cut?['Cortado en la casita','r']:s.next?[`Vence ${inDays(s.d)}`,s.d<=5?'y':'g']:['Al día','g'];
+    const st=!s.has?['Sin recibo registrado','b']:s.out?['Corte real registrado','r']:s.cut?[k==='carro'?'Dañado en la casita':'Cortado en la casita','r']:s.next?[`Vence ${inDays(s.d)}`,s.d<=5?'y':'g']:['Al día','g'];
     return `<button class="svcrow" data-act="svc" data-svc="${k}"><span class="em">${ic(m.ic)}</span><div class="t"><b>${m.n}</b><small>${s.next?money(s.next.amount)+' · vence el '+dLong(s.next.due):s.has?'Sin recibos pendientes':'Tocá para registrar el recibo y su vencimiento'}</small></div><span class="tag ${st[1]}">${st[0]}</span></button>`};
   return sceneWrap('sala',salaSVG())+`<p class="hint">Tocá la lámpara, el router o los recibos del tablero. Rosco y Mali andan por la casa: tocalos para saludarlos.</p>
-  <div class="panel-title"><h3>Servicios de la casa</h3><i></i></div>${row('luz')}${row('net')}${row('agua')}
+  <div class="panel-title"><h3>Servicios de la casa</h3><i></i></div>${row('luz')}${row('net')}${row('agua')}${row('carro')}
   <p class="sub" style="text-align:center;margin-top:10px">Los cortes son parte de la simulación de tu casita: no indican que el servicio real esté suspendido.</p>`;
 }
 
@@ -1928,7 +1933,7 @@ function sheetSvc(k){
   const s=svcState(k),m=SVC[k];
   const paid=S.bills.filter(b=>b.svc===k&&b.paid).sort((a,b)=>b.paid.at.localeCompare(a.paid.at));
   const status=s.out?`<div class="alert r"><span class="em">${ic(m.ic)}</span><div class="t">Registraste un <b>corte real</b> desde el ${dLong(s.out.start)}.</div><div class="acts"><button class="btn sm" data-act="outEnd" data-id="${s.out.id}">Ya volvió</button></div></div>`
-    :s.cut?`<div class="alert r"><span class="em">${ic(m.ic)}</span><div class="t"><b>${k==='luz'?'¡Tenés que pagar la luz para devolverle la energía a tu casita!':k==='net'?'El internet de tu casita está desconectado hasta que registrés el pago.':'Los grifos de tu casita no tienen agua hasta que registrés el pago.'}</b><br><small>Es parte de la simulación: no significa que el servicio real esté suspendido.</small></div></div>`
+    :s.cut?`<div class="alert r"><span class="em">${ic(m.ic)}</span><div class="t"><b>${k==='luz'?'¡Tenés que pagar la luz para devolverle la energía a tu casita!':k==='net'?'El internet de tu casita está desconectado hasta que registrés el pago.':k==='carro'?'El carrito de tu casita está dañado hasta que registrés el pago.':'Los grifos de tu casita no tienen agua hasta que registrés el pago.'}</b><br><small>Es parte de la simulación: no significa que el servicio real esté suspendido.</small></div></div>`
     :!s.has?`<div class="alert b"><span class="em">${ic(m.ic)}</span><div class="t">Aún no hay recibos de ${m.n.toLowerCase()}. Registrá el monto y la fecha de vencimiento del tuyo.</div></div>`
     :s.next?`<div class="alert ${s.d<=5?'y':''}"><span class="em">${ic(m.ic)}</span><div class="t">Próximo recibo: <b>${money(s.next.amount)}</b>, vence ${inDays(s.d)} (${dLong(s.next.due)}).</div></div>`
     :`<div class="alert"><span class="em">${ic(m.ic)}</span><div class="t">Al día. No hay recibos pendientes.</div></div>`;
@@ -1944,7 +1949,10 @@ function sheetSvc(k){
   <p class="sub">Si de verdad se fue ${m.art} en tu casa (avería, mantenimiento u otra causa), anotalo aquí. Es independiente de los recibos.</p>
   ${s.out?'':`<div class="row"><div><label for="o-start">¿Desde cuándo?</label><input id="o-start" type="date" value="${today()}"></div><button class="btn ghost" style="flex:none" data-act="outStart" data-svc="${k}">Registrar corte real</button></div>`}
   ${S.outages.filter(o=>o.svc===k&&o.end).slice(-4).reverse().map(o=>`<div class="li"><span class="em">${ic(m.ic)}</span><div class="t"><b>Corte real</b><small>Del ${dLong(o.start)} al ${dLong(o.end)}</small></div></div>`).join('')}`);
+  carTweak(k);
 }
+function carTweak(k){if(k!=='carro')return;const sh=$('#sheet .sheet');if(!sh)return;const h=[...sh.querySelectorAll('h4')].find(x=>x.textContent.includes('Corte real'));if(h){let n=h;while(n){const nx=n.nextElementSibling;n.remove();n=nx}}
+  sh.insertAdjacentHTML('beforeend','<p class="sub" style="margin-top:12px">Sirve para el marchamo, la cuota, el seguro o la revisión. Si llega la fecha sin pago registrado, al día siguiente el carrito de la casita aparece dañado. Es solo la simulación.</p>')}
 function sheetBills(){
   const sv=svcAll();
   openSheet(`<h3>${ic('🧾')} Recibos de la casa</h3><p class="sub">Tocá un servicio para registrar su recibo, el vencimiento o el pago.</p>
@@ -2007,7 +2015,7 @@ function sheetSync(){
 function restoreFx(k,was){
   const now=svcState(k).on;
   if(!was&&now){FX={svc:k,t:Date.now()};setTimeout(()=>{const r=$('.room');r&&r.classList.remove('fx-'+k)},2700);
-    toast(k==='luz'?'¡Volvió la luz a tu casita! ✨':k==='net'?'¡Internet reconectado en tu casita! 📶':'¡Volvió el agua a tu casita! 💧');PETS.cheer()}
+    toast(k==='carro'?'¡Tu carrito quedó como nuevo! 🚗':k==='luz'?'¡Volvió la luz a tu casita! ✨':k==='net'?'¡Internet reconectado en tu casita! 📶':'¡Volvió el agua a tu casita! 💧');PETS.cheer()}
 }
 function casaAct(a,d,el,px,py){
   const v=id=>$('#'+id);
@@ -2032,7 +2040,7 @@ function casaAct(a,d,el,px,py){
       if(!at){toast('Poné la fecha en que pagaste');return true}
       if(!(amt>=0)){toast('Poné el monto pagado');return true}
       const was=svcState(b.svc).on;
-      b.paid={at,amount:amt};award(5,px,py);save();closeSheet();if(b.svc==='agua')tab='bano';else if(b.svc==='net'||!ROOMS[tab]||tab==='jardin')tab='sala';
+      b.paid={at,amount:amt};award(5,px,py);save();closeSheet();if(b.svc==='carro')tab='casa';else if(b.svc==='agua')tab='bano';else if(b.svc==='net'||!ROOMS[tab]||tab==='jardin')tab='sala';
       restoreFx(b.svc,was);render();if(was)toast('Pago registrado ✅');
     }return true;
     case 'payUndo':{const b=S.bills.find(x=>x.id===d.id);if(b){b.paid=null;save();render();sheetSvc(b.svc);toast('Pago deshecho')}}return true;
@@ -2507,6 +2515,28 @@ const ISO_ART=(()=>{
     else if(kind==='jar'){g.cyl(0,0,0,.22,.105,c,{sw:2});g.cyl(0,0,.22,.27,.115,W,{sw:1.6})}
     else{const S={o:[-.085,.085,0],a:[.17,-.17,0],b:[0,0,.3]};g.disc(S,.5,.5,.5,.5,c,{sw:2,lit:'lh'});g.disc(S,.36,.66,.12,.1,'#fff',{stroke:'none',op:.55});g.pts(S,[[.5,.96],[.36,1.12],[.5,1.06],[.64,1.12]],'#7FB04F',{sw:1.4,stroke:'#4F6B2E'})}
     return g};
+  A_.car=(x,y,bad)=>()=>{const g=new G(),c='#F7B3A9';g.shadow(x,y,2.1,1,.2);
+    const WS={o:[x,y+.96,0],a:[2,0,0],b:[0,0,1]};
+    [[.24,0],[.78,bad?1:0]].forEach(w=>{g.disc(WS,w[0],.2-(w[1]?.05:0),.115,.2-(w[1]?.05:0),'#5E4638',{sw:2.4});g.disc(WS,w[0],.2-(w[1]?.05:0),.05,.085,'#D5DCE2',{sw:1.5})});
+    const b=g.box(x,y,.16,2,.95,.46,c,{r:18});
+    g.berry(b.L,.5,.5,.07,.22);g.rect(b.L,.04,.36,.1,.62,'#F29C92',{sw:1.5});
+    g.disc(b.R,.22,.55,.1,.16,'#FFE9A8',{sw:1.8});g.disc(b.R,.78,.55,.1,.16,'#FFE9A8',{sw:1.8});g.rect(b.R,.36,.3,.64,.5,'#FFF6E2',{sw:1.5});
+    const k=g.box(x+.4,y+.07,.62,1.05,.81,.44,shade(c,.1),{r:18});
+    g.rect(k.L,.08,.16,.46,.82,'#CFEAF2',{sw:1.8});g.rect(k.L,.54,.16,.92,.82,'#CFEAF2',{sw:1.8});g.rect(k.R,.12,.16,.88,.82,'#CFEAF2',{sw:1.8});
+    if(bad){g.poly([[x+1.5,y+.05,.62],[x+2,y+.05,.62],[x+2,y+.9,.62],[x+1.5,y+.9,.62]],'#6E625C',{sw:2});
+      g.poly([[x+1.5,y+.05,.62],[x+1.5,y+.9,.62],[x+1.62,y+.9,1.2],[x+1.62,y+.05,1.2]],shade(c,-.1),{sw:2.4,lit:'lv'});
+      [[1.75,.9,.3,'#8B8B93'],[1.9,1.25,.36,'#A3A3AB'],[1.7,1.65,.3,'#BDBDC4'],[1.95,1.95,.22,'#D3D3D8']].forEach(q=>g.disc({o:[x+q[0]-q[2]*.5,y+.5+q[2]*.5,q[1]],a:[q[2],-q[2],0],b:[0,0,q[2]*1.4]},.5,.5,.5,.5,q[3],{sw:1.6,op:.9}));
+      const T={o:[x+.7,y+1.2,.02],a:[.5,-.5,0],b:[0,0,.62]};g.pts(T,[[.5,1],[1,.05],[0,.05]],'#FFD36B',{sw:2.4});g.line(T,[[.5,.72],[.5,.4]],INKC,3);g.disc(T,.5,.22,.05,.05,INKC,{stroke:'none'})}
+    return g};
+  A_.trash=(x,y,l)=>()=>{const g=new G();g.shadow(x-.32,y-.32,.64,.64,.18);g.cyl(x,y,0,.62,.3,'#A9CDE0',{sw:2.4,top:l?'#5E6B60':'#7FA3B8'});
+    g.berry({o:[x-.02,y+.3,.16],a:[.26,-.1,0],b:[0,0,.3]},.5,.5,.5,.5);
+    const blob=(dx,dy,z,r,col)=>g.disc({o:[x+dx-r*.55,y+dy+r*.55,z],a:[r*1.1,-r*1.1,0],b:[0,0,r*1.5]},.5,.5,.5,.5,col,{sw:1.8,lit:'lv'});
+    if(l===0)g.cyl(x,y,.62,.7,.33,'#8FB7CC',{sw:2.2});
+    if(l>=1){blob(-.08,0,.5,.26,'#6E7B70');blob(.1,.04,.56,.22,'#8A968C')}
+    if(l>=2){blob(0,.02,.82,.24,'#6E7B70');g.poly([[x-.04,y,1.16],[x,y,1.3],[x+.05,y,1.16]],'#6E7B70',{sw:1.6});
+      g.shadow(x+.2,y+.2,.5,.5,.14);blob(.42,.3,0,.3,'#5E6B60');g.poly([[x+.38,y+.34,.42],[x+.44,y+.3,.56],[x+.5,y+.3,.42]],'#5E6B60',{sw:1.6});
+      [[-.3,1.25],[.34,1.05]].forEach(q=>g.poly([[x+q[0],y-q[0],q[1]],[x+q[0]+.05,y-q[0]-.05,q[1]+.1],[x+q[0],y-q[0],q[1]+.2]],'none',{open:true,stroke:'#9DB07A',sw:2}))}
+    return g};
   A_.rack=(S)=>()=>{const g=new G();g.line(S,[[.08,.62],[.92,.62]],'#8A5330',3);
     [[.2,'#F58FA6'],[.42,'#FFD979'],[.64,'#8EB8D0'],[.84,'#FFF6E2']].forEach(q=>{g.rect(S,q[0]-.07,.42,q[0]+.07,.62,q[1],{sw:1.8});g.rect(S,q[0]-.012,.6,q[0]+.012,.66,'#E9C48F',{sw:1.2})});return g};
   /* ---------- exterior ---------- */
@@ -2594,9 +2624,9 @@ const ISO=(()=>{
     add('lshelf',a.shelfWall(wY2,.42,.92,.66,[[.12,.36,'#8EB8D0',.12],[.34,.28,'#F6B5AE',.11,'#8E6BC0'],[.56,.38,'#FFFDF6',.12,'#4A8BB0'],[.8,.26,'#CDE8D8',.1,'#7FA050']]),.05+1.1+8+1.3+.01,'lavanderia');
     add('lrug',a.rug(2.9,8.4,1.3,1.1,'#CFE6EE','#FFFDF6'),-690,'lavanderia');
     for(let l=0;l<4;l++)add('basket'+l,a.basketL(.85,9.75,l),.85+9.75+.6,'lavanderia','basket');
-    add('pile',a.pile(2.2,9.9),2.2+9.9+.4,'lavanderia','basket');
-    [['cocina',2.6,4.9,'sock'],['cocina',4.9,2.7,'ball'],['cocina',1.7,1.9,'paper'],['cocina',5.5,4.7,'cup'],['cocina',3.1,2.2,'bone'],
-     ['bano',8.0,3.3,'sock'],['bano',9.9,3.0,'paper'],['bano',7.6,1.7,'cup'],['lavanderia',2.0,7.2,'sock'],['lavanderia',3.7,9.0,'paper'],['lavanderia',4.4,7.9,'ball']]
+    add('pile',a.pile(2.3,10.0),2.3+10.0+.4,'lavanderia','basket');
+    [['cocina',3.0,5.3,'sock'],['cocina',4.6,5.4,'ball'],['cocina',1.6,1.8,'paper'],['cocina',2.2,5.4,'cup'],['cocina',5.6,3.9,'bone'],
+     ['bano',7.9,3.6,'sock'],['bano',10.4,3.4,'paper'],['bano',7.7,1.7,'cup'],['lavanderia',1.8,7.0,'sock'],['lavanderia',3.6,9.6,'paper'],['lavanderia',4.5,8.3,'ball']]
       .forEach((c,i)=>{add('mess'+i,a.clutter(c[1],c[2],c[3]),c[1]+c[2]+.1,c[0],'mess');L[L.length-1].grp='mess:'+c[0]});
     [['cocina',4.4,4.9,.5],['cocina',2.2,3.9,.4],['cocina',5.6,2.1,.45],['bano',8.4,3.9,.5],['bano',10,1.9,.4],['lavanderia',2.6,7.5,.45],['lavanderia',3.9,9.9,.5]]
       .forEach((c,i)=>{add('dirt'+i,a.stain(c[1],c[2],c[3]),-685+i*.01,c[0],'dirt');L[L.length-1].grp='dirt';L[L.length-1].n=i});
@@ -2604,23 +2634,25 @@ const ISO=(()=>{
     add('puddle',a.puddle(9.1,2.5,1.05,.8),-691,'bano','mess');L[L.length-1].grp='mess:bano';
     add('sinkdish',a.sinkDishes(4.05,.6,1.5),3.35+1.9+FY+1.1+.04,'cocina','mess');L[L.length-1].grp='mess:cocina';
     add('vine1',a.vine(-.2,.2,H,0,.62,5),-750);add('vine2',a.vine(.5,-.2,H,.62,0,4),-749);add('vine3',a.vine(-.2,8.6,H,0,.6,4),-748);add('vine4',a.vine(9.2,-.2,H,.6,0,4),-747);
-    add('stool1',a.stool(2.0,3.3),2.0+3.3+.3,'cocina');add('stool2',a.stool(1.1,4.5,'#FFD979'),1.1+4.5+.3,'cocina');
+    add('stool1',a.stool(2.3,3.35),2.3+3.35+.3,'cocina');add('stool2',a.stool(1.3,4.8,'#FFD979'),1.3+4.8+.3,'cocina');
     add('ftop',a.fridgeTop(FX,FY,3.25),FX+1.45+FY+1.15-.28,'cocina','fridge');
     add('toaster',a.toaster(3.42,.2,1.5),3.35+1.9+FY+1.1+.012,'cocina');
     add('dishes',a.dishes(4.55,.75,1.5),3.35+1.9+FY+1.1+.03,'cocina');
     add('jars',a.jars(4.55,.22,1.5),3.35+1.9+FY+1.1+.02,'cocina');
     add('khang',a.hang(wX1,.56,.74,.645),3.35+1.9+FY+1.1+.015,'cocina');
     add('kframe',a.frame(wY1,.9,.6),-799,'cocina');
-    add('kroses',a.roses(.75,5.3,0,'#F7B3A9'),.75+5.3+.3,'cocina');
+    add('kroses',a.roses(.55,5.5,0,'#F7B3A9'),.55+5.5+.3,'cocina');
     add('proses',a.roses(1.0,.55,3.49),.25+1.5+FY+1.05+.01,'cocina');
     add('broses',a.roses(10.5,4.3,0,'#C9B0E8'),10.5+4.3+.3,'bano');
     add('lroses',a.roses(4.3,6.7,0,'#FFD979'),4.3+6.7+.3,'lavanderia');
-    add('lstool',a.stool(4.2,9.8,'#C9B0E8'),4.2+9.8+.3,'lavanderia');
-    add('groses',a.roses(6.0,7.2,-.02),6.0+7.2+.3);add('groses2',a.roses(10.6,10.4,-.02,'#F7B3A9'),10.6+10.4+.3);
-    [[7.2,8.9],[9.4,7.3],[10.2,9.6],[6.7,6.7],[8.9,10.6]].forEach((c,i)=>{add('poop'+i,a.poop(c[0],c[1]),c[0]+c[1]+.2,null,'poop');L[L.length-1].grp='poop';L[L.length-1].n=i});
-    [[7.9,6.9],[9.9,8.5],[6.3,9.4],[10.7,7.6]].forEach((c,i)=>{add('pee'+i,a.pee(c[0],c[1]),-688+i*.01,null,'pee');L[L.length-1].grp='pee';L[L.length-1].n=i});
+    add('lstool',a.stool(4.4,10.0,'#C9B0E8'),4.4+10.0+.3,'lavanderia');
+    add('groses',a.roses(6.0,7.2,-.02),6.0+7.2+.3);add('groses2',a.roses(8.6,11.1,-.02,'#F7B3A9'),8.6+11.1+.3);
+    add('car_ok',a.car(9.3,6.5,false),9.3+2+6.5+.95,null,'car','Carro');add('car_bad',a.car(9.3,6.5,true),9.3+2+6.5+.95,null,'car');
+    for(let l=0;l<3;l++)add('trash'+l,a.trash(6.0,5.45,l),6.0+5.45+.4,'cocina','trash');
+    [[7.2,8.9],[9.2,9.6],[7.9,11.0],[6.7,6.7],[7.6,10.0]].forEach((c,i)=>{add('poop'+i,a.poop(c[0],c[1]),c[0]+c[1]+.2,null,'poop');L[L.length-1].grp='poop';L[L.length-1].n=i});
+    [[7.9,6.6],[6.2,8.2],[6.3,9.4],[10.4,9.2]].forEach((c,i)=>{add('pee'+i,a.pee(c[0],c[1]),-688+i*.01,null,'pee');L[L.length-1].grp='pee';L[L.length-1].n=i});
     add('bush1',a.bush(6.4,10.6,.7),6.4+10.6+.9);
-    add('bush2',a.bush(10.8,6.3,.6),10.8+6.3+.8);
+    add('bush2',a.bush(10.9,10.6,.6),10.9+10.6+.8);
     add('mailbox',a.mailbox(8.3,7.8),8.3+7.8+.5,null,'mailbox','Buzón');
     add('letter',a.letter(8.3,7.8),8.3+7.8+.52,null,'mailbox');
     add('fglow',a.fridgeGlow(FX,FY),FX+1.45+FY+1.15-.25,'cocina');
@@ -2702,7 +2734,7 @@ const ISO=(()=>{
   function bounce(s){s._bn=1}
   function tapObj(d,s,e){
     if(moved())return;
-    if(d.act==='poop'||d.act==='pee'){api.onObject(d.act);return}
+    if(d.act==='poop'||d.act==='pee'||d.act==='car'){if(d.act==='car')bounce(s);api.onObject(d.act);return}
     if(view==='home'){if(d.act==='mailbox'){bounce(objs.mailbox.s);api.onMailbox&&api.onMailbox();return}if(d.room)go(d.room);return}
     if(view==='fridge'){if(d.act==='fridge')closeFridge();return}
     if(d.room&&d.room!==view){go(d.room);return}
@@ -2720,9 +2752,9 @@ const ISO=(()=>{
   async function refreshItems(){
     if(!fridge||!api)return;const list=api.fridgeItems()||[];const c=fridge.itemsC;c.removeChildren();
     const rows={top:1.61,mid:.91,low:.22},cnt={top:0,mid:0,low:0};
-    for(const it of list){const r=it.row||'mid';if(cnt[r]>=4)continue;const i=cnt[r]++;
+    for(const it of list){const r=it.row||'mid';if(cnt[r]>=3)continue;const i=cnt[r]++;
       const key=it.kind+it.col;let t=fridge.texCache[key];if(!t){try{const o=AR.A.prod(it.kind,it.col)().svg(K);t={t:await svgTex(o),o};fridge.texCache[key]=t}catch(e){continue}}
-      const s=new PIXI.Sprite(t.t);s.scale.set(1.25/K);const q=pr(FX+.26+i*.29,FY+.95-(i%2)*.16,rows[r]);s.position.set(q[0]+t.o.x*1.25,q[1]+t.o.y*1.25);c.addChild(s)}
+      const s=new PIXI.Sprite(t.t);s.scale.set(1/K);const q=pr(FX+.28+i*.34,FY+.72,rows[r]);s.position.set(q[0]+t.o.x,q[1]+t.o.y);s.zIndex=-i;c.addChild(s)}c.sortableChildren=true;
   }
   /* ---------- cuadro a cuadro ---------- */
   function tick(){
@@ -2753,7 +2785,8 @@ const ISO=(()=>{
     labels.forEach(l=>{const q=pr(l.p[0],l.p[1],l.p[2]);l.el.style.transform=`translate(-50%,-50%) translate(${(q[0]*cam.s+cam.x).toFixed(1)}px,${(q[1]*cam.s+cam.y).toFixed(1)}px)`});
   }
   function setHouse(){if(!ready||!api.house)return;const h=api.house();
-    for(let l=0;l<4;l++)objs['basket'+l].s.visible=l===Math.min(3,h.laundry);objs.pile.s.visible=h.laundry>=3;
+    for(let l=0;l<4;l++)objs['basket'+l].s.visible=l===Math.min(3,h.laundry);
+    for(let l=0;l<3;l++)objs['trash'+l].s.visible=l===Math.min(2,h.trash||0);objs.car_ok.s.visible=!h.carBad;objs.car_bad.s.visible=!!h.carBad;objs.pile.s.visible=h.laundry>=3;
     Object.values(objs).forEach(o=>{const g=o.def.grp;if(!g)return;if(g==='poop')o.s.visible=o.def.n<(h.poop||0);else if(g==='pee')o.s.visible=o.def.n<(h.pee||0);else if(g==='dirt')o.s.visible=h.dirty>0&&o.def.n<(h.dirty>=3?7:h.dirty===2?5:3);else o.s.visible=!!h.mess[g.slice(5)]})}
   function setDark(v){if(v===dark&&setDark._done)return;dark=v;setDark._done=true;const t=v?0x7F7AAE:0xFFFFFF;
     Object.values(objs).forEach(o=>{if(o.def.id!=='shaft'&&o.def.id!=='fglow')o.s.tint=t});if(fridge)fridge.door.tint=t;Object.values(dogs).forEach(d=>{d.mesh.tint=t;d.beg.tint=t});if(shaft)shaft.visible=!v}
@@ -2791,7 +2824,7 @@ const ISO=(()=>{
   function pause(){if(app)app.ticker.stop()}
   addEventListener('resize',()=>{if(host&&host.isConnected)resize()});
   function _pos(id){const o=objs[id].s,r=app.view.getBoundingClientRect();return{x:r.left+(o._b.x+o._b.w/2)*cam.s+cam.x,y:r.top+(o._b.y+o._b.h*.6)*cam.s+cam.y}}
-  return{_forceDirt:()=>Object.values(objs).forEach(o=>{if(o.def.grp==='dirt')o.s.visible=true}),_vis2:()=>[objs.poop0.s.visible,objs.poop1.s.visible,objs.poop2.s.visible,objs.pee0.s.visible],_vis:()=>({basket3:objs.basket3.s.visible,pile:objs.pile.s.visible,messCocina:objs.mess0.s.visible,messBano:objs.mess5.s.visible,dirt:objs.dirt0.s.visible}),_items:()=>fridge?fridge.itemsC.children.length:0,_pos,mount,pause,go,closeFridge,get view(){return view},get ready(){return ready},_dbg:()=>({cam,view,open:fridge&&fridge.open,objs:Object.keys(objs).length})};
+  return{_car:()=>[objs.car_ok.s.visible,objs.car_bad.s.visible,objs.trash2.s.visible],_forceDirt:()=>Object.values(objs).forEach(o=>{if(o.def.grp==='dirt')o.s.visible=true}),_vis2:()=>[objs.poop0.s.visible,objs.poop1.s.visible,objs.poop2.s.visible,objs.pee0.s.visible],_vis:()=>({basket3:objs.basket3.s.visible,pile:objs.pile.s.visible,messCocina:objs.mess0.s.visible,messBano:objs.mess5.s.visible,dirt:objs.dirt0.s.visible}),_items:()=>fridge?fridge.itemsC.children.length:0,_pos,mount,pause,go,closeFridge,get view(){return view},get ready(){return ready},_dbg:()=>({cam,view,open:fridge&&fridge.open,objs:Object.keys(objs).length})};
 })();
 
 /* ---------- puente entre la aplicación (datos) y el motor 2.5D (dibujo) ---------- */
@@ -2811,11 +2844,13 @@ const ISO_API={
     return out},
   onFridge:open=>{isoPanel=open?'fridge':null;render()},
   onMailbox:()=>sheetBills(),
-  house:()=>({laundry:S.house.laundry||0,mess:S.house.mess||{},dirty:overdueChores().length,poop:S.house.poop||0,pee:S.house.pee||0}),
+  house:()=>({laundry:S.house.laundry||0,mess:S.house.mess||{},dirty:overdueChores().length,poop:S.house.poop||0,pee:S.house.pee||0,trash:S.house.trash||0,carBad:svcState('carro').cut}),
   onObject:act=>{
     if(act==='pantry')openSheet(`<h3>Alacena</h3>${furnitureHTML('pantry')}<button class="btn terra block" data-act="newItem" data-place="pantry">＋ Agregar a la alacena</button>`);
     else if(act==='laundry')openSheet(`<h3>Lavandería y limpieza</h3>${furnitureHTML('clean')}<button class="btn terra block" data-act="newItem" data-place="clean">＋ Agregar producto</button>`);
     else if(act==='poop'||act==='pee'){if(S.house[act]>0){S.house[act]--;award(1);save();render();toast(act==='poop'?'¡Caca recogida! 🐾':'¡Orín limpio! 🐾')}}
+    else if(act==='car')sheetSvc('carro');
+    else if(act==='trash')sheetHouse();
     else if(act==='vanity')sheetBath();
     else if(act==='basket'||act==='mess'||act==='dirt'||act==='house')sheetHouse();
     else if(act==='sink'||act==='tub')toast(svcState('agua').on?'El agua corre bien 💧':'No sale agua en la casita: hay un recibo de agua vencido 🚰');
@@ -2874,6 +2909,9 @@ function sheetHouse(){
   <h4>🧺 Ropa sucia</h4><div class="seg">${L.map((t,i)=>`<button class="${(h.laundry||0)===i?'on':''}" data-act="hLaundry" data-l="${i}">${t}</button>`).join('')}</div>
   ${h.laundry?'<button class="btn block" style="margin-top:8px" data-act="hLaundry" data-l="0" data-done="1">Ya lavé todo ✨</button>':''}
   <h4>🧸 Orden</h4>${HROOMS.map(r=>`<div class="li"><div class="t"><b>${r[1]}</b><small>${h.mess[r[0]]?'Desordenada':'Ordenada'}</small></div><button class="btn sm ${h.mess[r[0]]?'':'ghost'}" data-act="hMess" data-r="${r[0]}">${h.mess[r[0]]?'Ya ordené':'Está desordenada'}</button></div>`).join('')}
+  <h4>🗑️ Basura</h4><div class="seg s3">${['Vacío','A medias','Lleno'].map((t,i)=>`<button class="${(h.trash||0)===i?'on':''}" data-act="hTrash" data-l="${i}">${t}</button>`).join('')}</div>
+  ${h.trash?'<button class="btn block" style="margin-top:8px" data-act="hTrash" data-l="0" data-done="1">Ya saqué la basura ✨</button>':''}
+  <label>Días que pasa el camión</label><div class="chips">${DAYS.map((d,i)=>`<button class="chip ${(h.trashDays||[]).includes(i)?'ok':''}" data-act="hTrashDay" data-i="${i}">${d}</button>`).join('')}</div>
   <h4>🐾 Rosco y Mali</h4>${[['poop','Cacas por recoger',5],['pee','Orines por limpiar',4]].map(q=>`<div class="li"><div class="t"><b>${q[1]}</b><small>${(h[q[0]]||0)?'Se ven en el jardín: tocalas ahí para limpiarlas':'Nada por ahora'}</small></div><div class="step"><button data-act="hPet" data-k="${q[0]}" data-d="-1" aria-label="Quitar">−</button><b class="rolln">${h[q[0]]||0}</b><button data-act="hPet" data-k="${q[0]}" data-d="1" data-max="${q[2]}" aria-label="Agregar">＋</button></div></div>`).join('')}
   ${(h.poop||0)+(h.pee||0)?'<button class="btn block" style="margin-top:8px" data-act="hPetClean">Ya limpié todo ✨</button>':''}
   <h4>🧽 Limpieza pendiente</h4>${od.length?od.map(c=>`<div class="li"><div class="t"><b>${esc(c.text)}</b><small>Tocaba hace ${-(daysUntil(c.last)+c.every)} día${-(daysUntil(c.last)+c.every)===1?'':'s'}</small></div><button class="btn sm" data-act="hChore" data-id="${c.id}">Hecho</button></div>`).join(''):`<p class="sub">${S.chores.some(c=>c.area==='clean')?'Nada atrasado: la casa se ve limpia ✨':'No tenés tareas de limpieza registradas. Agregalas en Baño → Rutina de limpieza y cuando se atrasen la casa se verá sucia.'}</p>`}`);
@@ -2883,6 +2921,8 @@ function houseAct(a,d,el,px,py){
     case 'hLaundry':{const was=S.house.laundry||0;S.house.laundry=+d.l;if(d.done&&was)award(3,px,py);save();render();sheetHouse();if(d.done)toast('¡Ropa limpia! 🧺')}return true;
     case 'hMess':{const m=S.house.mess;m[d.r]=!m[d.r];if(!m[d.r])award(2,px,py);save();render();sheetHouse()}return true;
     case 'hChore':{const c=S.chores.find(x=>x.id===d.id);if(c){c.last=today();award(3,px,py);save();render();sheetHouse()}}return true;
+    case 'hTrash':{const was=S.house.trash||0;S.house.trash=+d.l;if(d.done&&was)award(2,px,py);save();render();sheetHouse();if(d.done)toast('¡Basura afuera! 🗑️')}return true;
+    case 'hTrashDay':{const a=S.house.trashDays||(S.house.trashDays=[]),i=+d.i,k=a.indexOf(i);if(k>=0)a.splice(k,1);else a.push(i);save();render();sheetHouse()}return true;
     case 'hPet':{const k=d.k,was=S.house[k]||0,n=Math.max(0,Math.min(k==='poop'?5:4,was+(+d.d)));S.house[k]=n;if(n<was)award(1,px,py);save();render();sheetHouse()}return true;
     case 'hPetClean':{award(2,px,py);S.house.poop=0;S.house.pee=0;save();render();sheetHouse();toast('¡Jardín limpio! 🐾')}return true;
     case 'bathAdd':{const it=mk(d.n,d.e,'clean',1,icKey(d.e)==='🧻'?0:1);it.level=50;if(isCount(it))it.unit='rollos';S.items.push(it);save();render();sheetBath();toast(isCount(it)?'Poné cuántos rollos hay':'Marcá en la botella por dónde va')}return true;

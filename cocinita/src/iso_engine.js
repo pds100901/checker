@@ -46,9 +46,9 @@ const ISO=(()=>{
     add('lshelf',a.shelfWall(wY2,.42,.92,.66,[[.12,.36,'#8EB8D0',.12],[.34,.28,'#F6B5AE',.11,'#8E6BC0'],[.56,.38,'#FFFDF6',.12,'#4A8BB0'],[.8,.26,'#CDE8D8',.1,'#7FA050']]),.05+1.1+8+1.3+.01,'lavanderia');
     add('lrug',a.rug(2.9,8.4,1.3,1.1,'#CFE6EE','#FFFDF6'),-690,'lavanderia');
     for(let l=0;l<4;l++)add('basket'+l,a.basketL(.85,9.75,l),.85+9.75+.6,'lavanderia','basket');
-    add('pile',a.pile(2.2,9.9),2.2+9.9+.4,'lavanderia','basket');
-    [['cocina',2.6,4.9,'sock'],['cocina',4.9,2.7,'ball'],['cocina',1.7,1.9,'paper'],['cocina',5.5,4.7,'cup'],['cocina',3.1,2.2,'bone'],
-     ['bano',8.0,3.3,'sock'],['bano',9.9,3.0,'paper'],['bano',7.6,1.7,'cup'],['lavanderia',2.0,7.2,'sock'],['lavanderia',3.7,9.0,'paper'],['lavanderia',4.4,7.9,'ball']]
+    add('pile',a.pile(2.3,10.0),2.3+10.0+.4,'lavanderia','basket');
+    [['cocina',3.0,5.3,'sock'],['cocina',4.6,5.4,'ball'],['cocina',1.6,1.8,'paper'],['cocina',2.2,5.4,'cup'],['cocina',5.6,3.9,'bone'],
+     ['bano',7.9,3.6,'sock'],['bano',10.4,3.4,'paper'],['bano',7.7,1.7,'cup'],['lavanderia',1.8,7.0,'sock'],['lavanderia',3.6,9.6,'paper'],['lavanderia',4.5,8.3,'ball']]
       .forEach((c,i)=>{add('mess'+i,a.clutter(c[1],c[2],c[3]),c[1]+c[2]+.1,c[0],'mess');L[L.length-1].grp='mess:'+c[0]});
     [['cocina',4.4,4.9,.5],['cocina',2.2,3.9,.4],['cocina',5.6,2.1,.45],['bano',8.4,3.9,.5],['bano',10,1.9,.4],['lavanderia',2.6,7.5,.45],['lavanderia',3.9,9.9,.5]]
       .forEach((c,i)=>{add('dirt'+i,a.stain(c[1],c[2],c[3]),-685+i*.01,c[0],'dirt');L[L.length-1].grp='dirt';L[L.length-1].n=i});
@@ -56,23 +56,25 @@ const ISO=(()=>{
     add('puddle',a.puddle(9.1,2.5,1.05,.8),-691,'bano','mess');L[L.length-1].grp='mess:bano';
     add('sinkdish',a.sinkDishes(4.05,.6,1.5),3.35+1.9+FY+1.1+.04,'cocina','mess');L[L.length-1].grp='mess:cocina';
     add('vine1',a.vine(-.2,.2,H,0,.62,5),-750);add('vine2',a.vine(.5,-.2,H,.62,0,4),-749);add('vine3',a.vine(-.2,8.6,H,0,.6,4),-748);add('vine4',a.vine(9.2,-.2,H,.6,0,4),-747);
-    add('stool1',a.stool(2.0,3.3),2.0+3.3+.3,'cocina');add('stool2',a.stool(1.1,4.5,'#FFD979'),1.1+4.5+.3,'cocina');
+    add('stool1',a.stool(2.3,3.35),2.3+3.35+.3,'cocina');add('stool2',a.stool(1.3,4.8,'#FFD979'),1.3+4.8+.3,'cocina');
     add('ftop',a.fridgeTop(FX,FY,3.25),FX+1.45+FY+1.15-.28,'cocina','fridge');
     add('toaster',a.toaster(3.42,.2,1.5),3.35+1.9+FY+1.1+.012,'cocina');
     add('dishes',a.dishes(4.55,.75,1.5),3.35+1.9+FY+1.1+.03,'cocina');
     add('jars',a.jars(4.55,.22,1.5),3.35+1.9+FY+1.1+.02,'cocina');
     add('khang',a.hang(wX1,.56,.74,.645),3.35+1.9+FY+1.1+.015,'cocina');
     add('kframe',a.frame(wY1,.9,.6),-799,'cocina');
-    add('kroses',a.roses(.75,5.3,0,'#F7B3A9'),.75+5.3+.3,'cocina');
+    add('kroses',a.roses(.55,5.5,0,'#F7B3A9'),.55+5.5+.3,'cocina');
     add('proses',a.roses(1.0,.55,3.49),.25+1.5+FY+1.05+.01,'cocina');
     add('broses',a.roses(10.5,4.3,0,'#C9B0E8'),10.5+4.3+.3,'bano');
     add('lroses',a.roses(4.3,6.7,0,'#FFD979'),4.3+6.7+.3,'lavanderia');
-    add('lstool',a.stool(4.2,9.8,'#C9B0E8'),4.2+9.8+.3,'lavanderia');
-    add('groses',a.roses(6.0,7.2,-.02),6.0+7.2+.3);add('groses2',a.roses(10.6,10.4,-.02,'#F7B3A9'),10.6+10.4+.3);
-    [[7.2,8.9],[9.4,7.3],[10.2,9.6],[6.7,6.7],[8.9,10.6]].forEach((c,i)=>{add('poop'+i,a.poop(c[0],c[1]),c[0]+c[1]+.2,null,'poop');L[L.length-1].grp='poop';L[L.length-1].n=i});
-    [[7.9,6.9],[9.9,8.5],[6.3,9.4],[10.7,7.6]].forEach((c,i)=>{add('pee'+i,a.pee(c[0],c[1]),-688+i*.01,null,'pee');L[L.length-1].grp='pee';L[L.length-1].n=i});
+    add('lstool',a.stool(4.4,10.0,'#C9B0E8'),4.4+10.0+.3,'lavanderia');
+    add('groses',a.roses(6.0,7.2,-.02),6.0+7.2+.3);add('groses2',a.roses(8.6,11.1,-.02,'#F7B3A9'),8.6+11.1+.3);
+    add('car_ok',a.car(9.3,6.5,false),9.3+2+6.5+.95,null,'car','Carro');add('car_bad',a.car(9.3,6.5,true),9.3+2+6.5+.95,null,'car');
+    for(let l=0;l<3;l++)add('trash'+l,a.trash(6.0,5.45,l),6.0+5.45+.4,'cocina','trash');
+    [[7.2,8.9],[9.2,9.6],[7.9,11.0],[6.7,6.7],[7.6,10.0]].forEach((c,i)=>{add('poop'+i,a.poop(c[0],c[1]),c[0]+c[1]+.2,null,'poop');L[L.length-1].grp='poop';L[L.length-1].n=i});
+    [[7.9,6.6],[6.2,8.2],[6.3,9.4],[10.4,9.2]].forEach((c,i)=>{add('pee'+i,a.pee(c[0],c[1]),-688+i*.01,null,'pee');L[L.length-1].grp='pee';L[L.length-1].n=i});
     add('bush1',a.bush(6.4,10.6,.7),6.4+10.6+.9);
-    add('bush2',a.bush(10.8,6.3,.6),10.8+6.3+.8);
+    add('bush2',a.bush(10.9,10.6,.6),10.9+10.6+.8);
     add('mailbox',a.mailbox(8.3,7.8),8.3+7.8+.5,null,'mailbox','Buzón');
     add('letter',a.letter(8.3,7.8),8.3+7.8+.52,null,'mailbox');
     add('fglow',a.fridgeGlow(FX,FY),FX+1.45+FY+1.15-.25,'cocina');
@@ -154,7 +156,7 @@ const ISO=(()=>{
   function bounce(s){s._bn=1}
   function tapObj(d,s,e){
     if(moved())return;
-    if(d.act==='poop'||d.act==='pee'){api.onObject(d.act);return}
+    if(d.act==='poop'||d.act==='pee'||d.act==='car'){if(d.act==='car')bounce(s);api.onObject(d.act);return}
     if(view==='home'){if(d.act==='mailbox'){bounce(objs.mailbox.s);api.onMailbox&&api.onMailbox();return}if(d.room)go(d.room);return}
     if(view==='fridge'){if(d.act==='fridge')closeFridge();return}
     if(d.room&&d.room!==view){go(d.room);return}
@@ -172,9 +174,9 @@ const ISO=(()=>{
   async function refreshItems(){
     if(!fridge||!api)return;const list=api.fridgeItems()||[];const c=fridge.itemsC;c.removeChildren();
     const rows={top:1.61,mid:.91,low:.22},cnt={top:0,mid:0,low:0};
-    for(const it of list){const r=it.row||'mid';if(cnt[r]>=4)continue;const i=cnt[r]++;
+    for(const it of list){const r=it.row||'mid';if(cnt[r]>=3)continue;const i=cnt[r]++;
       const key=it.kind+it.col;let t=fridge.texCache[key];if(!t){try{const o=AR.A.prod(it.kind,it.col)().svg(K);t={t:await svgTex(o),o};fridge.texCache[key]=t}catch(e){continue}}
-      const s=new PIXI.Sprite(t.t);s.scale.set(1.25/K);const q=pr(FX+.26+i*.29,FY+.95-(i%2)*.16,rows[r]);s.position.set(q[0]+t.o.x*1.25,q[1]+t.o.y*1.25);c.addChild(s)}
+      const s=new PIXI.Sprite(t.t);s.scale.set(1/K);const q=pr(FX+.28+i*.34,FY+.72,rows[r]);s.position.set(q[0]+t.o.x,q[1]+t.o.y);s.zIndex=-i;c.addChild(s)}c.sortableChildren=true;
   }
   /* ---------- cuadro a cuadro ---------- */
   function tick(){
@@ -205,7 +207,8 @@ const ISO=(()=>{
     labels.forEach(l=>{const q=pr(l.p[0],l.p[1],l.p[2]);l.el.style.transform=`translate(-50%,-50%) translate(${(q[0]*cam.s+cam.x).toFixed(1)}px,${(q[1]*cam.s+cam.y).toFixed(1)}px)`});
   }
   function setHouse(){if(!ready||!api.house)return;const h=api.house();
-    for(let l=0;l<4;l++)objs['basket'+l].s.visible=l===Math.min(3,h.laundry);objs.pile.s.visible=h.laundry>=3;
+    for(let l=0;l<4;l++)objs['basket'+l].s.visible=l===Math.min(3,h.laundry);
+    for(let l=0;l<3;l++)objs['trash'+l].s.visible=l===Math.min(2,h.trash||0);objs.car_ok.s.visible=!h.carBad;objs.car_bad.s.visible=!!h.carBad;objs.pile.s.visible=h.laundry>=3;
     Object.values(objs).forEach(o=>{const g=o.def.grp;if(!g)return;if(g==='poop')o.s.visible=o.def.n<(h.poop||0);else if(g==='pee')o.s.visible=o.def.n<(h.pee||0);else if(g==='dirt')o.s.visible=h.dirty>0&&o.def.n<(h.dirty>=3?7:h.dirty===2?5:3);else o.s.visible=!!h.mess[g.slice(5)]})}
   function setDark(v){if(v===dark&&setDark._done)return;dark=v;setDark._done=true;const t=v?0x7F7AAE:0xFFFFFF;
     Object.values(objs).forEach(o=>{if(o.def.id!=='shaft'&&o.def.id!=='fglow')o.s.tint=t});if(fridge)fridge.door.tint=t;Object.values(dogs).forEach(d=>{d.mesh.tint=t;d.beg.tint=t});if(shaft)shaft.visible=!v}
@@ -243,5 +246,5 @@ const ISO=(()=>{
   function pause(){if(app)app.ticker.stop()}
   addEventListener('resize',()=>{if(host&&host.isConnected)resize()});
   function _pos(id){const o=objs[id].s,r=app.view.getBoundingClientRect();return{x:r.left+(o._b.x+o._b.w/2)*cam.s+cam.x,y:r.top+(o._b.y+o._b.h*.6)*cam.s+cam.y}}
-  return{_forceDirt:()=>Object.values(objs).forEach(o=>{if(o.def.grp==='dirt')o.s.visible=true}),_vis2:()=>[objs.poop0.s.visible,objs.poop1.s.visible,objs.poop2.s.visible,objs.pee0.s.visible],_vis:()=>({basket3:objs.basket3.s.visible,pile:objs.pile.s.visible,messCocina:objs.mess0.s.visible,messBano:objs.mess5.s.visible,dirt:objs.dirt0.s.visible}),_items:()=>fridge?fridge.itemsC.children.length:0,_pos,mount,pause,go,closeFridge,get view(){return view},get ready(){return ready},_dbg:()=>({cam,view,open:fridge&&fridge.open,objs:Object.keys(objs).length})};
+  return{_car:()=>[objs.car_ok.s.visible,objs.car_bad.s.visible,objs.trash2.s.visible],_forceDirt:()=>Object.values(objs).forEach(o=>{if(o.def.grp==='dirt')o.s.visible=true}),_vis2:()=>[objs.poop0.s.visible,objs.poop1.s.visible,objs.poop2.s.visible,objs.pee0.s.visible],_vis:()=>({basket3:objs.basket3.s.visible,pile:objs.pile.s.visible,messCocina:objs.mess0.s.visible,messBano:objs.mess5.s.visible,dirt:objs.dirt0.s.visible}),_items:()=>fridge?fridge.itemsC.children.length:0,_pos,mount,pause,go,closeFridge,get view(){return view},get ready(){return ready},_dbg:()=>({cam,view,open:fridge&&fridge.open,objs:Object.keys(objs).length})};
 })();

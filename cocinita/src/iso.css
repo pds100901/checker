@@ -96,3 +96,5 @@
 
 .botv.h{width:156px;height:109px;cursor:ew-resize}
 .meterbig.wide{flex-direction:column;align-items:stretch;text-align:center}.meterbig.wide .botv{margin:0 auto}
+
+.seg.s3{grid-template-columns:repeat(3,1fr)}

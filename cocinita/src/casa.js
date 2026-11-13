@@ -9,7 +9,8 @@ ICONS['📶']='<path d="M6 20C16 10 32 10 42 20" fill="none" stroke-width="4"/><
 ICONS['🧾']='<path d="M11 5H37V43L32 39L28 43L24 39L20 43L16 39L11 43Z" fill="#FFFDF6"/><path d="M17 14H31M17 21H31M17 28H26" fill="none" stroke-width="2"/>';
 ICONS['🥡']='<path d="M8 20H40L37 40C37 42 35 43 33 43H15C13 43 11 42 11 40Z" fill="#DDF1FA"/><rect x="5" y="13" width="38" height="8" rx="3" fill="#F29C92"/><rect x="18" y="9" width="12" height="5" rx="2" fill="#F29C92"/><path d="M15 28Q24 24 33 28" fill="none" stroke="#fff" stroke-width="2.2"/>';
 
-const SVC={luz:{n:'Electricidad',art:'la luz',ic:'⚡',c:'#FFD36B'},net:{n:'Internet',art:'el internet',ic:'📶',c:'#9DC27A'},agua:{n:'Agua',art:'el agua',ic:'💧',c:'#8FC3E8'}};
+const SVC={luz:{n:'Electricidad',art:'la luz',ic:'⚡',c:'#FFD36B'},net:{n:'Internet',art:'el internet',ic:'📶',c:'#9DC27A'},agua:{n:'Agua',art:'el agua',ic:'💧',c:'#8FC3E8'},carro:{n:'Carro',art:'el carro',ic:'🚗',c:'#F7B3A9',over:'En tu casita virtual el carro se dañó.'}};
+ICONS['🚗']='<path d="M4 30C4 25 7 23 11 23L15 13C16 11 18 10 20 10H31C33 10 35 11 36 13L40 23C43 23 45 26 45 30V36H4Z" fill="#F7B3A9"/><path d="M16 22L19 14H31L34 22Z" fill="#CFEAF2"/><circle cx="14" cy="37" r="5" fill="#6B4A3A"/><circle cx="35" cy="37" r="5" fill="#6B4A3A"/><circle cx="9" cy="29" r="2" fill="#FFD36B"/>';
 const ROOMS={sala:{n:'Sala',ic:'🛋',h:360,f:[308,346]},cocina:{n:'Cocina',ic:'🍲',h:360,f:[306,346]},bano:{n:'Baño',ic:'🚿',h:330,f:[262,318]},jardin:{n:'Jardín',ic:'🐶'}};
 const UNITS=['unid.','g','kg','ml','L','paq.','latas','botellas','cajas','bolsas','docenas'];
 let FX=null;
@@ -25,20 +26,22 @@ function svcState(svc){
   const next=un[0]||null;
   return{svc,un,over,out,next,has:S.bills.some(b=>b.svc===svc),cut:over.length>0,on:!over.length&&!out,d:next?daysUntil(next.due):null};
 }
-function svcAll(){return{luz:svcState('luz'),net:svcState('net'),agua:svcState('agua')}}
+function svcAll(){return{luz:svcState('luz'),net:svcState('net'),agua:svcState('agua'),carro:svcState('carro')}}
 function extraAlerts(){
   const a=[];
   Object.keys(SVC).forEach(k=>{
     const s=svcState(k),m=SVC[k];
     s.un.forEach(b=>{
       const d=daysUntil(b.due);
-      if(d<0)a.push({lv:'r',ic:m.ic,t:`Recibo de ${m.n.toLowerCase()} vencido (${money(b.amount)}, vencía el ${dLong(b.due)}). En tu casita virtual se cortó ${m.art}.`,svc:k});
+      if(d<0)a.push({lv:'r',ic:m.ic,t:`Recibo de ${m.n.toLowerCase()} vencido (${money(b.amount)}, vencía el ${dLong(b.due)}). ${m.over||'En tu casita virtual se cortó '+m.art+'.'}`,svc:k});
       else if(d<=5)a.push({lv:d<=1?'r':'y',ic:m.ic,t:`Recibo de ${m.n.toLowerCase()} vence ${inDays(d)} (${money(b.amount)}).`,svc:k});
     });
     if(s.out)a.push({lv:'r',ic:m.ic,t:`Corte real de ${m.n.toLowerCase()} registrado desde el ${dLong(s.out.start)}.`+(k==='luz'?' Mantené la refri cerrada y revisá los alimentos antes de consumirlos.':''),svc:k});
-    if(!s.has)a.push({lv:'b',ic:m.ic,t:`Todavía no registraste ningún recibo de ${m.n.toLowerCase()}.`,svc:k});
+    if(!s.has&&k!=='carro')a.push({lv:'b',ic:m.ic,t:`Todavía no registraste ningún recibo de ${m.n.toLowerCase()}.`,svc:k});
   });
   S.items.filter(i=>i.place!=='clean'&&i.meter&&i.qty===1&&i.level<=20).forEach(i=>a.push({lv:'y',ic:i.emoji,t:`${i.name}: al envase le queda poco (${i.level}%) y no tenés otro.`,add:{name:i.name,emoji:i.emoji,place:i.place,ref:{type:'item',id:i.id}}}));
+  if((S.house.trash||0)>0&&(S.house.trashDays||[]).includes(dayIdx()))a.push({lv:'r',ic:'🗑️',t:'Hoy pasa el camión de la basura: acordate de sacarla.',go:'casa'});
+  else if((S.house.trash||0)>=2)a.push({lv:'y',ic:'🗑️',t:'El basurero está lleno: hay que sacar la basura.',go:'casa'});
   if((S.house.poop||0)+(S.house.pee||0))a.push({lv:'y',ic:'🐶',t:`En el jardín hay ${[S.house.poop?S.house.poop+' caca'+(S.house.poop>1?'s':''):'',S.house.pee?S.house.pee+' orín'+(S.house.pee>1?'es':''):''].filter(Boolean).join(' y ')} por limpiar.`,go:'casa'});
   S.tuppers.filter(t=>t.status==='activo').forEach(t=>{
     const d=daysUntil(t.safe);
@@ -154,10 +157,10 @@ function salaSVG(){
 function vSala(){
   const sv=svcAll();
   const row=k=>{const s=sv[k],m=SVC[k];
-    const st=!s.has?['Sin recibo registrado','b']:s.out?['Corte real registrado','r']:s.cut?['Cortado en la casita','r']:s.next?[`Vence ${inDays(s.d)}`,s.d<=5?'y':'g']:['Al día','g'];
+    const st=!s.has?['Sin recibo registrado','b']:s.out?['Corte real registrado','r']:s.cut?[k==='carro'?'Dañado en la casita':'Cortado en la casita','r']:s.next?[`Vence ${inDays(s.d)}`,s.d<=5?'y':'g']:['Al día','g'];
     return `<button class="svcrow" data-act="svc" data-svc="${k}"><span class="em">${ic(m.ic)}</span><div class="t"><b>${m.n}</b><small>${s.next?money(s.next.amount)+' · vence el '+dLong(s.next.due):s.has?'Sin recibos pendientes':'Tocá para registrar el recibo y su vencimiento'}</small></div><span class="tag ${st[1]}">${st[0]}</span></button>`};
   return sceneWrap('sala',salaSVG())+`<p class="hint">Tocá la lámpara, el router o los recibos del tablero. Rosco y Mali andan por la casa: tocalos para saludarlos.</p>
-  <div class="panel-title"><h3>Servicios de la casa</h3><i></i></div>${row('luz')}${row('net')}${row('agua')}
+  <div class="panel-title"><h3>Servicios de la casa</h3><i></i></div>${row('luz')}${row('net')}${row('agua')}${row('carro')}
   <p class="sub" style="text-align:center;margin-top:10px">Los cortes son parte de la simulación de tu casita: no indican que el servicio real esté suspendido.</p>`;
 }
 
@@ -280,7 +283,7 @@ function sheetSvc(k){
   const s=svcState(k),m=SVC[k];
   const paid=S.bills.filter(b=>b.svc===k&&b.paid).sort((a,b)=>b.paid.at.localeCompare(a.paid.at));
   const status=s.out?`<div class="alert r"><span class="em">${ic(m.ic)}</span><div class="t">Registraste un <b>corte real</b> desde el ${dLong(s.out.start)}.</div><div class="acts"><button class="btn sm" data-act="outEnd" data-id="${s.out.id}">Ya volvió</button></div></div>`
-    :s.cut?`<div class="alert r"><span class="em">${ic(m.ic)}</span><div class="t"><b>${k==='luz'?'¡Tenés que pagar la luz para devolverle la energía a tu casita!':k==='net'?'El internet de tu casita está desconectado hasta que registrés el pago.':'Los grifos de tu casita no tienen agua hasta que registrés el pago.'}</b><br><small>Es parte de la simulación: no significa que el servicio real esté suspendido.</small></div></div>`
+    :s.cut?`<div class="alert r"><span class="em">${ic(m.ic)}</span><div class="t"><b>${k==='luz'?'¡Tenés que pagar la luz para devolverle la energía a tu casita!':k==='net'?'El internet de tu casita está desconectado hasta que registrés el pago.':k==='carro'?'El carrito de tu casita está dañado hasta que registrés el pago.':'Los grifos de tu casita no tienen agua hasta que registrés el pago.'}</b><br><small>Es parte de la simulación: no significa que el servicio real esté suspendido.</small></div></div>`
     :!s.has?`<div class="alert b"><span class="em">${ic(m.ic)}</span><div class="t">Aún no hay recibos de ${m.n.toLowerCase()}. Registrá el monto y la fecha de vencimiento del tuyo.</div></div>`
     :s.next?`<div class="alert ${s.d<=5?'y':''}"><span class="em">${ic(m.ic)}</span><div class="t">Próximo recibo: <b>${money(s.next.amount)}</b>, vence ${inDays(s.d)} (${dLong(s.next.due)}).</div></div>`
     :`<div class="alert"><span class="em">${ic(m.ic)}</span><div class="t">Al día. No hay recibos pendientes.</div></div>`;
@@ -296,7 +299,10 @@ function sheetSvc(k){
   <p class="sub">Si de verdad se fue ${m.art} en tu casa (avería, mantenimiento u otra causa), anotalo aquí. Es independiente de los recibos.</p>
   ${s.out?'':`<div class="row"><div><label for="o-start">¿Desde cuándo?</label><input id="o-start" type="date" value="${today()}"></div><button class="btn ghost" style="flex:none" data-act="outStart" data-svc="${k}">Registrar corte real</button></div>`}
   ${S.outages.filter(o=>o.svc===k&&o.end).slice(-4).reverse().map(o=>`<div class="li"><span class="em">${ic(m.ic)}</span><div class="t"><b>Corte real</b><small>Del ${dLong(o.start)} al ${dLong(o.end)}</small></div></div>`).join('')}`);
+  carTweak(k);
 }
+function carTweak(k){if(k!=='carro')return;const sh=$('#sheet .sheet');if(!sh)return;const h=[...sh.querySelectorAll('h4')].find(x=>x.textContent.includes('Corte real'));if(h){let n=h;while(n){const nx=n.nextElementSibling;n.remove();n=nx}}
+  sh.insertAdjacentHTML('beforeend','<p class="sub" style="margin-top:12px">Sirve para el marchamo, la cuota, el seguro o la revisión. Si llega la fecha sin pago registrado, al día siguiente el carrito de la casita aparece dañado. Es solo la simulación.</p>')}
 function sheetBills(){
   const sv=svcAll();
   openSheet(`<h3>${ic('🧾')} Recibos de la casa</h3><p class="sub">Tocá un servicio para registrar su recibo, el vencimiento o el pago.</p>
@@ -359,7 +365,7 @@ function sheetSync(){
 function restoreFx(k,was){
   const now=svcState(k).on;
   if(!was&&now){FX={svc:k,t:Date.now()};setTimeout(()=>{const r=$('.room');r&&r.classList.remove('fx-'+k)},2700);
-    toast(k==='luz'?'¡Volvió la luz a tu casita! ✨':k==='net'?'¡Internet reconectado en tu casita! 📶':'¡Volvió el agua a tu casita! 💧');PETS.cheer()}
+    toast(k==='carro'?'¡Tu carrito quedó como nuevo! 🚗':k==='luz'?'¡Volvió la luz a tu casita! ✨':k==='net'?'¡Internet reconectado en tu casita! 📶':'¡Volvió el agua a tu casita! 💧');PETS.cheer()}
 }
 function casaAct(a,d,el,px,py){
   const v=id=>$('#'+id);
@@ -384,7 +390,7 @@ function casaAct(a,d,el,px,py){
       if(!at){toast('Poné la fecha en que pagaste');return true}
       if(!(amt>=0)){toast('Poné el monto pagado');return true}
       const was=svcState(b.svc).on;
-      b.paid={at,amount:amt};award(5,px,py);save();closeSheet();if(b.svc==='agua')tab='bano';else if(b.svc==='net'||!ROOMS[tab]||tab==='jardin')tab='sala';
+      b.paid={at,amount:amt};award(5,px,py);save();closeSheet();if(b.svc==='carro')tab='casa';else if(b.svc==='agua')tab='bano';else if(b.svc==='net'||!ROOMS[tab]||tab==='jardin')tab='sala';
       restoreFx(b.svc,was);render();if(was)toast('Pago registrado ✅');
     }return true;
     case 'payUndo':{const b=S.bills.find(x=>x.id===d.id);if(b){b.paid=null;save();render();sheetSvc(b.svc);toast('Pago deshecho')}}return true;

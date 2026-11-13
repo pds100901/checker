@@ -15,11 +15,13 @@ const ISO_API={
     return out},
   onFridge:open=>{isoPanel=open?'fridge':null;render()},
   onMailbox:()=>sheetBills(),
-  house:()=>({laundry:S.house.laundry||0,mess:S.house.mess||{},dirty:overdueChores().length,poop:S.house.poop||0,pee:S.house.pee||0}),
+  house:()=>({laundry:S.house.laundry||0,mess:S.house.mess||{},dirty:overdueChores().length,poop:S.house.poop||0,pee:S.house.pee||0,trash:S.house.trash||0,carBad:svcState('carro').cut}),
   onObject:act=>{
     if(act==='pantry')openSheet(`<h3>Alacena</h3>${furnitureHTML('pantry')}<button class="btn terra block" data-act="newItem" data-place="pantry">＋ Agregar a la alacena</button>`);
     else if(act==='laundry')openSheet(`<h3>Lavandería y limpieza</h3>${furnitureHTML('clean')}<button class="btn terra block" data-act="newItem" data-place="clean">＋ Agregar producto</button>`);
     else if(act==='poop'||act==='pee'){if(S.house[act]>0){S.house[act]--;award(1);save();render();toast(act==='poop'?'¡Caca recogida! 🐾':'¡Orín limpio! 🐾')}}
+    else if(act==='car')sheetSvc('carro');
+    else if(act==='trash')sheetHouse();
     else if(act==='vanity')sheetBath();
     else if(act==='basket'||act==='mess'||act==='dirt'||act==='house')sheetHouse();
     else if(act==='sink'||act==='tub')toast(svcState('agua').on?'El agua corre bien 💧':'No sale agua en la casita: hay un recibo de agua vencido 🚰');
@@ -78,6 +80,9 @@ function sheetHouse(){
   <h4>🧺 Ropa sucia</h4><div class="seg">${L.map((t,i)=>`<button class="${(h.laundry||0)===i?'on':''}" data-act="hLaundry" data-l="${i}">${t}</button>`).join('')}</div>
   ${h.laundry?'<button class="btn block" style="margin-top:8px" data-act="hLaundry" data-l="0" data-done="1">Ya lavé todo ✨</button>':''}
   <h4>🧸 Orden</h4>${HROOMS.map(r=>`<div class="li"><div class="t"><b>${r[1]}</b><small>${h.mess[r[0]]?'Desordenada':'Ordenada'}</small></div><button class="btn sm ${h.mess[r[0]]?'':'ghost'}" data-act="hMess" data-r="${r[0]}">${h.mess[r[0]]?'Ya ordené':'Está desordenada'}</button></div>`).join('')}
+  <h4>🗑️ Basura</h4><div class="seg s3">${['Vacío','A medias','Lleno'].map((t,i)=>`<button class="${(h.trash||0)===i?'on':''}" data-act="hTrash" data-l="${i}">${t}</button>`).join('')}</div>
+  ${h.trash?'<button class="btn block" style="margin-top:8px" data-act="hTrash" data-l="0" data-done="1">Ya saqué la basura ✨</button>':''}
+  <label>Días que pasa el camión</label><div class="chips">${DAYS.map((d,i)=>`<button class="chip ${(h.trashDays||[]).includes(i)?'ok':''}" data-act="hTrashDay" data-i="${i}">${d}</button>`).join('')}</div>
   <h4>🐾 Rosco y Mali</h4>${[['poop','Cacas por recoger',5],['pee','Orines por limpiar',4]].map(q=>`<div class="li"><div class="t"><b>${q[1]}</b><small>${(h[q[0]]||0)?'Se ven en el jardín: tocalas ahí para limpiarlas':'Nada por ahora'}</small></div><div class="step"><button data-act="hPet" data-k="${q[0]}" data-d="-1" aria-label="Quitar">−</button><b class="rolln">${h[q[0]]||0}</b><button data-act="hPet" data-k="${q[0]}" data-d="1" data-max="${q[2]}" aria-label="Agregar">＋</button></div></div>`).join('')}
   ${(h.poop||0)+(h.pee||0)?'<button class="btn block" style="margin-top:8px" data-act="hPetClean">Ya limpié todo ✨</button>':''}
   <h4>🧽 Limpieza pendiente</h4>${od.length?od.map(c=>`<div class="li"><div class="t"><b>${esc(c.text)}</b><small>Tocaba hace ${-(daysUntil(c.last)+c.every)} día${-(daysUntil(c.last)+c.every)===1?'':'s'}</small></div><button class="btn sm" data-act="hChore" data-id="${c.id}">Hecho</button></div>`).join(''):`<p class="sub">${S.chores.some(c=>c.area==='clean')?'Nada atrasado: la casa se ve limpia ✨':'No tenés tareas de limpieza registradas. Agregalas en Baño → Rutina de limpieza y cuando se atrasen la casa se verá sucia.'}</p>`}`);
@@ -87,6 +92,8 @@ function houseAct(a,d,el,px,py){
     case 'hLaundry':{const was=S.house.laundry||0;S.house.laundry=+d.l;if(d.done&&was)award(3,px,py);save();render();sheetHouse();if(d.done)toast('¡Ropa limpia! 🧺')}return true;
     case 'hMess':{const m=S.house.mess;m[d.r]=!m[d.r];if(!m[d.r])award(2,px,py);save();render();sheetHouse()}return true;
     case 'hChore':{const c=S.chores.find(x=>x.id===d.id);if(c){c.last=today();award(3,px,py);save();render();sheetHouse()}}return true;
+    case 'hTrash':{const was=S.house.trash||0;S.house.trash=+d.l;if(d.done&&was)award(2,px,py);save();render();sheetHouse();if(d.done)toast('¡Basura afuera! 🗑️')}return true;
+    case 'hTrashDay':{const a=S.house.trashDays||(S.house.trashDays=[]),i=+d.i,k=a.indexOf(i);if(k>=0)a.splice(k,1);else a.push(i);save();render();sheetHouse()}return true;
     case 'hPet':{const k=d.k,was=S.house[k]||0,n=Math.max(0,Math.min(k==='poop'?5:4,was+(+d.d)));S.house[k]=n;if(n<was)award(1,px,py);save();render();sheetHouse()}return true;
     case 'hPetClean':{award(2,px,py);S.house.poop=0;S.house.pee=0;save();render();sheetHouse();toast('¡Jardín limpio! 🐾')}return true;
     case 'bathAdd':{const it=mk(d.n,d.e,'clean',1,icKey(d.e)==='🧻'?0:1);it.level=50;if(isCount(it))it.unit='rollos';S.items.push(it);save();render();sheetBath();toast(isCount(it)?'Poné cuántos rollos hay':'Marcá en la botella por dónde va')}return true;
