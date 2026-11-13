@@ -104,6 +104,6 @@ function botSet(e){const r=botDrag.el.getBoundingClientRect(),top=r.top+r.height
   const p=document.getElementById('bp-'+botDrag.id);if(p)p.textContent=lv+'%'}
 document.addEventListener('pointerdown',e=>{const el=e.target.closest&&e.target.closest('.botv');if(!el)return;botDrag={el,id:el.dataset.id,lv:null};botSet(e);e.preventDefault()});
 document.addEventListener('pointermove',e=>{if(botDrag){botSet(e);e.preventDefault()}},{passive:false});
-const botEnd=()=>{if(!botDrag)return;const b=botDrag;botDrag=null;const it=itemById(b.id);if(it&&b.lv!==null&&b.lv!==it.level){it.level=b.lv;save();render();sheetBath();if(b.lv===0)toast(`${it.name} se acabó: lo anoté en la lista 🛒`)}};
+const botEnd=()=>{if(!botDrag)return;const b=botDrag;botDrag=null;const it=itemById(b.id);if(it&&b.lv!==null&&b.lv!==it.level)setLevel(it,b.lv)};
 document.addEventListener('pointerup',botEnd);document.addEventListener('pointercancel',botEnd);
-document.addEventListener('keydown',e=>{const el=e.target.closest&&e.target.closest('.botv');if(!el||!['ArrowUp','ArrowDown'].includes(e.key))return;const it=itemById(el.dataset.id);if(!it)return;it.level=Math.max(0,Math.min(100,it.level+(e.key==='ArrowUp'?5:-5)));save();render();sheetBath();const n=document.querySelector(`.botv[data-id="${it.id}"]`);n&&n.focus();e.preventDefault()});
+document.addEventListener('keydown',e=>{const el=e.target.closest&&e.target.closest('.botv');if(!el||!['ArrowUp','ArrowDown'].includes(e.key))return;const it=itemById(el.dataset.id);if(!it)return;levelFrom=el.closest('.bathgrid')?'bath':'item';e.preventDefault();setLevel(it,Math.max(0,Math.min(100,(it.level||0)+(e.key==='ArrowUp'?5:-5))));const n=document.querySelector(`.botv[data-id="${it.id}"]`);n&&n.focus()});

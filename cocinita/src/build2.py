@@ -69,6 +69,10 @@ s=rep(s,'<label>Estante</label><select id="f-shelf">${shelfOpts(place,0)}</selec
 s=rep(s,'return `<div class="card"><h2>🛒 Lista del súper</h2>','return `<button class="btn block rcbtn" data-act="receipt">📷 Leer factura del súper</button><div class="card"><h2>🛒 Lista del súper</h2>')
 s=rep(s,"  if(casaAct(a,d,el,px,py))return;","  if(casaAct(a,d,el,px,py)||receiptAct(a,d)||slAct(a,d)||houseAct(a,d,el,px,py))return;")
 s=rep(s,"h+'</div>';s.classList.add('on')}","h+'</div>';s.classList.add('on');slUpdate()}")
+s=rep(s,'${unitSel(it.unit)}<div id="sl-box"></div>','${unitSel(it.unit)}<div id="sl-box"></div>${meterUI(it)}')
+s=rep(s,'${unitSel()}<div id="sl-box"></div>','${unitSel()}<div id="sl-box"></div>${meterUI(null)}')
+s=rep(s,"it.unit=v('f-unit')?v('f-unit').value:(it.unit||'unid.')}","it.unit=v('f-unit')?v('f-unit').value:(it.unit||'unid.');if(v('f-meter')){it.meter=v('f-meter').value==='1';it.cont=v('f-cont').value}}")
+s=rep(s,"  if(clean){const c=it.level<=20?'low':it.level<=50?'mid':'';extra=`<div class=\"lvl ${c}\"><i style=\"width:${it.level}%\"></i></div>`}\n  else{","  if(clean||(it.meter&&!gone)){const c=it.level<=20?'low':it.level<=50?'mid':'';extra=`<div class=\"lvl ${c}\"><i style=\"width:${it.level}%\"></i></div>`}\n  if(!clean){")
 # --- voseo
 for a,b in [('Arrastra ','Arrastrá '),('Toca para planear','Tocá para planear'),('Ponle un nombre','Ponele un nombre'),('Escribe ','Escribí '),('Tienes ','Tenés '),('No tienes','No tenés'),('ya lo tienes','ya lo tenés'),
             ('Pon la nueva','Poné la nueva'),('puedes','podés'),('Agrégala','Agregala'),('agrégalos aquí','agregalos aquí'),('Qué quieres recordar','Qué querés recordar'),('Toca un producto','Tocá un producto'),
@@ -76,7 +80,7 @@ for a,b in [('Arrastra ','Arrastrá '),('Toca para planear','Tocá para planear'
     s=s.replace(a,b)
 
 # --- módulos y arranque
-s=rep(s,'/* ---------- inicio ---------- */\nrender();','/* ---------- casa ---------- */\n'+rd('casa.js')+'\n'+rd('pets.js')+'\n'+rd('iso_art.js')+'\n'+rd('iso_engine.js')+'\n'+rd('iso_app.js')+'\n'+rd('receipt.js')+'\n'+rd('shelflife.js')+'\n/* ---------- inicio ---------- */\nrender();initSync();window.PETS_TEST=PETS;window.ISO_TEST=ISO;window.SYNC_TEST=SYNC;\nsetInterval(()=>{if(!document.hidden&&!$("#sheet").classList.contains("on")&&!drag)render()},60000);')
+s=rep(s,'/* ---------- inicio ---------- */\nrender();','/* ---------- casa ---------- */\n'+rd('casa.js')+'\n'+rd('pets.js')+'\n'+rd('iso_art.js')+'\n'+rd('iso_engine.js')+'\n'+rd('iso_app.js')+'\n'+rd('receipt.js')+'\n'+rd('shelflife.js')+'\n'+rd('meter.js')+'\n/* ---------- inicio ---------- */\nrender();initSync();window.PETS_TEST=PETS;window.ISO_TEST=ISO;window.SYNC_TEST=SYNC;\nsetInterval(()=>{if(!document.hidden&&!$("#sheet").classList.contains("on")&&!drag)render()},60000);')
 s=rep(s,"toast('¡Bienvenida! Arrastrá los productos y toca a los perritos 🐾')","toast('¡Bienvenida a tu casita! Tocá los objetos para usarlos 🐾')")
 s=rep(s,'</style>',rd('casa.css')+rd('iso.css')+'\n</style>')
 s=rep(s,'<script>\n(()=>{','<script src="pixi.min.js"></script>\n<script>\n(()=>{')

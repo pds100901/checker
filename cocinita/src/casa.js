@@ -38,6 +38,7 @@ function extraAlerts(){
     if(s.out)a.push({lv:'r',ic:m.ic,t:`Corte real de ${m.n.toLowerCase()} registrado desde el ${dLong(s.out.start)}.`+(k==='luz'?' Mantené la refri cerrada y revisá los alimentos antes de consumirlos.':''),svc:k});
     if(!s.has)a.push({lv:'b',ic:m.ic,t:`Todavía no registraste ningún recibo de ${m.n.toLowerCase()}.`,svc:k});
   });
+  S.items.filter(i=>i.place!=='clean'&&i.meter&&i.qty===1&&i.level<=20).forEach(i=>a.push({lv:'y',ic:i.emoji,t:`${i.name}: al envase le queda poco (${i.level}%) y no tenés otro.`,add:{name:i.name,emoji:i.emoji,place:i.place,ref:{type:'item',id:i.id}}}));
   if((S.house.poop||0)+(S.house.pee||0))a.push({lv:'y',ic:'🐶',t:`En el jardín hay ${[S.house.poop?S.house.poop+' caca'+(S.house.poop>1?'s':''):'',S.house.pee?S.house.pee+' orín'+(S.house.pee>1?'es':''):''].filter(Boolean).join(' y ')} por limpiar.`,go:'casa'});
   S.tuppers.filter(t=>t.status==='activo').forEach(t=>{
     const d=daysUntil(t.safe);

@@ -58,7 +58,7 @@ function receiptSave(){
     const place=r.place==='freezer'?'fridge':r.place,shelf=r.place==='freezer'?0:place==='fridge'?1:0,clean=place==='clean',key=r.name.trim().toLowerCase();
     let it=S.items.find(i=>i.name.toLowerCase()===key&&(i.place==='clean')===clean);
     if(it){if(clean)it.level=100;else{it.qty=(+it.qty||0)+r.qty;if(!it.unit||it.qty===r.qty)it.unit=r.unit}}
-    else{it=mk(r.name.trim(),r.emoji,place,shelf,clean?1:r.qty);it.unit=r.unit;S.items.push(it)}
+    else{it=mk(r.name.trim(),r.emoji,place,shelf,clean?1:r.qty);it.unit=r.unit;if(!clean&&METER_RE.test(slNorm(it.name))){it.meter=true;it.cont=contFor(it.name)}S.items.push(it)}
     if(RC.dates&&(r.place==='fridge'||r.place==='freezer')&&!it.expiry){const g=shelfLife(it.name,r.place);if(g&&g.days)it.expiry=addDays(g.days)}
     S.shop=S.shop.filter(x=>x.name.toLowerCase()!==key);n++;
   });

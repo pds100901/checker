@@ -89,3 +89,7 @@
 .fr2 .fzr .shelf.sh0::after{display:none}
 .fzfront{height:46px;background:var(--fp);border:3px solid var(--out);border-radius:6px 6px 24px 24px;display:grid;place-items:center;box-shadow:inset 0 -6px 0 var(--fpd)}
 .fzfront i{width:44%;height:13px;border:3px solid var(--out);border-radius:8px;background:#FBE6EC}
+
+.meterbig{display:flex;gap:14px;align-items:center;margin-top:12px;background:var(--pantry-in);border:3px solid var(--out);border-radius:20px;padding:10px 14px}
+.meterbig .botv{margin:0;flex:none}.meterbig small{display:block;color:var(--muted);font-size:12px;line-height:1.3;margin-top:4px}
+.meterbig .botpct{font-size:24px}
