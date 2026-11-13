@@ -2,7 +2,7 @@
 const KEY='casa-fresita-v2',KEY_OLD='cocinita-v1';
 const COLS=['items','shop','prep','chores','reminders','bills','tuppers','moves','outages'];
 function emptyState(){
-  return{v:2,stars:0,welcome:false,items:[],shop:[],menu:{},prep:[],chores:[],reminders:[],wasted:[],bills:[],tuppers:[],moves:[],outages:[],house:{laundry:0,mess:{}},
+  return{v:2,stars:0,welcome:false,items:[],shop:[],menu:{},prep:[],chores:[],reminders:[],wasted:[],bills:[],tuppers:[],moves:[],outages:[],house:{laundry:0,mess:{},poop:0,pee:0},
     dogs:{rosco:{name:'Rosco',g:0,fed:{date:'',am:false,pm:false}},mali:{name:'Mali',g:0,fed:{date:'',am:false,pm:false}},bag:{left:0,total:0},treats:0,water:''}};
 }
 function normalize(s){const e=emptyState();Object.keys(e).forEach(k=>{if(s[k]==null)s[k]=e[k]});COLS.forEach(c=>{if(!Array.isArray(s[c]))s[c]=[]});
@@ -24,7 +24,7 @@ function applyDoc(path,json){
     if(!d)return;
     if(id==='dogs')S.dogs=Object.assign(emptyState().dogs,d);
     else if(id==='menu')S.menu=d.menu||{};
-    else if(id==='house')S.house=Object.assign({laundry:0,mess:{}},d);
+    else if(id==='house')S.house=Object.assign({laundry:0,mess:{},poop:0,pee:0},d);
     else if(id==='misc'){S.stars=d.stars||0;S.welcome=!!d.welcome;S.wasted=d.wasted||[]}
     return;
   }

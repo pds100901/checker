@@ -66,6 +66,8 @@ const ISO=(()=>{
     add('lroses',a.roses(4.3,6.7,0,'#FFD979'),4.3+6.7+.3,'lavanderia');
     add('lstool',a.stool(4.2,9.8,'#C9B0E8'),4.2+9.8+.3,'lavanderia');
     add('groses',a.roses(6.0,7.2,-.02),6.0+7.2+.3);add('groses2',a.roses(10.6,10.4,-.02,'#F7B3A9'),10.6+10.4+.3);
+    [[7.2,8.9],[9.4,7.3],[10.2,9.6],[6.7,6.7],[8.9,10.6]].forEach((c,i)=>{add('poop'+i,a.poop(c[0],c[1]),c[0]+c[1]+.2,null,'poop');L[L.length-1].grp='poop';L[L.length-1].n=i});
+    [[7.9,6.9],[9.9,8.5],[6.3,9.4],[10.7,7.6]].forEach((c,i)=>{add('pee'+i,a.pee(c[0],c[1]),-688+i*.01,null,'pee');L[L.length-1].grp='pee';L[L.length-1].n=i});
     add('bush1',a.bush(6.4,10.6,.7),6.4+10.6+.9);
     add('bush2',a.bush(10.8,6.3,.6),10.8+6.3+.8);
     add('mailbox',a.mailbox(8.3,7.8),8.3+7.8+.5,null,'mailbox','Buzón');
@@ -149,6 +151,7 @@ const ISO=(()=>{
   function bounce(s){s._bn=1}
   function tapObj(d,s,e){
     if(moved())return;
+    if(d.act==='poop'||d.act==='pee'){api.onObject(d.act);return}
     if(view==='home'){if(d.act==='mailbox'){bounce(objs.mailbox.s);api.onMailbox&&api.onMailbox();return}if(d.room)go(d.room);return}
     if(view==='fridge'){if(d.act==='fridge')closeFridge();return}
     if(d.room&&d.room!==view){go(d.room);return}
@@ -167,8 +170,8 @@ const ISO=(()=>{
     if(!fridge||!api)return;const list=api.fridgeItems()||[];const c=fridge.itemsC;c.removeChildren();
     const rows={top:1.61,mid:.91,low:.22},cnt={top:0,mid:0,low:0};
     for(const it of list){const r=it.row||'mid';if(cnt[r]>=4)continue;const i=cnt[r]++;
-      let t=fridge.texCache[it.icon];if(!t){try{t=await svgTex({svg:it.svg});fridge.texCache[it.icon]=t}catch(e){continue}}
-      const s=new PIXI.Sprite(t);s.anchor.set(.5,1);const q=pr(FX+.24+i*.27,FY+.98-(i%2)*.2,rows[r]);s.position.set(q[0],q[1]);s.width=s.height=U*.56;c.addChild(s)}
+      const key=it.kind+it.col;let t=fridge.texCache[key];if(!t){try{const o=AR.A.prod(it.kind,it.col)().svg(K);t={t:await svgTex(o),o};fridge.texCache[key]=t}catch(e){continue}}
+      const s=new PIXI.Sprite(t.t);s.scale.set(1.25/K);const q=pr(FX+.26+i*.29,FY+.95-(i%2)*.16,rows[r]);s.position.set(q[0]+t.o.x*1.25,q[1]+t.o.y*1.25);c.addChild(s)}
   }
   /* ---------- cuadro a cuadro ---------- */
   function tick(){
@@ -200,7 +203,7 @@ const ISO=(()=>{
   }
   function setHouse(){if(!ready||!api.house)return;const h=api.house();
     for(let l=0;l<4;l++)objs['basket'+l].s.visible=l===Math.min(3,h.laundry);objs.pile.s.visible=h.laundry>=3;
-    Object.values(objs).forEach(o=>{const g=o.def.grp;if(!g)return;if(g==='dirt')o.s.visible=h.dirty>0&&o.def.n<(h.dirty>=3?7:h.dirty===2?5:3);else o.s.visible=!!h.mess[g.slice(5)]})}
+    Object.values(objs).forEach(o=>{const g=o.def.grp;if(!g)return;if(g==='poop')o.s.visible=o.def.n<(h.poop||0);else if(g==='pee')o.s.visible=o.def.n<(h.pee||0);else if(g==='dirt')o.s.visible=h.dirty>0&&o.def.n<(h.dirty>=3?7:h.dirty===2?5:3);else o.s.visible=!!h.mess[g.slice(5)]})}
   function setDark(v){if(v===dark&&setDark._done)return;dark=v;setDark._done=true;const t=v?0x7F7AAE:0xFFFFFF;
     Object.values(objs).forEach(o=>{if(o.def.id!=='shaft'&&o.def.id!=='fglow')o.s.tint=t});if(fridge)fridge.door.tint=t;Object.values(dogs).forEach(d=>{d.mesh.tint=t;d.beg.tint=t});if(shaft)shaft.visible=!v}
   /* ---------- interfaz mínima sobre el lienzo ---------- */
@@ -237,5 +240,5 @@ const ISO=(()=>{
   function pause(){if(app)app.ticker.stop()}
   addEventListener('resize',()=>{if(host&&host.isConnected)resize()});
   function _pos(id){const o=objs[id].s,r=app.view.getBoundingClientRect();return{x:r.left+(o._b.x+o._b.w/2)*cam.s+cam.x,y:r.top+(o._b.y+o._b.h*.6)*cam.s+cam.y}}
-  return{_vis:()=>({basket3:objs.basket3.s.visible,pile:objs.pile.s.visible,messCocina:objs.mess0.s.visible,messBano:objs.mess5.s.visible,dirt:objs.dirt0.s.visible}),_items:()=>fridge?fridge.itemsC.children.length:0,_pos,mount,pause,go,closeFridge,get view(){return view},get ready(){return ready},_dbg:()=>({cam,view,open:fridge&&fridge.open,objs:Object.keys(objs).length})};
+  return{_vis2:()=>[objs.poop0.s.visible,objs.poop1.s.visible,objs.poop2.s.visible,objs.pee0.s.visible],_vis:()=>({basket3:objs.basket3.s.visible,pile:objs.pile.s.visible,messCocina:objs.mess0.s.visible,messBano:objs.mess5.s.visible,dirt:objs.dirt0.s.visible}),_items:()=>fridge?fridge.itemsC.children.length:0,_pos,mount,pause,go,closeFridge,get view(){return view},get ready(){return ready},_dbg:()=>({cam,view,open:fridge&&fridge.open,objs:Object.keys(objs).length})};
 })();

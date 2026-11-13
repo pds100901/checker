@@ -1,19 +1,25 @@
 /* ---------- puente entre la aplicación (datos) y el motor 2.5D (dibujo) ---------- */
 let isoPanel=null;
 const isoSvg=e=>{const d=ICONS[icKey(e)]||ICONS['🍯'];return `<svg xmlns="http://www.w3.org/2000/svg" width="96" height="96" viewBox="-2 -2 52 52"><g stroke="${INK}" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round">${d}</g></svg>`};
+const PROD3D={'🥛':['carton','#9CCBEA'],'🧃':['carton','#FFD36B'],'🥤':['bottle','#F29A8E'],'🥚':['eggs','#F2C99B'],'🧀':['wedge','#FFC94F'],'🧈':['tray','#FFE07A'],
+  '🍗':['tray','#E9A56A'],'🥩':['tray','#E66A63'],'🐟':['tray','#9CCBEA'],'🦐':['tray','#FFA487'],'🌭':['tray','#C4633F'],'🥫':['can','#E8574B'],'🍯':['jar','#F7B531'],'🫒':['bottle','#C9D76B'],
+  '🥣':['tub','#8FC3E8'],'🍞':['box','#E0A458'],'🍫':['box','#8A5330'],'🍪':['box','#E0A458'],'🧁':['box','#F7B6C8'],'🍕':['box','#FFD56B'],'🥞':['tub','#F0C078'],'☕':['jar','#8A5330'],
+  '🍓':['round','#E8574B'],'🍅':['round','#EE5B46'],'🍎':['round','#EE5B46'],'🍑':['round','#FFB38A'],'🍋':['round','#FFE04D'],'🍇':['round','#A77AD0'],'🥑':['round','#7FB04F'],'🥬':['round','#A6D46E'],
+  '🥕':['round','#F5923E'],'🥒':['round','#7FB04F'],'🌽':['round','#FFD24A'],'🍄':['round','#E8574B'],'🧅':['round','#C98BC0'],'🥔':['round','#D6A66A'],'🍌':['round','#FFD84D'],'🌶':['round','#E8483C'],'🧄':['round','#FBF3E4']};
 const ISO_API={
   power:()=>svcState('luz').on,
   fridgeItems:()=>{
     const rows={1:'top',2:'mid',3:'low',4:'mid'},out=[];
-    S.tuppers.filter(t=>t.status==='activo'&&t.place!=='freezer').forEach(t=>out.push({icon:'🥡',svg:isoSvg('🥡'),row:'mid'}));
-    S.items.filter(i=>i.place==='fridge'&&i.shelf>0&&i.qty>0).forEach(i=>out.push({icon:icKey(i.emoji),svg:isoSvg(i.emoji),row:rows[i.shelf]||'mid'}));
+    S.tuppers.filter(t=>t.status==='activo'&&t.place!=='freezer').forEach(t=>out.push({kind:'tub',col:'#F29C92',row:'mid'}));
+    S.items.filter(i=>i.place==='fridge'&&i.shelf>0&&i.qty>0).forEach(i=>{const m=PROD3D[icKey(i.emoji)]||['jar','#F7B3A9'];out.push({kind:m[0],col:m[1],row:rows[i.shelf]||'mid'})});
     return out},
   onFridge:open=>{isoPanel=open?'fridge':null;render()},
   onMailbox:()=>sheetBills(),
-  house:()=>({laundry:S.house.laundry||0,mess:S.house.mess||{},dirty:overdueChores().length}),
+  house:()=>({laundry:S.house.laundry||0,mess:S.house.mess||{},dirty:overdueChores().length,poop:S.house.poop||0,pee:S.house.pee||0}),
   onObject:act=>{
     if(act==='pantry')openSheet(`<h3>Alacena</h3>${furnitureHTML('pantry')}<button class="btn terra block" data-act="newItem" data-place="pantry">＋ Agregar a la alacena</button>`);
     else if(act==='laundry')openSheet(`<h3>Lavandería y limpieza</h3>${furnitureHTML('clean')}<button class="btn terra block" data-act="newItem" data-place="clean">＋ Agregar producto</button>`);
+    else if(act==='poop'||act==='pee'){if(S.house[act]>0){S.house[act]--;award(1);save();render();toast(act==='poop'?'¡Caca recogida! 🐾':'¡Orín limpio! 🐾')}}
     else if(act==='vanity')sheetBath();
     else if(act==='basket'||act==='mess'||act==='dirt'||act==='house')sheetHouse();
     else if(act==='sink'||act==='tub')toast(svcState('agua').on?'El agua corre bien 💧':'No sale agua en la casita: hay un recibo de agua vencido 🚰');
@@ -72,6 +78,8 @@ function sheetHouse(){
   <h4>🧺 Ropa sucia</h4><div class="seg">${L.map((t,i)=>`<button class="${(h.laundry||0)===i?'on':''}" data-act="hLaundry" data-l="${i}">${t}</button>`).join('')}</div>
   ${h.laundry?'<button class="btn block" style="margin-top:8px" data-act="hLaundry" data-l="0" data-done="1">Ya lavé todo ✨</button>':''}
   <h4>🧸 Orden</h4>${HROOMS.map(r=>`<div class="li"><div class="t"><b>${r[1]}</b><small>${h.mess[r[0]]?'Desordenada':'Ordenada'}</small></div><button class="btn sm ${h.mess[r[0]]?'':'ghost'}" data-act="hMess" data-r="${r[0]}">${h.mess[r[0]]?'Ya ordené':'Está desordenada'}</button></div>`).join('')}
+  <h4>🐾 Rosco y Mali</h4>${[['poop','Cacas por recoger',5],['pee','Orines por limpiar',4]].map(q=>`<div class="li"><div class="t"><b>${q[1]}</b><small>${(h[q[0]]||0)?'Se ven en el jardín: tocalas ahí para limpiarlas':'Nada por ahora'}</small></div><div class="step"><button data-act="hPet" data-k="${q[0]}" data-d="-1" aria-label="Quitar">−</button><b class="rolln">${h[q[0]]||0}</b><button data-act="hPet" data-k="${q[0]}" data-d="1" data-max="${q[2]}" aria-label="Agregar">＋</button></div></div>`).join('')}
+  ${(h.poop||0)+(h.pee||0)?'<button class="btn block" style="margin-top:8px" data-act="hPetClean">Ya limpié todo ✨</button>':''}
   <h4>🧽 Limpieza pendiente</h4>${od.length?od.map(c=>`<div class="li"><div class="t"><b>${esc(c.text)}</b><small>Tocaba hace ${-(daysUntil(c.last)+c.every)} día${-(daysUntil(c.last)+c.every)===1?'':'s'}</small></div><button class="btn sm" data-act="hChore" data-id="${c.id}">Hecho</button></div>`).join(''):`<p class="sub">${S.chores.some(c=>c.area==='clean')?'Nada atrasado: la casa se ve limpia ✨':'No tenés tareas de limpieza registradas. Agregalas en Baño → Rutina de limpieza y cuando se atrasen la casa se verá sucia.'}</p>`}`);
 }
 function houseAct(a,d,el,px,py){
@@ -79,6 +87,8 @@ function houseAct(a,d,el,px,py){
     case 'hLaundry':{const was=S.house.laundry||0;S.house.laundry=+d.l;if(d.done&&was)award(3,px,py);save();render();sheetHouse();if(d.done)toast('¡Ropa limpia! 🧺')}return true;
     case 'hMess':{const m=S.house.mess;m[d.r]=!m[d.r];if(!m[d.r])award(2,px,py);save();render();sheetHouse()}return true;
     case 'hChore':{const c=S.chores.find(x=>x.id===d.id);if(c){c.last=today();award(3,px,py);save();render();sheetHouse()}}return true;
+    case 'hPet':{const k=d.k,was=S.house[k]||0,n=Math.max(0,Math.min(k==='poop'?5:4,was+(+d.d)));S.house[k]=n;if(n<was)award(1,px,py);save();render();sheetHouse()}return true;
+    case 'hPetClean':{award(2,px,py);S.house.poop=0;S.house.pee=0;save();render();sheetHouse();toast('¡Jardín limpio! 🐾')}return true;
     case 'bathAdd':{const it=mk(d.n,d.e,'clean',1,icKey(d.e)==='🧻'?0:1);it.level=50;if(isCount(it))it.unit='rollos';S.items.push(it);save();render();sheetBath();toast(isCount(it)?'Poné cuántos rollos hay':'Marcá en la botella por dónde va')}return true;
     case 'rollStep':{const it=itemById(d.id);if(it){it.qty=Math.max(0,Math.round(it.qty||0)+(+d.d));save();render();sheetBath();if(it.qty===0)toast('Se acabó el papel: lo anoté en la lista 🛒')}}return true;
     case 'bath':sheetBath();return true;

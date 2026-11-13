@@ -185,6 +185,12 @@ const iso=n=>{const d=new Date();d.setDate(d.getDate()+n);return d.getFullYear()
   await tab(A,'casa');await wait(A,1500);
   const vis=await A.evaluate(()=>ISO_TEST._vis());
   ok(vis.basket3&&vis.pile&&vis.messCocina&&!vis.messBano,'la casa muestra la montaña de ropa y la cocina desordenada');
+  console.log('\n— Fase 9: cacas y orines —');
+  await act(A,'.isoState');await act(A,'[data-act=hPet][data-k=poop][data-d="1"]');await act(A,'[data-act=hPet][data-k=poop][data-d="1"]');await act(A,'[data-act=hPet][data-k=pee][data-d="1"]');await act(A,'[data-act=closeSheet]');await wait(A,900);
+  ok(store.docs['home/house'].poop===2&&store.docs['home/house'].pee===1,'se anotan 2 cacas y 1 orín');
+  const pv=await A.evaluate(()=>ISO_TEST._vis2());ok(pv.join()==='true,true,false,true','aparecen en el jardín de la casa');
+  const pp=await A.evaluate(()=>ISO_TEST._pos('poop0'));await A.mouse.click(pp.x,pp.y);await wait(A,900);
+  ok(store.docs['home/house'].poop===1,'tocar una caca en el jardín la limpia');
   ok(A.errs.length===0&&B.errs.length===0,'sin errores de JavaScript en ninguna de las dos sesiones');
   console.log(`\n${pass} pasaron, ${fail} fallaron`);
   await b.close();srv.close();process.exit(fail?1:0);
