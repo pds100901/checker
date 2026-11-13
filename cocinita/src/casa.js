@@ -214,6 +214,7 @@ function vCocina(){
   ${empty?`<p class="hint">${furn==='fridge'?'La refri está vacía':'Aquí no hay nada todavía'}. Agregá lo que tenés de verdad en tu casa.</p>`:''}
   ${binsHTML()}
   <button class="btn terra block" data-act="newItem" data-place="${furn}">＋ Agregar a ${PLACES[furn].label.toLowerCase()}</button>
+  <button class="btn ghost block rcbtn" data-act="receipt">📷 Leer factura del súper</button>
   <p class="hint">Tocá la refri, el especiero o la alacena para abrirlos; la lista de compras está pegada en la refri y el menú en la pizarra. Arrastrá productos entre estantes o a las cestas.</p>`;
 }
 

@@ -22,7 +22,7 @@ function vIso(){
   const n=S.items.filter(i=>i.place==='fridge').length+S.tuppers.filter(t=>t.status==='activo').length;
   const panel=isoPanel==='fridge'?`<div class="isoPanel"><div class="isoPanelH"><h3>Dentro de la refri</h3><button class="btn sm ghost" data-act="isoClose">Cerrar</button></div>
     ${n?'':'<p class="hint" style="margin-top:0">La refri está vacía. Agregá lo que tenés de verdad en tu casa.</p>'}${furnitureHTML('fridge')}
-    <button class="btn terra block" data-act="newItem" data-place="fridge">＋ Agregar a la refri</button></div>`:'';
+    <button class="btn terra block" data-act="newItem" data-place="fridge">＋ Agregar a la refri</button><button class="btn ghost block rcbtn" data-act="receipt">📷 Leer factura del súper</button></div>`:'';
   return `<div class="isoWrap${isoPanel?' withPanel':''}"><i class="cl c1"></i><i class="cl c2"></i><div class="isoHost" id="isoHost"></div>${panel}</div>
   <p class="hint">Prueba de la casa 2.5D: cocina, baño y lavandería. Las demás habitaciones siguen en las pestañas de abajo.</p>`;
 }

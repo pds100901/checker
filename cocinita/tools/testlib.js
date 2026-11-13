@@ -30,6 +30,8 @@ const MOCK=`(()=>{
   const db={doc:p=>({id:p.split('/').pop(),path:p,set:d=>send({op:'set',path:p,data:d}),delete:()=>send({op:'del',path:p})}),
     collection:c=>({path:c,onSnapshot:(cb,err)=>{const s={col:c,cb};subs.push(s);if(cache)fire(s,JSON.parse(cache));else pull();return()=>{}}})};
   setInterval(pull,250);
-  window.claude={use:async n=>n==='db'?db:null};
+  const sample=async()=>({text:'',truncated:false});sample.limits=async()=>({maxPromptBytes:262144,images:{maxCount:4,maxInputBytes:2e7,mediaTypes:['image/jpeg','image/png']}});
+  sample.json=async(prompt,o)=>{window.__rc={prompt,n:o&&o.images&&o.images.length};return [{name:'Yogurt',qty:2,unit:'unid.',place:'fridge',emoji:'🥛'},{name:'Frijoles',qty:1,unit:'kg',place:'pantry',emoji:'🫘'},{name:'Cloro',qty:1,unit:'botellas',place:'clean',emoji:'🧴'},{name:'Bolsa',qty:1,unit:'unid.',place:'nada',emoji:'x'}]};
+  window.claude={use:async n=>n==='db'?db:n==='sample'?sample:null};
 })();`;
 module.exports={start,store,MOCK};

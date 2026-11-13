@@ -152,6 +152,15 @@ const iso=n=>{const d=new Date();d.setDate(d.getDate()+n);return d.getFullYear()
   ok((await A.evaluate(()=>ISO_TEST.view))==='cocina'&&!(await has(A,'.isoPanel')),'cerrar la refri regresa a la cocina');
   await act(A,'.isoBack');await wait(A,900);
   ok((await A.evaluate(()=>ISO_TEST.view))==='home','se regresa a la vista general');
+  console.log('\n— Fase 6: leer factura —');
+  await tab(A,'cocina');await act(A,'[data-act=receipt]');await A.setInputFiles('#rc-file','img/mali-beg.png');await wait(A,500);
+  ok((await A.evaluate(()=>window.__rc&&window.__rc.n))===1&&(await A.evaluate(()=>document.querySelectorAll('.rcrow').length))===4,'la foto se envía a leer y aparece la lista para revisar (4 líneas)');
+  ok(!Object.values(store.docs).some(d=>d.name==='Yogurt'),'nada se guarda antes de revisar');
+  await A.evaluate(()=>document.querySelectorAll('[data-act=rcTog]')[3].click());await wait(A,100);
+  await act(A,'[data-act=rcSave]');await wait(A,800);
+  const dd=Object.values(store.docs);
+  ok(dd.some(d=>d.name==='Yogurt'&&d.place==='fridge'&&d.qty===2)&&dd.some(d=>d.name==='Frijoles'&&d.place==='pantry'&&d.unit==='kg')&&dd.some(d=>d.name==='Cloro'&&d.place==='clean'),'cada producto queda en su lugar: refri, alacena y limpieza');
+  ok(!dd.some(d=>d.name==='Bolsa'),'lo que se desmarca no se guarda');
   ok(A.errs.length===0&&B.errs.length===0,'sin errores de JavaScript en ninguna de las dos sesiones');
   console.log(`\n${pass} pasaron, ${fail} fallaron`);
   await b.close();srv.close();process.exit(fail?1:0);

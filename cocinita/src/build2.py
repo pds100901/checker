@@ -66,6 +66,8 @@ s=rep(s,"D.rosco.g=+v('d-g1').value||260;D.mali.g=+v('d-g2').value||180;","D.ros
 s=rep(s,'type="number" step="0.5" min="1" value="${D.bag.total/1000}"','type="number" step="0.5" min="0" value="${D.bag.total/1000||\'\'}"')
 
 s=rep(s,'<label>Estante</label><select id="f-shelf">${shelfOpts(place,0)}</select>','<label>Estante</label><select id="f-shelf">${shelfOpts(place,place===\'fridge\'?1:0)}</select>')
+s=rep(s,'return `<div class="card"><h2>🛒 Lista del súper</h2>','return `<button class="btn block rcbtn" data-act="receipt">📷 Leer factura del súper</button><div class="card"><h2>🛒 Lista del súper</h2>')
+s=rep(s,"  if(casaAct(a,d,el,px,py))return;","  if(casaAct(a,d,el,px,py)||receiptAct(a,d))return;")
 # --- voseo
 for a,b in [('Arrastra ','Arrastrá '),('Toca para planear','Tocá para planear'),('Ponle un nombre','Ponele un nombre'),('Escribe ','Escribí '),('Tienes ','Tenés '),('No tienes','No tenés'),('ya lo tienes','ya lo tenés'),
             ('Pon la nueva','Poné la nueva'),('puedes','podés'),('Agrégala','Agregala'),('agrégalos aquí','agregalos aquí'),('Qué quieres recordar','Qué querés recordar'),('Toca un producto','Tocá un producto'),
@@ -73,7 +75,7 @@ for a,b in [('Arrastra ','Arrastrá '),('Toca para planear','Tocá para planear'
     s=s.replace(a,b)
 
 # --- módulos y arranque
-s=rep(s,'/* ---------- inicio ---------- */\nrender();','/* ---------- casa ---------- */\n'+rd('casa.js')+'\n'+rd('pets.js')+'\n'+rd('iso_art.js')+'\n'+rd('iso_engine.js')+'\n'+rd('iso_app.js')+'\n/* ---------- inicio ---------- */\nrender();initSync();window.PETS_TEST=PETS;window.ISO_TEST=ISO;\nsetInterval(()=>{if(!document.hidden&&!$("#sheet").classList.contains("on")&&!drag)render()},60000);')
+s=rep(s,'/* ---------- inicio ---------- */\nrender();','/* ---------- casa ---------- */\n'+rd('casa.js')+'\n'+rd('pets.js')+'\n'+rd('iso_art.js')+'\n'+rd('iso_engine.js')+'\n'+rd('iso_app.js')+'\n'+rd('receipt.js')+'\n/* ---------- inicio ---------- */\nrender();initSync();window.PETS_TEST=PETS;window.ISO_TEST=ISO;\nsetInterval(()=>{if(!document.hidden&&!$("#sheet").classList.contains("on")&&!drag)render()},60000);')
 s=rep(s,"toast('¡Bienvenida! Arrastrá los productos y toca a los perritos 🐾')","toast('¡Bienvenida a tu casita! Tocá los objetos para usarlos 🐾')")
 s=rep(s,'</style>',rd('casa.css')+rd('iso.css')+'\n</style>')
 s=rep(s,'<script>\n(()=>{','<script src="pixi.min.js"></script>\n<script>\n(()=>{')

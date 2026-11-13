@@ -23,3 +23,13 @@
 .isoPanelH{display:flex;align-items:center;justify-content:space-between;margin:0 2px 8px}
 .isoPanelH h3{font-size:18px}
 .isoPanel .scene{margin-bottom:10px}
+
+/* leer factura */
+.vh{position:absolute;width:1px;height:1px;opacity:0;overflow:hidden;clip-path:inset(50%)}
+.filebtn{text-align:center;margin:10px 0}
+.rcbtn{margin-top:10px;margin-bottom:12px}
+.rclist{max-height:46vh;overflow:auto;margin:8px -4px;padding:0 4px}
+.rcrow{display:grid;grid-template-columns:30px 30px minmax(0,1fr) 96px;gap:6px;align-items:center;padding:8px 0;border-bottom:2.5px dashed var(--line)}
+.rcrow .em .ic{width:28px;height:28px;display:block;vertical-align:0}
+.rcrow input,.rcrow select{padding:6px 8px;border-width:2.5px;border-radius:12px;font-size:14px;min-width:0}
+.rcrow .rc-p{grid-column:3;grid-row:2}.rcrow .rc-u{grid-column:4;grid-row:2}
